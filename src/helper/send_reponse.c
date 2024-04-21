@@ -23,7 +23,7 @@
 #include "../sw.h"
 
 int helper_send_response_pubkey() {
-    return io_send_response_pointer(G_context.raw_public_key, 32, SW_OK);
+    return io_send_response_pointer(G_context.raw_public_key, RAW_ED25519_PUBLIC_KEY_SIZE, SW_OK);
 }
 
 int helper_send_response_sig(const uint8_t *signature) {
