@@ -56,8 +56,7 @@ CURVE_APP_LOAD_PARAMS = ed25519
 # Most application will have to request a path according to the BIP-0044
 # and SLIP-0044 standards.
 # If your app needs it, you can specify multiple path by using:
-# `PATH_APP_LOAD_PARAMS = "44'/1'" "45'/1'"`
-PATH_APP_LOAD_PARAMS = "44'/148'"   # purpose=coin(44) / coin_type=Testnet(1)
+PATH_APP_LOAD_PARAMS = "44'/148'"
 
 # Setting to allow building variant applications
 # - <VARIANT_PARAM> is the name of the parameter which should be set
@@ -115,6 +114,12 @@ ifneq ($(WITH_LIBSTELLAR),0)
 endif
 
 include $(BOLOS_SDK)/Makefile.standard_app
+
+ifeq ($(TARGET_NAME), TARGET_NANOS)
+APP_FLAGS_APP_LOAD_PARAMS = 0x800  # APPLICATION_FLAG_LIBRARY
+else
+APP_FLAGS_APP_LOAD_PARAMS = 0xa00  # APPLICATION_FLAG_LIBRARY + APPLICATION_FLAG_BOLOS_SETTINGS
+endif
 
 tests-unit:
 	cd tests_common_js && npm install && npm run build
