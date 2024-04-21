@@ -68,7 +68,7 @@ VARIANT_PARAM = COIN
 VARIANT_VALUES = stellar
 
 # Enabling DEBUG flag will enable PRINTF and disable optimizations
-DEBUG = 1
+DEBUG = 0
 
 ########################################
 #     Application custom permissions   #
@@ -106,6 +106,8 @@ ENABLE_NBGL_QRCODE = 1
 #DISABLE_STANDARD_BAGL_UX_FLOW = 1
 #DISABLE_DEBUG_LEDGER_ASSERT = 1
 #DISABLE_DEBUG_THROW = 1
+
+ENABLE_SWAP = 1
 
 WITH_LIBSTELLAR=1
 ifneq ($(WITH_LIBSTELLAR),0)

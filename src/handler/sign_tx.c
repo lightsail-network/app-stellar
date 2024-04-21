@@ -22,15 +22,15 @@
 #include "os.h"
 #include "cx.h"
 #include "buffer.h"
+#include "swap.h"
 
 #include "sign_tx.h"
 #include "../sw.h"
 #include "../globals.h"
 #include "../ui/display.h"
 #include "../crypto.h"
-#include "swap_lib_calls.h"
-#include "../swap/handle_swap_commands.h"
 #include "../helper/send_response.h"
+#include "../swap/handle_swap_sign_transaction.h"
 #include "stellar/parser.h"
 #include "stellar/formatter.h"
 
@@ -78,14 +78,14 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
     PRINTF("tx parsed.\n");
 
     if (G_called_from_swap) {
-        if (G.swap.response_ready) {
+        if (G_swap_response_ready) {
             // Safety against trying to make the app sign multiple TX
             // This panic quit is a failsafe that should never trigger, as the app is supposed to
             // exit after the first send when started in swap mode
             os_sched_exit(-1);
         } else {
             // We will quit the app after this transaction, whether it succeeds or fails
-            G.swap.response_ready = true;
+            G_swap_response_ready = true;
         }
 
         if (!swap_check()) {

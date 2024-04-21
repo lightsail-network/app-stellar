@@ -29,25 +29,10 @@ extern bolos_ux_params_t G_ux_params;
 extern global_ctx_t G_context;
 
 /**
- * Is it called through the exchange app
- */
-extern bool G_called_from_swap;
-
-/**
  * Use an union to avoid the UI variable footprints for the swap flow and vice versa
  */
 typedef union swap_or_ui_u {
-    struct {
-        /**
-         * The response to the swap is ready
-         */
-        bool response_ready;
-
-        /**
-         * Global context for swap requests.
-         */
-        swap_values_t values;
-    } swap;
+    swap_values_t swap_values;
 
     struct {
         /**
