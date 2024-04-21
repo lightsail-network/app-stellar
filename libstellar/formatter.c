@@ -1721,6 +1721,7 @@ static const format_function_t formatters[] = {&format_create_account,
                                                NULL,  // &format_invoke_host_function,
                                                &format_extend_footprint_ttl,
                                                &format_restore_footprint};
+
 static bool format_confirm_operation(formatter_data_t *fdata) {
     if (fdata->envelope->tx.operations_count > 1) {
         char op_caption[OPERATION_CAPTION_MAX_LENGTH];
@@ -1739,6 +1740,10 @@ static bool format_confirm_operation(formatter_data_t *fdata) {
         FORMATTER_CHECK(push_to_formatter_stack(
             ((format_function_t) PIC(formatters[fdata->envelope->tx.op_details.type]))));
     } else {
+        if (fdata->envelope->tx.op_details.type == OPERATION_INVOKE_HOST_FUNCTION) {
+            // TODO: add support!
+            return false;
+        }
         ((format_function_t) PIC(formatters[fdata->envelope->tx.op_details.type]))(fdata);
     }
     return true;

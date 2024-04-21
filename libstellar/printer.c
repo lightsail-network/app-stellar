@@ -28,10 +28,10 @@ uint16_t crc16(const uint8_t *input_str, int num_bytes) {
 }
 
 bool encode_key(const uint8_t *in, uint8_t version_byte, char *out, uint8_t out_len) {
-    if (out_len < 56 + 1) {
+    if (in == NULL || out_len < 56 + 1) {
         return false;
     }
-    uint8_t buffer[35];
+    uint8_t buffer[35] = {0};
     buffer[0] = version_byte;
     for (uint8_t i = 0; i < 32; i++) {
         buffer[i + 1] = in[i];
@@ -102,13 +102,17 @@ bool encode_ed25519_signed_payload(const ed25519_signed_payload_t *signed_payloa
 }
 
 bool encode_muxed_account(const muxed_account_t *raw_muxed_account, char *out, size_t out_len) {
+    if (raw_muxed_account == NULL || raw_muxed_account->med25519.ed25519 == NULL ||
+        out_len < ENCODED_MUXED_ACCOUNT_KEY_LENGTH) {
+        return false;
+    }
     if (raw_muxed_account->type == KEY_TYPE_ED25519) {
         return encode_ed25519_public_key(raw_muxed_account->ed25519, out, out_len);
     } else {
         if (out_len < ENCODED_MUXED_ACCOUNT_KEY_LENGTH) {
             return false;
         }
-        uint8_t buffer[MUXED_ACCOUNT_MED_25519_SIZE];
+        uint8_t buffer[MUXED_ACCOUNT_MED_25519_SIZE] = {0};
         buffer[0] = VERSION_BYTE_MUXED_ACCOUNT;
         memcpy(buffer + 1, raw_muxed_account->med25519.ed25519, RAW_ED25519_PUBLIC_KEY_SIZE);
         for (int i = 0; i < 8; i++) {
