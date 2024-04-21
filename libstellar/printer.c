@@ -102,8 +102,7 @@ bool encode_ed25519_signed_payload(const ed25519_signed_payload_t *signed_payloa
 }
 
 bool encode_muxed_account(const muxed_account_t *raw_muxed_account, char *out, size_t out_len) {
-    if (raw_muxed_account == NULL || raw_muxed_account->med25519.ed25519 == NULL ||
-        out_len < ENCODED_MUXED_ACCOUNT_KEY_LENGTH) {
+    if (raw_muxed_account == NULL) {
         return false;
     }
     if (raw_muxed_account->type == KEY_TYPE_ED25519) {
