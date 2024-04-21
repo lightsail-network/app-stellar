@@ -74,7 +74,7 @@ static void display_next_state(bool is_upper_delimiter) {
             // The previous screen was NOT a static screen, so we were already in a dynamic screen.
 
             // Fetch new data.
-            if (!get_next_data(&formatter_data, true, &data_exists, &is_op_header)) {
+            if (!get_next_data(&formatter_data, false, &data_exists, &is_op_header)) {
                 THROW(SW_FORMATTING_FAIL);
             };
             if (data_exists) {
@@ -94,7 +94,7 @@ static void display_next_state(bool is_upper_delimiter) {
 
         if (G.ui.current_state == STATIC_SCREEN) {
             // Fetch new data.
-            if (!get_next_data(&formatter_data, true, &data_exists, &is_op_header)) {
+            if (!get_next_data(&formatter_data, false, &data_exists, &is_op_header)) {
                 THROW(SW_FORMATTING_FAIL);
             };
             if (data_exists) {
