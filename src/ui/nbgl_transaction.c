@@ -265,7 +265,7 @@ int ui_display_transaction(void) {
         .caption = G.ui.detail_caption,
         .value = G.ui.detail_value,
         .signing_key = G_context.raw_public_key,
-                .caption_len = DETAIL_CAPTION_MAX_LENGTH,
+        .caption_len = DETAIL_CAPTION_MAX_LENGTH,
         .value_len = DETAIL_VALUE_MAX_LENGTH,
         .display_sequence = HAS_SETTING(S_SEQUENCE_NUMBER_ENABLED),
     };
