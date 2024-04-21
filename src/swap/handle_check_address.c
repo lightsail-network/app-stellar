@@ -2,10 +2,10 @@
 
 #include "os.h"
 
-#include "./swap_lib_calls.h"
-#include "../utils.h"
+#include "swap_lib_calls.h"
 #include "../crypto.h"
-#include "../common/bip32.h"
+#include "bip32.h"
+#include "stellar/printer.h"
 
 int handle_check_address(const check_address_parameters_t* params) {
     PRINTF("Params on the address %d\n", (unsigned int) params);
@@ -41,7 +41,7 @@ int handle_check_address(const check_address_parameters_t* params) {
     explicit_bzero(&privateKey, sizeof(privateKey));
 
     char address[57];
-    if (!encode_ed25519_public_key(stellar_publicKey, address, sizeof(address))) {
+    if (!print_account_id(stellar_publicKey, address, sizeof(address), 0, 0)) {
         PRINTF("public key encode failed\n");
         return 0;
     };

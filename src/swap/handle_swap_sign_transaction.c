@@ -2,7 +2,7 @@
 #include "ux.h"
 #include "os_io_seproxyhal.h"
 
-#include "./swap_lib_calls.h"
+#include "swap_lib_calls.h"
 #include "handle_swap_commands.h"
 #include "../globals.h"
 #include "os.h"
