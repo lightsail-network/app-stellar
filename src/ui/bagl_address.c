@@ -40,7 +40,7 @@ static void ui_action_validate_pubkey(bool choice) {
 }
 
 // Step with icon and text
-UX_STEP_NOCB(ux_address_display_confirm_addr_step, pn, {&C_icon_eye, "Confirm Address"});
+UX_STEP_NOCB(ux_address_display_confirm_addr_step, pnn, {&C_icon_eye, "Confirm", "Address"});
 // Step with title/text for address
 UX_STEP_NOCB(ux_address_display_address_step,
              bnnn_paging,
