@@ -28,8 +28,8 @@ include $(BOLOS_SDK)/Makefile.defines
 APPNAME = "Stellar"
 
 # Application version
-APPVERSION_M = 6
-APPVERSION_N = 0
+APPVERSION_M = 5
+APPVERSION_N = 2
 APPVERSION_P = 0
 APPVERSION = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
