@@ -536,6 +536,7 @@ typedef struct {
         const uint8_t *name;
     } function;
     size_t parameters_position;
+    uint8_t parameters_length;
 } invoke_contract_args_t;
 
 typedef enum {

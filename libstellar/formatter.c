@@ -48,6 +48,8 @@ static const char *NETWORK_NAMES[3] = {"Public", "Testnet", "Unknown"};
 static format_function_t formatter_stack[MAX_FORMATTERS_PER_OPERATION];
 static int8_t formatter_index;
 static uint8_t current_data_index;
+static uint8_t parameters_index;
+static uint8_t last_parameter_at_formatter_index;
 
 static bool push_to_formatter_stack(format_function_t formatter) {
     if (formatter_index >= MAX_FORMATTERS_PER_OPERATION) {
@@ -1680,6 +1682,122 @@ static bool format_liquidity_pool_withdraw(formatter_data_t *fdata) {
     return true;
 }
 
+static bool format_invoke_host_function_args(formatter_data_t *fdata) {
+    // PRINTF("++++++++++ formatter_index: %d, parameters_index: %d\n",
+    //        formatter_index,
+    //        parameters_index);
+    // Argument _ of _
+    char op_caption[OPERATION_CAPTION_MAX_LENGTH] = {0};
+    size_t length;
+    STRLCPY(op_caption, "Arg ", OPERATION_CAPTION_MAX_LENGTH);
+    length = strlen(op_caption);
+    FORMATTER_CHECK(print_uint(parameters_index + 1,
+                               op_caption + length,
+                               OPERATION_CAPTION_MAX_LENGTH - length))
+
+    STRLCAT(op_caption, " of ", sizeof(op_caption));
+    length = strlen(op_caption);
+    FORMATTER_CHECK(print_uint(fdata->envelope->tx.op_details.invoke_host_function_op
+                                   .invoke_contract_args.parameters_length,
+                               op_caption + length,
+                               OPERATION_CAPTION_MAX_LENGTH - length))
+    STRLCPY(fdata->caption, op_caption, fdata->caption_len);
+
+    buffer_t buffer = {.ptr = fdata->raw_data,
+                       .size = fdata->raw_data_len,
+                       .offset = fdata->envelope->tx.op_details.invoke_host_function_op
+                                     .invoke_contract_args.parameters_position};
+    // Content
+    for (uint8_t i = 0; i < parameters_index; i++) {
+        read_scval_advance(&buffer);
+    }
+    uint32_t sc_type;
+    if (!buffer_read32(&buffer, &sc_type)) {
+        return false;
+    }
+    switch (sc_type) {
+        case SCV_I128:
+            STRLCPY(fdata->value, "1,000,000,000", fdata->value_len);
+            break;
+        case SCV_ADDRESS: {
+            sc_address_t sc_address;
+            FORMATTER_CHECK(parse_sc_address(&buffer, &sc_address));
+            FORMATTER_CHECK(print_sc_address(&sc_address, fdata->value, fdata->value_len, 0, 0));
+            break;
+        }
+        default:
+            return false;
+    }
+
+    parameters_index++;
+    if (parameters_index == fdata->envelope->tx.op_details.invoke_host_function_op
+                                .invoke_contract_args.parameters_length) {
+        last_parameter_at_formatter_index = formatter_index;
+        format_operation_source_prepare(fdata);
+    } else {
+        FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args))
+    }
+    return true;
+}
+
+static bool format_invoke_host_function_func_name(formatter_data_t *fdata) {
+    STRLCPY(fdata->caption, "Function", fdata->caption_len);
+
+    memcpy(
+        fdata->value,
+        fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args.function.name,
+        fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args.function
+            .name_size);
+    fdata->value[fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args
+                     .function.name_size] = '\0';
+
+    if (fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args
+            .parameters_length == 0) {
+        format_operation_source_prepare(fdata);
+    } else {
+        parameters_index = 0;
+        FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args))
+    }
+    return true;
+}
+
+static bool format_invoke_host_function_contract_id(formatter_data_t *fdata) {
+    STRLCPY(fdata->caption, "Contract ID", fdata->caption_len);
+
+    FORMATTER_CHECK(print_sc_address(
+        &fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args.address,
+        fdata->value,
+        fdata->value_len,
+        0,
+        0))
+    push_to_formatter_stack(&format_invoke_host_function_func_name);
+    return true;
+}
+
+static bool format_invoke_host_function(formatter_data_t *fdata) {
+    switch (fdata->envelope->tx.op_details.invoke_host_function_op.host_function_type) {
+        case HOST_FUNCTION_TYPE_INVOKE_CONTRACT:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Invoke Smart Contract", fdata->value_len);
+            FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_contract_id));
+            break;
+        case HOST_FUNCTION_TYPE_CREATE_CONTRACT:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
+            format_operation_source_prepare(fdata);
+            break;
+        case HOST_FUNCTION_TYPE_UPLOAD_CONTRACT_WASM:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Upload Smart Contract Wasm", fdata->value_len);
+            // TODO: check
+            format_operation_source_prepare(fdata);
+            break;
+        default:
+            return false;
+    }
+    return true;
+}
+
 static bool format_extend_footprint_ttl(formatter_data_t *fdata) {
     STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
     STRLCPY(fdata->value, "Extend Footprint TTL", fdata->value_len);
@@ -1718,7 +1836,7 @@ static const format_function_t formatters[] = {&format_create_account,
                                                &format_set_trust_line_flags,
                                                &format_liquidity_pool_deposit,
                                                &format_liquidity_pool_withdraw,
-                                               NULL,  // &format_invoke_host_function,
+                                               &format_invoke_host_function,
                                                &format_extend_footprint_ttl,
                                                &format_restore_footprint};
 
@@ -1740,10 +1858,6 @@ static bool format_confirm_operation(formatter_data_t *fdata) {
         FORMATTER_CHECK(push_to_formatter_stack(
             ((format_function_t) PIC(formatters[fdata->envelope->tx.op_details.type]))));
     } else {
-        if (fdata->envelope->tx.op_details.type == OPERATION_INVOKE_HOST_FUNCTION) {
-            // TODO: add support!
-            return false;
-        }
         format_function_t func = PIC(formatters[fdata->envelope->tx.op_details.type]);
         FORMATTER_CHECK(func(fdata));
     }
@@ -1906,6 +2020,26 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
             }
         } else {
             formatter_index -= 2;
+
+            // For display the parameter of the soroabn operation
+            if (formatter_index <= last_parameter_at_formatter_index) {
+                if (last_parameter_at_formatter_index == formatter_index) {
+                    parameters_index -= 1;
+                } else {
+                    if (parameters_index < 2) {
+                        parameters_index = 0;
+                    } else {
+                        parameters_index -= 2;
+                    }
+                }
+            }
+            // PRINTF(
+            //     "---------- last_parameter_at_formatter_index: %d. formatter_index: %d, "
+            //     "parameters_index: %d\n",
+            //     last_parameter_at_formatter_index,
+            //     formatter_index - 1,
+            //     parameters_index);
+
             FORMATTER_CHECK(formatter_stack[formatter_index - 1](fdata));
             *data_exists = true;
             if (current_data_index > 0 && formatter_index == 2) {

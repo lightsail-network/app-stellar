@@ -10,13 +10,13 @@
         if (!(x)) return false; \
     }
 
-static bool read_scval_advance(buffer_t *buffer);
+bool read_scval_advance(buffer_t *buffer);
 
 static bool buffer_advance(buffer_t *buffer, size_t num_bytes) {
     return buffer_seek_cur(buffer, num_bytes);
 }
 
-static bool buffer_read32(buffer_t *buffer, uint32_t *n) {
+bool buffer_read32(buffer_t *buffer, uint32_t *n) {
     return buffer_read_u32(buffer, n, BE);
 }
 
@@ -723,7 +723,7 @@ static bool parse_begin_sponsoring_future_reserves(buffer_t *buffer,
     return true;
 }
 
-static bool parse_sc_address(buffer_t *buffer, sc_address_t *sc_address) {
+bool parse_sc_address(buffer_t *buffer, sc_address_t *sc_address) {
     uint32_t address_type;
     PARSER_CHECK(buffer_read32(buffer, &address_type))
     sc_address->type = address_type;
@@ -777,7 +777,7 @@ static bool read_contract_executable_advance(buffer_t *buffer) {
     return true;
 }
 
-static bool read_scval_advance(buffer_t *buffer) {
+bool read_scval_advance(buffer_t *buffer) {
     uint32_t sc_type;
     PARSER_CHECK(buffer_read32(buffer, &sc_type))
 
@@ -1024,13 +1024,17 @@ static bool parse_invoke_contract_args(buffer_t *buffer, invoke_contract_args_t 
     args->function.name_size = name_size;
 
     // args
-    args->parameters_position = buffer->offset;
-    // PRINTF("function_name.text_size=%d, function_name.text=%s\n",
-    //        args->function.name_size,
-    //        args->function.name);
-
     uint32_t args_len;
     PARSER_CHECK(buffer_read32(buffer, &args_len))
+
+    args->parameters_length = args_len;
+    args->parameters_position = buffer->offset;
+
+    // PRINTF("function_name.text_size=%d, function_name.text=%s, args->parameters_length=%d\n",
+    //        args->function.name_size,
+    //        args->function.name,
+    //        args->parameters_length);
+
     for (uint32_t i = 0; i < args_len; i++) {
         PARSER_CHECK(read_scval_advance(buffer))
     }
@@ -1203,8 +1207,7 @@ static bool parse_operation(buffer_t *buffer, operation_t *operation) {
         case OPERATION_TYPE_LIQUIDITY_POOL_WITHDRAW:
             return parse_liquidity_pool_withdraw(buffer, &operation->liquidity_pool_withdraw_op);
         case OPERATION_INVOKE_HOST_FUNCTION: {
-            PARSER_CHECK(parse_invoke_host_function(buffer, &operation->invoke_host_function_op))
-            return true;
+            return parse_invoke_host_function(buffer, &operation->invoke_host_function_op);
         }
         case OPERATION_EXTEND_FOOTPRINT_TTL:
             return parse_extend_footprint_ttl(buffer, &operation->extend_footprint_ttl_op);
