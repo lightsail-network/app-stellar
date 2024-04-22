@@ -1744,7 +1744,8 @@ static bool format_confirm_operation(formatter_data_t *fdata) {
             // TODO: add support!
             return false;
         }
-        ((format_function_t) PIC(formatters[fdata->envelope->tx.op_details.type]))(fdata);
+        format_function_t func = PIC(formatters[fdata->envelope->tx.op_details.type]);
+        FORMATTER_CHECK(func(fdata));
     }
     return true;
 }
@@ -1830,10 +1831,12 @@ static bool format(formatter_data_t *fdata, uint8_t data_index) {
         return format_transaction_info(fdata);
     } else {
         uint8_t op_index = data_index - 1;
-        parse_transaction_operation(fdata->raw_data,
-                                    fdata->raw_data_len,
-                                    fdata->envelope,
-                                    op_index);
+        if (!parse_transaction_operation(fdata->raw_data,
+                                         fdata->raw_data_len,
+                                         fdata->envelope,
+                                         op_index)) {
+            return false;
+        };
         FORMATTER_CHECK(push_to_formatter_stack(&format_confirm_operation))
     }
     return true;
@@ -1858,6 +1861,7 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
     explicit_bzero(fdata->value, fdata->value_len);
     *is_op_header = false;
     uint8_t total_data = get_data_count(fdata);
+    // printf("current_data_index: %d, formatter_index: %d\n", current_data_index, formatter_index);
     if (forward) {
         if (current_data_index == 0 && formatter_index == 0) {
             FORMATTER_CHECK(format(fdata, current_data_index));
