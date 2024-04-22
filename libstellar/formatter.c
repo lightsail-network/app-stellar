@@ -1880,7 +1880,7 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
                    formatter_stack[formatter_index - 1] == NULL) {
             *data_exists = false;
         } else {
-            formatter_stack[formatter_index - 1](fdata);
+            FORMATTER_CHECK(formatter_stack[formatter_index - 1](fdata));
             *data_exists = true;
         }
     } else {
