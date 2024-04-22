@@ -48,8 +48,8 @@ UX_STEP_CB(ux_settings_hash_signing_step,
            switch_settings_hash_signing(),
            {
                "Hash signing",
-               "Enable transaction",
-               "hash signing",
+               "Enable hash",
+               "signing",
                G.ui.detail_value,
            });
 UX_STEP_CB(ux_settings_sequence_number_step,

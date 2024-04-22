@@ -54,7 +54,7 @@ static bool settingsNavCallback(uint8_t page, nbgl_pageContent_t* content) {
         content->infosList.infoContents = (const char**) infoContents;
     } else if (page == 1) {
         switches[0].text = "Hash signing";
-        switches[0].subText = "Enable transaction hash\nsigning";
+        switches[0].subText = "Enable hash signing";
         switches[0].token = SWITCH_HASH_SET_TOKEN;
         switches[0].tuneId = TUNE_TAP_CASUAL;
         switches[0].initState = (HAS_SETTING(S_HASH_SIGNING_ENABLED)) ? ON_STATE : OFF_STATE;
