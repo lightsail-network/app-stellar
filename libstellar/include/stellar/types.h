@@ -512,6 +512,11 @@ typedef enum SCValType {
     SCV_LEDGER_KEY_NONCE = 21
 } sc_val_type_t;
 
+typedef struct {
+    int64_t hi;
+    uint64_t lo;
+} scv_i128_t;
+
 typedef enum { SC_ADDRESS_TYPE_ACCOUNT = 0, SC_ADDRESS_TYPE_CONTRACT = 1 } sc_address_type_t;
 
 typedef struct {

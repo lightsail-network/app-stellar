@@ -46,6 +46,34 @@ static bool buffer_read_bytes(buffer_t *buffer, uint8_t *out, size_t size) {
     return true;
 }
 
+static int64_t read_i64_be(const uint8_t *ptr, size_t offset) {
+    int64_t result = 0;
+    for (int i = 0; i < 8; i++) {
+        result = (result << 8) | ptr[offset + i];
+    }
+    return result;
+}
+
+bool parse_uint64(buffer_t *buffer, uint64_t *n) {
+    PARSER_CHECK(buffer_read64(buffer, (uint64_t *) n))
+    return true;
+}
+
+bool parse_int64(buffer_t *buffer, int64_t *n) {
+    if (!buffer_can_read(buffer, 8)) {
+        *n = 0;
+        return false;
+    }
+    *n = read_i64_be(buffer->ptr, buffer->offset);
+    return buffer_seek_cur(buffer, 8);
+}
+
+bool parse_scv_i128(buffer_t *buffer, scv_i128_t *i128) {
+    PARSER_CHECK(parse_int64(buffer, &i128->hi))
+    PARSER_CHECK(parse_uint64(buffer, &i128->lo))
+    return true;
+}
+
 size_t num_bytes(size_t size) {
     size_t remainder = size % 4;
     if (remainder == 0) {
