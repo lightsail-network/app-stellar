@@ -1882,6 +1882,7 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
             *data_exists = true;
         } else if (current_data_index == total_data - 1 &&
                    formatter_stack[formatter_index - 1] == NULL) {
+            formatter_index++;  // we can back from the approve page
             *data_exists = false;
         } else {
             FORMATTER_CHECK(formatter_stack[formatter_index - 1](fdata));
