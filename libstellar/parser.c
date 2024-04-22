@@ -1030,6 +1030,11 @@ static bool parse_invoke_contract_args(buffer_t *buffer, invoke_contract_args_t 
     args->parameters_length = args_len;
     args->parameters_position = buffer->offset;
 
+    if (args_len > 10) {
+        // We dont support more than 10 arguments
+        return false;
+    }
+
     // PRINTF("function_name.text_size=%d, function_name.text=%s, args->parameters_length=%d\n",
     //        args->function.name_size,
     //        args->function.name,
