@@ -1724,7 +1724,7 @@ static const format_function_t formatters[] = {&format_create_account,
 
 static bool format_confirm_operation(formatter_data_t *fdata) {
     if (fdata->envelope->tx.operations_count > 1) {
-        char op_caption[OPERATION_CAPTION_MAX_LENGTH];
+        char op_caption[OPERATION_CAPTION_MAX_LENGTH] = {0};
         size_t length;
         STRLCPY(op_caption, "Operation ", OPERATION_CAPTION_MAX_LENGTH);
         length = strlen(op_caption);
@@ -1748,6 +1748,7 @@ static bool format_confirm_operation(formatter_data_t *fdata) {
     }
     return true;
 }
+
 static bool format_fee_bump_transaction_fee(formatter_data_t *fdata) {
     STRLCPY(fdata->caption, "Max Fee", fdata->caption_len);
     asset_t asset = {.type = ASSET_TYPE_NATIVE};
