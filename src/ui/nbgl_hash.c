@@ -22,10 +22,10 @@
 #include "nbgl_use_case.h"
 
 #include "display.h"
+#include "globals.h"
+#include "sw.h"
 #include "stellar/printer.h"
 #include "action/validate.h"
-#include "../globals.h"
-#include "../sw.h"
 
 // Macros
 #define TAG_VAL_LST_PAIR_NB 2

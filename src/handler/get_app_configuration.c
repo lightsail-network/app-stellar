@@ -23,11 +23,11 @@
 #include "buffer.h"
 
 #include "get_app_configuration.h"
-#include "../globals.h"
-#include "../constants.h"
-#include "../sw.h"
-#include "../types.h"
-#include "../settings.h"
+#include "globals.h"
+#include "constants.h"
+#include "sw.h"
+#include "types.h"
+#include "settings.h"
 
 int handler_get_app_configuration() {
     PRINTF("handler_get_app_configuration invoked\n");

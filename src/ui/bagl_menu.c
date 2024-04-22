@@ -16,8 +16,8 @@
  *****************************************************************************/
 #ifdef HAVE_BAGL
 #include "display.h"
-#include "../globals.h"
-#include "../settings.h"
+#include "globals.h"
+#include "settings.h"
 
 static void ui_idle(void);
 static void display_settings(const ux_flow_step_t* const start_step);

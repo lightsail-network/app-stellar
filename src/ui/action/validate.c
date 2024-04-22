@@ -18,10 +18,10 @@
 #include <stdbool.h>  // bool
 
 #include "validate.h"
-#include "../../sw.h"
-#include "../../globals.h"
-#include "../../helper/send_response.h"
-#include "../../crypto.h"
+#include "sw.h"
+#include "crypto.h"
+#include "globals.h"
+#include "helper/send_response.h"
 
 void validate_pubkey(bool choice) {
     if (choice) {

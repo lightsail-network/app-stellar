@@ -18,8 +18,8 @@
 #include <stdint.h>  // uint*_t
 #include <string.h>  // explicit_bzero
 
-#include "./crypto.h"
-#include "./globals.h"
+#include "crypto.h"
+#include "globals.h"
 
 #define STELLAR_SEED_KEY "ed25519 seed"
 

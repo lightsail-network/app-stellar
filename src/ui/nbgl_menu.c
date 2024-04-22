@@ -23,8 +23,8 @@
 #include "ux.h"
 #include "nbgl_use_case.h"
 
-#include "../settings.h"
-#include "../globals.h"
+#include "settings.h"
+#include "globals.h"
 
 static void displaySettingsMenu(void);
 static void settingsControlsCallback(int token, uint8_t index);

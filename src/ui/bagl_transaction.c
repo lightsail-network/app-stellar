@@ -28,14 +28,14 @@
 #include "format.h"
 
 #include "display.h"
+#include "constants.h"
+#include "globals.h"
+#include "sw.h"
+#include "settings.h"
 #include "action/validate.h"
 #include "stellar/printer.h"
 #include "stellar/formatter.h"
 #include "stellar/printer.h"
-#include "../constants.h"
-#include "../globals.h"
-#include "../sw.h"
-#include "../settings.h"
 
 static action_validate_cb g_validate_callback;
 static bool data_exists;

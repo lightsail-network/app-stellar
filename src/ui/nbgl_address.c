@@ -21,10 +21,10 @@
 #include "nbgl_use_case.h"
 
 #include "display.h"
+#include "globals.h"
+#include "sw.h"
 #include "stellar/printer.h"
 #include "action/validate.h"
-#include "../globals.h"
-#include "../sw.h"
 
 // Validate/Invalidate public key and go back to home
 static void ui_action_validate_pubkey(bool choice) {

@@ -4,7 +4,7 @@
 #include "swap.h"
 #include "bip32.h"
 
-#include "../crypto.h"
+#include "crypto.h"
 #include "stellar/printer.h"
 
 /* Check check_address_parameters_t.address_to_check against specified parameters.
@@ -33,7 +33,7 @@ void swap_handle_check_address(check_address_parameters_t* params) {
 
     cx_ecfp_private_key_t privateKey;
     cx_ecfp_public_key_t publicKey;
-    uint8_t stellar_publicKey[32];
+    uint8_t stellar_publicKey[RAW_ED25519_PUBLIC_KEY_SIZE];
 
     if (crypto_derive_private_key(&privateKey, bip32_path, bip32_path_length) != CX_OK) {
         explicit_bzero(&privateKey, sizeof(privateKey));

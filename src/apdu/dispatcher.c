@@ -23,12 +23,12 @@
 #include "swap.h"
 
 #include "dispatcher.h"
-#include "../sw.h"
-#include "../types.h"
-#include "../handler/get_app_configuration.h"
-#include "../handler/get_public_key.h"
-#include "../handler/sign_tx.h"
-#include "../handler/sign_hash.h"
+#include "sw.h"
+#include "types.h"
+#include "handler/get_app_configuration.h"
+#include "handler/get_public_key.h"
+#include "handler/sign_tx.h"
+#include "handler/sign_hash.h"
 
 int apdu_dispatcher(const command_t *cmd) {
     LEDGER_ASSERT(cmd != NULL, "NULL cmd");

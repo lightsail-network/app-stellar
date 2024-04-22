@@ -3,10 +3,10 @@
 #include "os_io_seproxyhal.h"
 
 #include "swap.h"
-#include "handle_swap_sign_transaction.h"
 
-#include "../globals.h"
-#include "../types.h"
+#include "handle_swap_sign_transaction.h"
+#include "globals.h"
+#include "types.h"
 #include "stellar/printer.h"
 #include "stellar/parser.h"
 

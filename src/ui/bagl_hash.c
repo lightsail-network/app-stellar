@@ -29,8 +29,8 @@
 
 #include "display.h"
 #include "constants.h"
-#include "../globals.h"
-#include "../sw.h"
+#include "globals.h"
+#include "sw.h"
 #include "action/validate.h"
 #include "stellar/printer.h"
 #include "stellar/formatter.h"

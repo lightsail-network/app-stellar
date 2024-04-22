@@ -25,12 +25,12 @@
 #include "swap.h"
 
 #include "sign_tx.h"
-#include "../sw.h"
-#include "../globals.h"
-#include "../ui/display.h"
-#include "../crypto.h"
-#include "../helper/send_response.h"
-#include "../swap/handle_swap_sign_transaction.h"
+#include "sw.h"
+#include "globals.h"
+#include "ui/display.h"
+#include "crypto.h"
+#include "helper/send_response.h"
+#include "swap/handle_swap_sign_transaction.h"
 #include "stellar/parser.h"
 #include "stellar/formatter.h"
 

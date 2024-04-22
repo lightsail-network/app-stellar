@@ -18,9 +18,9 @@
 #include <stdint.h>  // uint*_t
 
 #include "send_response.h"
-#include "../constants.h"
-#include "../globals.h"
-#include "../sw.h"
+#include "constants.h"
+#include "globals.h"
+#include "sw.h"
 
 int helper_send_response_pubkey() {
     return io_send_response_pointer(G_context.raw_public_key, RAW_ED25519_PUBLIC_KEY_SIZE, SW_OK);

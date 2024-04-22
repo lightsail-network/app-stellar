@@ -24,16 +24,15 @@
 #include "cx.h"
 #include "io.h"
 #include "buffer.h"
-#include "crypto_helpers.h"
 
 #include "get_public_key.h"
-#include "../globals.h"
-#include "../types.h"
-#include "../sw.h"
-#include "../crypto.h"
-#include "../settings.h"
-#include "../ui/display.h"
-#include "../helper/send_response.h"
+#include "globals.h"
+#include "types.h"
+#include "sw.h"
+#include "crypto.h"
+#include "settings.h"
+#include "ui/display.h"
+#include "helper/send_response.h"
 
 int handler_sign_hash(buffer_t *cdata) {
     if (!HAS_SETTING(S_HASH_SIGNING_ENABLED)) {

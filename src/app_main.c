@@ -26,9 +26,9 @@
 #include "globals.h"
 #include "io.h"
 #include "sw.h"
+#include "settings.h"
 #include "ui/display.h"
 #include "apdu/dispatcher.h"
-#include "settings.h"
 
 // Global variables
 swap_or_ui_t G;
