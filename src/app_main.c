@@ -87,19 +87,6 @@ void app_main() {
                cmd.lc,
                cmd.data);
 
-        if (G_called_from_swap) {
-            // TODO: check if this is necessary
-            // if (cmd.cla != CLA_APP) {
-            //     io_send_sw(SW_CLA_NOT_SUPPORTED);
-            //     continue;
-            // }
-            if (cmd.ins != GET_PUBLIC_KEY && cmd.ins != SIGN_TX) {
-                PRINTF("Only GET_PUBLIC_KEY and SIGN_TX can be called during swap\n");
-                io_send_sw(SW_INS_NOT_SUPPORTED);
-                continue;
-            }
-        }
-
         // Dispatch structured APDU command to handler
         if (apdu_dispatcher(&cmd) < 0) {
             PRINTF("=> apdu_dispatcher failure\n");

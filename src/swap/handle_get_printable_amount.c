@@ -4,7 +4,7 @@
 #include "os.h"
 #include "swap.h"
 
-#include "swap_lib_calls.h"
+#include "handle_swap_sign_transaction.h"
 #include "stellar/printer.h"
 
 /* Format printable amount including the ticker from specified parameters.
@@ -21,11 +21,11 @@ void swap_handle_get_printable_amount(get_printable_amount_parameters_t* params)
         goto error;
     }
 
-    if (print_amount(amount,
-                     &asset,
-                     NETWORK_TYPE_PUBLIC,
-                     params->printable_amount,
-                     sizeof(params->printable_amount))) {
+    if (!print_amount(amount,
+                      &asset,
+                      NETWORK_TYPE_PUBLIC,
+                      params->printable_amount,
+                      sizeof(params->printable_amount))) {
         goto error;
     }
     return;

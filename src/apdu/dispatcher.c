@@ -20,6 +20,7 @@
 #include "buffer.h"
 #include "io.h"
 #include "ledger_assert.h"
+#include "swap.h"
 
 #include "dispatcher.h"
 #include "../sw.h"
@@ -34,6 +35,13 @@ int apdu_dispatcher(const command_t *cmd) {
 
     if (cmd->cla != CLA) {
         return io_send_sw(SW_CLA_NOT_SUPPORTED);
+    }
+
+    if (G_called_from_swap) {
+        if (cmd->ins != GET_PUBLIC_KEY && cmd->ins != SIGN_TX) {
+            PRINTF("Only GET_PUBLIC_KEY and SIGN_TX can be called during swap\n");
+            return io_send_sw(SW_INS_NOT_SUPPORTED);
+        }
     }
 
     buffer_t buf = {0};

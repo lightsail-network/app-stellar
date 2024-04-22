@@ -77,6 +77,7 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
     G_context.state = STATE_PARSED;
     PRINTF("tx parsed.\n");
 
+    // We have been called from the Exchange app that has already vaidated the TX in the UI
     if (G_called_from_swap) {
         if (G_swap_response_ready) {
             // Safety against trying to make the app sign multiple TX
@@ -109,6 +110,7 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
         }
 
     } else {
+        // Normal (not-swap) mode, derive the public_key and display the validation UI
         cx_ecfp_private_key_t private_key = {0};
         cx_ecfp_public_key_t public_key = {0};
 

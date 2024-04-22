@@ -34,13 +34,18 @@ void swap_handle_check_address(check_address_parameters_t* params) {
     cx_ecfp_private_key_t privateKey;
     cx_ecfp_public_key_t publicKey;
     uint8_t stellar_publicKey[32];
-    if (crypto_derive_private_key(&privateKey, bip32_path, bip32_path_length) != 0) {
+
+    if (crypto_derive_private_key(&privateKey, bip32_path, bip32_path_length) != CX_OK) {
         explicit_bzero(&privateKey, sizeof(privateKey));
         PRINTF("derive_private_key failed\n");
         return;
     }
 
-    crypto_init_public_key(&privateKey, &publicKey, stellar_publicKey);
+    if (crypto_init_public_key(&privateKey, &publicKey, stellar_publicKey) != CX_OK) {
+        explicit_bzero(&privateKey, sizeof(privateKey));
+        PRINTF("crypto_init_public_key failed\n");
+        return;
+    }
 
     explicit_bzero(&privateKey, sizeof(privateKey));
 

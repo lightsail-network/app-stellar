@@ -9,9 +9,9 @@
 #include "../types.h"
 #include "stellar/printer.h"
 
-#ifdef HAVE_NBGL
-#include "nbgl_use_case.h"
-#endif
+// #ifdef HAVE_NBGL
+// #include "nbgl_use_case.h"
+// #endif
 
 // Save the BSS address where we will write the return value when finished
 static uint8_t* G_swap_sign_return_value_address;
