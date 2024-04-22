@@ -8,6 +8,7 @@
 #include "../globals.h"
 #include "../types.h"
 #include "stellar/printer.h"
+#include "stellar/parser.h"
 
 // #ifdef HAVE_NBGL
 // #include "nbgl_use_case.h"
@@ -63,6 +64,7 @@ void __attribute__((noreturn)) swap_finalize_exchange_sign_transaction(bool is_s
 
 bool swap_check() {
     PRINTF("swap_check invoked.\n");
+
     char tmp_buf[DETAIL_VALUE_MAX_LENGTH];
 
     // tx type
@@ -72,6 +74,11 @@ bool swap_check() {
 
     // A XLM swap consist of only one "send" operation
     if (G_context.tx_info.tx.operations_count != 1) {
+        return false;
+    }
+
+    // parse the payment op
+    if (!parse_transaction_operation(G_context.raw, G_context.raw_size, &G_context.tx_info, 0)) {
         return false;
     }
 
