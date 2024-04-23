@@ -17,7 +17,6 @@ typedef enum {
     INS_GET_APP_CONFIGURATION = 0x06,     // app configuration of the application
     INS_SIGN_HASH = 0x08,                 // sign transaction in hash mode
     INS_SIGN_SOROBAN_AUTHORATION = 0x0a,  // sign soroban authoration
-
 } command_e;
 
 /**

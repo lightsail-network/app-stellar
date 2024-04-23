@@ -80,3 +80,7 @@ bool print_summary(const char *in,
                    uint8_t num_chars_r);
 
 bool print_time(uint64_t seconds, char *out, size_t out_len);
+
+bool print_int128(const uint8_t *value, char *out, size_t out_len);
+
+bool print_uint128(const uint8_t *value, char *out, size_t out_len);

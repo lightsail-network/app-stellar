@@ -6,7 +6,7 @@
 
 #include "stellar/printer.h"
 
-#define MAX_INT_SIZE                      32
+#define INT256_LENGTH                     32
 #define MUXED_ACCOUNT_MED_25519_SIZE      43
 #define BINARY_MAX_SIZE                   36
 #define AMOUNT_WITH_COMMAS_MAX_LENGTH     24   // 922,337,203,685.4775807
@@ -44,126 +44,6 @@ bool encode_key(const uint8_t *in, uint8_t version_byte, char *out, uint8_t out_
         return false;
     }
     out[56] = '\0';
-    return true;
-}
-
-int allzeroes(const void *buf, size_t n) {
-    uint8_t *p = (uint8_t *) buf;
-    for (size_t i = 0; i < n; ++i) {
-        if (p[i]) {
-            return 0;
-        }
-    }
-    return 1;
-}
-
-bool int_to_decimal(const int8_t *value, size_t value_len, char *out, size_t out_len) {
-    bool is_negative = false;
-    if (value_len > MAX_INT_SIZE) {
-        // value len is bigger than MAX_INT_SIZE ?!
-        return false;
-    }
-
-    uint16_t n[16] = {0};
-    // Check if the number is negative
-    if (value[0] & 0x80) {
-        is_negative = true;
-        // Convert to absolute value
-        for (size_t i = 0; i < value_len; ++i) {
-            ((uint8_t *) n)[MAX_INT_SIZE - value_len + i] = ~value[i];
-        }
-        // Add 1 to complete the two's complement conversion
-        for (int i = MAX_INT_SIZE - 1; i >= 0; --i) {
-            if (++((uint8_t *) n)[i] != 0) {
-                break;
-            }
-        }
-    } else {
-        // Copy and right-align the number
-        memcpy((uint8_t *) n + MAX_INT_SIZE - value_len, value, value_len);
-    }
-
-    // Special case when value is 0
-    if (allzeroes(n, MAX_INT_SIZE)) {
-        if (out_len < 2) {
-            // Not enough space to hold "0" and \0.
-            return false;
-        }
-        strcpy(out, "0");
-        return true;
-    }
-
-    uint16_t *p = n;
-    for (int i = 0; i < 16; i++) {
-        n[i] = __builtin_bswap16(*p++);
-    }
-    int pos = out_len;
-    while (!allzeroes(n, sizeof(n))) {
-        if (pos == 0) {
-            return false;
-        }
-        pos -= 1;
-        unsigned int carry = 0;
-        for (int i = 0; i < 16; i++) {
-            int rem = ((carry << 16) | n[i]) % 10;
-            n[i] = ((carry << 16) | n[i]) / 10;
-            carry = rem;
-        }
-        out[pos] = '0' + carry;
-    }
-    memmove(out, out + pos, out_len - pos);
-    out[out_len - pos] = 0;
-    if (is_negative) {
-        // Add '-' sign at the start if the number was negative
-        if (out_len - pos < 2) {
-            // Not enough space to hold '-' and \0.
-            return false;
-        }
-        memmove(out + 1, out, out_len - pos);
-        out[0] = '-';
-    }
-    return true;
-}
-
-bool uint_to_decimal(const uint8_t *value, size_t value_len, char *out, size_t out_len) {
-    if (value_len > MAX_INT_SIZE) {
-        return false;
-    }
-
-    uint16_t n[16] = {0};
-    // Copy and right-align the number
-    memcpy((uint8_t *) n + MAX_INT_SIZE - value_len, value, value_len);
-
-    // Special case when value is 0
-    if (allzeroes(n, MAX_INT_SIZE)) {
-        if (out_len < 2) {
-            // Not enough space to hold "0" and \0.
-            return false;
-        }
-        strcpy(out, "0");
-        return true;
-    }
-
-    uint16_t *p = n;
-    for (int i = 0; i < 16; i++) {
-        n[i] = __builtin_bswap16(*p++);
-    }
-    int pos = out_len;
-    while (!allzeroes(n, sizeof(n))) {
-        if (pos == 0) {
-            return false;
-        }
-        pos -= 1;
-        unsigned int carry = 0;
-        for (int i = 0; i < 16; i++) {
-            int rem = ((carry << 16) | n[i]) % 10;
-            n[i] = ((carry << 16) | n[i]) / 10;
-            carry = rem;
-        }
-        out[pos] = '0' + carry;
-    }
-    memmove(out, out + pos, out_len - pos);
-    out[out_len - pos] = 0;
     return true;
 }
 
@@ -716,4 +596,120 @@ bool is_printable_binary(const uint8_t *str, size_t str_len) {
         }
     }
     return true;
+}
+
+static int allzeroes(const void *buf, size_t n) {
+    uint8_t *p = (uint8_t *) buf;
+    for (size_t i = 0; i < n; ++i) {
+        if (p[i]) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/**
+ * Convert  a 128-bit or 256-bit unsigned integer to a decimal string.
+ */
+static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out, size_t out_len) {
+    if (value_len > INT256_LENGTH) {
+        return false;
+    }
+
+    uint16_t n[16] = {0};
+    // Copy and right-align the number
+    memcpy((uint8_t *) n + INT256_LENGTH - value_len, value, value_len);
+
+    // Special case when value is 0
+    if (allzeroes(n, INT256_LENGTH)) {
+        if (out_len < 2) {
+            // Not enough space to hold "0" and \0.
+            return false;
+        }
+        // TODO
+        strcpy(out, "0");
+        return true;
+    }
+
+    uint16_t *p = n;
+    for (int i = 0; i < 16; i++) {
+        n[i] = __builtin_bswap16(*p++);
+    }
+    int pos = out_len;
+    while (!allzeroes(n, sizeof(n))) {
+        if (pos == 0) {
+            return false;
+        }
+        pos -= 1;
+        unsigned int carry = 0;
+        for (int i = 0; i < 16; i++) {
+            int rem = ((carry << 16) | n[i]) % 10;
+            n[i] = ((carry << 16) | n[i]) / 10;
+            carry = rem;
+        }
+        out[pos] = '0' + carry;
+    }
+    memmove(out, out + pos, out_len - pos);
+    out[out_len - pos] = 0;
+    return true;
+}
+
+/**
+ * Convert a 128-bit or 256-bit signed integer to a decimal string.
+ */
+static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out, size_t out_len) {
+    if (value_len > INT256_LENGTH) {
+        // value len is bigger than INT256_LENGTH
+        return false;
+    }
+
+    bool is_negative = (value[0] & 0x80) != 0;
+    uint8_t n[INT256_LENGTH] = {0};
+    if (is_negative) {
+        // Compute the absolute value
+        bool carry = true;
+        for (int i = value_len - 1; i >= 0; --i) {
+            n[INT256_LENGTH - value_len + i] = ~value[i] + (carry ? 1 : 0);
+            carry = carry && (value[i] == 0);
+        }
+    } else {
+        memcpy(n + INT256_LENGTH - value_len, value, value_len);
+    }
+
+    char *p = out + out_len - 1;
+    *p = '\0';
+    do {
+        uint32_t remainder = 0;
+        for (int i = 0; i < INT256_LENGTH; ++i) {
+            uint32_t temp = (remainder << 8) | n[i];
+            n[i] = temp / 10;
+            remainder = temp % 10;
+        }
+        --p;
+        *p = '0' + remainder;
+    } while (!allzeroes(n, INT256_LENGTH) && p > out);
+
+    if (is_negative && p > out) {
+        --p;
+        *p = '-';
+    }
+
+    memmove(out, p, out_len - (p - out));
+    return true;
+}
+
+bool print_int128(const uint8_t *value, char *out, size_t out_len) {
+    return int256_to_decimal(value, 16, out, out_len);
+}
+
+bool print_uint128(const uint8_t *value, char *out, size_t out_len) {
+    return uint256_to_decimal(value, 16, out, out_len);
+}
+
+bool print_int256(const uint8_t *value, char *out, size_t out_len) {
+    return int256_to_decimal(value, 32, out, out_len);
+}
+
+bool print_uint256(const uint8_t *value, char *out, size_t out_len) {
+    return uint256_to_decimal(value, 32, out, out_len);
 }
