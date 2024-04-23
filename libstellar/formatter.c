@@ -1774,11 +1774,19 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
             FORMATTER_CHECK(
                 print_int256(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
             break;
-        // case SCV_BYTES:
-        // case SCV_STRING:
-        // case SCV_SYMBOL: {
-        //     break;
-        // }
+        case SCV_BYTES:
+            STRLCPY(fdata->value, "[Bytes Data]", fdata->value_len);
+            break;
+        case SCV_STRING: {
+            STRLCPY(fdata->value, "[Strings Data]", fdata->value_len);
+            break;
+        }
+        case SCV_SYMBOL: {
+            scv_symbol_t scv_symbol;
+            memcpy(fdata->value, scv_symbol.symbol, scv_symbol.symbol_size);
+            fdata->value[scv_symbol.symbol_size] = '\0';
+            break;
+        }
         case SCV_ADDRESS: {
             sc_address_t sc_address;
             FORMATTER_CHECK(parse_sc_address(&buffer, &sc_address));

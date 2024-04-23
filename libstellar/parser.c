@@ -142,6 +142,15 @@ static bool parse_optional_type(buffer_t *buffer, xdr_type_reader reader, void *
     }
 }
 
+bool parse_scv_symbol(buffer_t *buffer, scv_symbol_t *symbol) {
+    if (!buffer_read32(buffer, symbol->symbol_size) || symbol->symbol_size > SCV_SYMBOL_MAX_SIZE) {
+        return false;
+    }
+    PARSER_CHECK(buffer_can_read(buffer, num_bytes(symbol->symbol_size)))
+    symbol->symbol = buffer->ptr + buffer->offset;
+    return true;
+}
+
 static bool parse_signer_key(buffer_t *buffer, signer_key_t *key) {
     uint32_t signer_type;
 

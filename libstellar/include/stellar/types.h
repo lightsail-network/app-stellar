@@ -517,6 +517,11 @@ typedef struct {
     uint64_t lo;
 } scv_i128_t;
 
+typedef struct {
+    uint32_t symbol_size;
+    const uint8_t *symbol;
+} scv_symbol_t;
+
 typedef enum { SC_ADDRESS_TYPE_ACCOUNT = 0, SC_ADDRESS_TYPE_CONTRACT = 1 } sc_address_type_t;
 
 typedef struct {
