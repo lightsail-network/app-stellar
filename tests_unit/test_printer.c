@@ -793,6 +793,129 @@ void test_print_uint256() {
         "115792089237316195423570985008687907853269984665640564039457584007913129639935");
 }
 
+void test_print_int32() {
+    char out[89];
+    uint8_t data0[] = {0x00, 0x00, 0x00, 0x00};
+    assert_true(print_int32(data0, out, sizeof(out)));
+    assert_string_equal(out, "0");
+
+    uint8_t data1[] = {0x00, 0x00, 0x00, 0x01};
+    assert_true(print_int32(data1, out, sizeof(out)));
+    assert_string_equal(out, "1");
+
+    uint8_t data2[] = {0xff, 0xff, 0xff, 0xff};
+    assert_true(print_int32(data2, out, sizeof(out)));
+    assert_string_equal(out, "-1");
+
+    uint8_t data3[] = {0x00, 0x01, 0x00, 0x00};
+    assert_true(print_int32(data3, out, sizeof(out)));
+    assert_string_equal(out, "65536");
+
+    uint8_t data4[] = {0xff, 0xff, 0x00, 0x00};
+    assert_true(print_int32(data4, out, sizeof(out)));
+    assert_string_equal(out, "-65536");
+
+    uint8_t data5[] = {0x02, 0x10, 0x17, 0x4b};
+    assert_true(print_int32(data5, out, sizeof(out)));
+    assert_string_equal(out, "34608971");
+
+    uint8_t data6[] = {0xfd, 0xf1, 0xe8, 0xb5};
+    assert_true(print_int32(data6, out, sizeof(out)));
+    assert_string_equal(out, "-34477899");
+
+    uint8_t data7[] = {0x7f, 0xff, 0xff, 0xff};
+    assert_true(print_int32(data7, out, sizeof(out)));
+    assert_string_equal(out, "2147483647");
+
+    uint8_t data8[] = {0x80, 0x00, 0x00, 0x00};
+    assert_true(print_int32(data8, out, sizeof(out)));
+    assert_string_equal(out, "-2147483648");
+}
+
+void test_print_uint32() {
+    char out[89];
+    uint8_t data0[] = {0x00, 0x00, 0x00, 0x00};
+    assert_true(print_uint32(data0, out, sizeof(out)));
+    assert_string_equal(out, "0");
+
+    uint8_t data1[] = {0x00, 0x00, 0x00, 0x01};
+    assert_true(print_uint32(data1, out, sizeof(out)));
+    assert_string_equal(out, "1");
+    uint8_t data2[] = {0x00, 0x01, 0x00, 0x00};
+    assert_true(print_uint32(data2, out, sizeof(out)));
+    assert_string_equal(out, "65536");
+
+    uint8_t data4[] = {0xfd, 0xf0, 0xe8, 0xb5};
+    assert_true(print_uint32(data4, out, sizeof(out)));
+    assert_string_equal(out, "4260423861");
+
+    uint8_t data5[] = {0xff, 0xff, 0xff, 0xff};
+    assert_true(print_uint32(data5, out, sizeof(out)));
+    assert_string_equal(out, "4294967295");
+}
+
+void test_print_int64() {
+    char out[89];
+    uint8_t data0[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    assert_true(print_int64(data0, out, sizeof(out)));
+    assert_string_equal(out, "0");
+
+    uint8_t data1[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+    assert_true(print_int64(data1, out, sizeof(out)));
+    assert_string_equal(out, "1");
+
+    uint8_t data2[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    assert_true(print_int64(data2, out, sizeof(out)));
+    assert_string_equal(out, "-1");
+
+    uint8_t data3[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
+    assert_true(print_int64(data3, out, sizeof(out)));
+    assert_string_equal(out, "4294967296");
+
+    uint8_t data4[] = {0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00};
+    assert_true(print_int64(data4, out, sizeof(out)));
+    assert_string_equal(out, "-4294967296");
+
+    uint8_t data5[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x38, 0xb9};
+    assert_true(print_int64(data5, out, sizeof(out)));
+    assert_string_equal(out, "4294981817");
+
+    uint8_t data6[] = {0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xc7, 0x47};
+    assert_true(print_int64(data6, out, sizeof(out)));
+    assert_string_equal(out, "-4294981817");
+
+    uint8_t data7[] = {0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    assert_true(print_int64(data7, out, sizeof(out)));
+    assert_string_equal(out, "9223372036854775807");
+
+    uint8_t data8[] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    assert_true(print_int64(data8, out, sizeof(out)));
+    assert_string_equal(out, "-9223372036854775808");
+}
+
+void test_print_uint64() {
+    char out[89];
+    uint8_t data0[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    assert_true(print_uint64(data0, out, sizeof(out)));
+    assert_string_equal(out, "0");
+
+    uint8_t data1[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+    assert_true(print_uint64(data1, out, sizeof(out)));
+    assert_string_equal(out, "1");
+
+    uint8_t data2[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
+    assert_true(print_uint64(data2, out, sizeof(out)));
+    assert_string_equal(out, "4294967296");
+
+    uint8_t data3[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x38, 0xb9};
+    assert_true(print_uint64(data3, out, sizeof(out)));
+    assert_string_equal(out, "4294981817");
+
+    uint8_t data4[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    assert_true(print_uint64(data4, out, sizeof(out)));
+    assert_string_equal(out, "18446744073709551615");
+}
+
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_print_account_id),
@@ -818,6 +941,10 @@ int main() {
         cmocka_unit_test(test_print_uint128),
         cmocka_unit_test(test_print_int256),
         cmocka_unit_test(test_print_uint256),
+        cmocka_unit_test(test_print_int32),
+        cmocka_unit_test(test_print_uint32),
+        cmocka_unit_test(test_print_int64),
+        cmocka_unit_test(test_print_uint64),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
