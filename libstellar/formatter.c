@@ -1777,12 +1777,12 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
         case SCV_BYTES:
             STRLCPY(fdata->value, "[Bytes Data]", fdata->value_len);
             break;
-        case SCV_STRING: {
+        case SCV_STRING:
             STRLCPY(fdata->value, "[Strings Data]", fdata->value_len);
             break;
-        }
         case SCV_SYMBOL: {
             scv_symbol_t scv_symbol;
+            parse_scv_symbol(&buffer, &scv_symbol);
             memcpy(fdata->value, scv_symbol.symbol, scv_symbol.symbol_size);
             fdata->value[scv_symbol.symbol_size] = '\0';
             break;
@@ -2109,7 +2109,8 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
     explicit_bzero(fdata->value, fdata->value_len);
     *is_op_header = false;
     uint8_t total_data = get_data_count(fdata);
-    // printf("current_data_index: %d, formatter_index: %d\n", current_data_index, formatter_index);
+    // printf("current_data_index: %d, formatter_index: %d\n", current_data_index,
+    // formatter_index);
     if (forward) {
         if (current_data_index == 0 && formatter_index == 0) {
             FORMATTER_CHECK(format(fdata, current_data_index));

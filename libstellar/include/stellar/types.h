@@ -49,6 +49,7 @@
 #define DATA_NAME_MAX_SIZE      64
 #define DATA_VALUE_MAX_SIZE     64
 #define HOME_DOMAIN_MAX_SIZE    32
+#define SCV_SYMBOL_MAX_SIZE     32
 
 #define NETWORK_TYPE_PUBLIC  0
 #define NETWORK_TYPE_TEST    1
