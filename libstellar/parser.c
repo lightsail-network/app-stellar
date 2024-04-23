@@ -1030,10 +1030,10 @@ static bool parse_invoke_contract_args(buffer_t *buffer, invoke_contract_args_t 
     args->parameters_length = args_len;
     args->parameters_position = buffer->offset;
 
-    if (args_len > 10) {
-        // We dont support more than 10 arguments
-        return false;
-    }
+    // if (args_len > 10) {
+    //     // TODO: We dont support more than 10 arguments
+    //     return false;
+    // }
 
     // PRINTF("function_name.text_size=%d, function_name.text=%s, args->parameters_length=%d\n",
     //        args->function.name_size,
@@ -1424,11 +1424,11 @@ bool parse_soroban_authorization_envelope(const uint8_t *data,
             return false;
     }
 
-    // // subInvocations
-    // uint32_t len;
-    // PARSER_CHECK(buffer_read32(&buffer, &len))
-    // for (uint32_t i = 0; i < len; i++) {
-    //     PARSER_CHECK(read_soroban_authorized_invocation_advance(&buffer))
-    // }
+    // subInvocations
+    uint32_t len;
+    PARSER_CHECK(buffer_read32(&buffer, &len))
+    for (uint32_t i = 0; i < len; i++) {
+        PARSER_CHECK(read_soroban_authorized_invocation_advance(&buffer))
+    }
     return true;
 }

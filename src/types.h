@@ -12,10 +12,12 @@
  * Enumeration with expected INS of APDU commands.
  */
 typedef enum {
-    GET_PUBLIC_KEY = 0x02,             // public key of corresponding BIP32 path
-    SIGN_TX = 0x04,                    // sign transaction with BIP32 path
-    INS_GET_APP_CONFIGURATION = 0x06,  // app configuration of the application
-    INS_SIGN_HASH = 0x08,              // sign transaction in hash mode
+    GET_PUBLIC_KEY = 0x02,                // public key of corresponding BIP32 path
+    SIGN_TX = 0x04,                       // sign transaction with BIP32 path
+    INS_GET_APP_CONFIGURATION = 0x06,     // app configuration of the application
+    INS_SIGN_HASH = 0x08,                 // sign transaction in hash mode
+    INS_SIGN_SOROBAN_AUTHORATION = 0x0a,  // sign soroban authoration
+
 } command_e;
 
 /**

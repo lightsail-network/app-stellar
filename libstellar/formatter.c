@@ -1726,7 +1726,7 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
             break;
         }
         default:
-            return false;
+            STRLCPY(fdata->value, "[unable to display]", fdata->value_len);
     }
 
     parameters_index++;
