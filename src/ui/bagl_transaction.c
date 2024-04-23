@@ -203,12 +203,7 @@ UX_FLOW(ux_auth_flow,
         &ux_auth_approve_step,
         &ux_tx_reject_step);
 
-int ui_display_transaction() {
-    if (G_context.req_type != CONFIRM_TRANSACTION || G_context.state != STATE_PARSED) {
-        G_context.state = STATE_NONE;
-        return io_send_sw(SW_BAD_STATE);
-    }
-
+void prepare_display() {
     reset_formatter();
 
     formatter_data_t fdata = {
@@ -228,6 +223,14 @@ int ui_display_transaction() {
     // PRINTF("formatter_data.raw_size: %d\n", formatter_data.buffer->size);
 
     g_validate_callback = &ui_action_validate_transaction;
+}
+
+int ui_display_transaction() {
+    if (G_context.req_type != CONFIRM_TRANSACTION || G_context.state != STATE_PARSED) {
+        G_context.state = STATE_NONE;
+        return io_send_sw(SW_BAD_STATE);
+    }
+    prepare_display();
     ux_flow_init(0, ux_tx_flow, NULL);
     return 0;
 }
@@ -237,26 +240,7 @@ int ui_display_auth() {
         G_context.state = STATE_NONE;
         return io_send_sw(SW_BAD_STATE);
     }
-
-    reset_formatter();
-
-    formatter_data_t fdata = {
-        .raw_data = G_context.raw,
-        .raw_data_len = G_context.raw_size,
-        .envelope = &G_context.tx_info,
-        .caption = G.ui.detail_caption,
-        .value = G.ui.detail_value,
-        .signing_key = G_context.raw_public_key,
-        .caption_len = DETAIL_CAPTION_MAX_LENGTH,
-        .value_len = DETAIL_VALUE_MAX_LENGTH,
-        .display_sequence = HAS_SETTING(S_SEQUENCE_NUMBER_ENABLED),
-    };
-
-    // init formatter_data
-    memcpy(&formatter_data, &fdata, sizeof(formatter_data_t));
-    // PRINTF("formatter_data.raw_size: %d\n", formatter_data.buffer->size);
-
-    g_validate_callback = &ui_action_validate_transaction;
+    prepare_display();
     ux_flow_init(0, ux_auth_flow, NULL);
     return 0;
 }

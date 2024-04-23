@@ -2076,6 +2076,7 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
         }
     } else {
         if (current_data_index == 0 && formatter_index == 2) {
+            formatter_index = 0;
             *data_exists = false;
         }
 

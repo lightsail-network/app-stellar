@@ -64,10 +64,15 @@ static void ui_action_validate_transaction(bool choice) {
     ui_menu_main();
 }
 
-static void reviewContinue(void);
-static void reviewStart(void);
-static void rejectConfirmation(void);
-static void rejectChoice(void);
+static void reviewTxContinue(void);
+static void reviewTxStart(void);
+static void rejectTxConfirmation(void);
+static void rejectTxChoice(void);
+
+static void reviewAuthContinue(void);
+static void reviewAuthStart(void);
+static void rejectAuthConfirmation(void);
+static void rejectAuthChoice(void);
 
 // Functions definitions
 static inline void INCR_AND_CHECK_PAGE_NB(void) {
@@ -211,52 +216,87 @@ static bool displayTransactionPage(uint8_t page, nbgl_pageContent_t *content) {
     return true;
 }
 
-static void rejectConfirmation(void) {
+static void rejectTxConfirmation(void) {
     ui_action_validate_transaction(false);
     nbgl_useCaseStatus("Transaction\nRejected", false, ui_menu_main);
 }
 
-static void rejectChoice(void) {
+static void rejectTxChoice(void) {
     nbgl_useCaseConfirm("Reject transaction?",
                         NULL,
                         "Yes, Reject",
                         "Go back to transaction",
-                        rejectConfirmation);
+                        rejectTxConfirmation);
 }
 
-static void reviewChoice(bool confirm) {
+static void reviewTxChoice(bool confirm) {
     if (confirm) {
         ui_action_validate_transaction(true);
         nbgl_useCaseStatus("TRANSACTION\nSIGNED", true, ui_menu_main);
     } else {
-        rejectChoice();
+        rejectTxChoice();
     }
 }
 
-static void reviewContinue(void) {
+static void reviewTxContinue(void) {
     nbgl_useCaseRegularReview(currentPage,
                               nbPages + 1,
                               "Reject transaction",
                               NULL,
                               displayTransactionPage,
-                              reviewChoice);
+                              reviewTxChoice);
 }
 
-static void reviewStart(void) {
+static void reviewTxStart(void) {
     nbgl_useCaseReviewStart(&C_icon_stellar_64px,
                             "Review transaction",
                             NULL,
                             "Reject transaction",
-                            reviewContinue,
-                            rejectChoice);
+                            reviewTxContinue,
+                            rejectTxChoice);
 }
 
-int ui_display_transaction(void) {
-    if (G_context.req_type != CONFIRM_TRANSACTION || G_context.state != STATE_PARSED) {
-        G_context.state = STATE_NONE;
-        return io_send_sw(SW_BAD_STATE);
-    }
+static void rejectAuthConfirmation(void) {
+    ui_action_validate_transaction(false);
+    nbgl_useCaseStatus("Soroban Auth\nRejected", false, ui_menu_main);
+}
 
+static void rejectAuthChoice(void) {
+    nbgl_useCaseConfirm("Reject Soroban Auth?",
+                        NULL,
+                        "Yes, Reject",
+                        "Go back to Soroban Auth",
+                        rejectAuthConfirmation);
+}
+
+static void reviewAuthChoice(bool confirm) {
+    if (confirm) {
+        ui_action_validate_transaction(true);
+        nbgl_useCaseStatus("SOROBAN AUTH\nSIGNED", true, ui_menu_main);
+    } else {
+        rejectAuthChoice();
+    }
+}
+
+static void reviewAuthContinue(void) {
+    nbgl_useCaseRegularReview(currentPage,
+                              nbPages + 1,
+                              "Reject Soroban Auth",
+                              NULL,
+                              displayTransactionPage,
+                              reviewAuthChoice);
+}
+
+static void reviewAuthStart(void) {
+    nbgl_useCaseReviewStart(&C_icon_stellar_64px,
+                            "Review Soroban Auth",
+                            NULL,
+                            "Reject Soroban Auth",
+                            reviewAuthContinue,
+                            rejectAuthChoice);
+}
+
+void prepare_display() {
     formatter_data_t fdata = {
         .raw_data = G_context.raw,
         .raw_data_len = G_context.raw_size,
@@ -274,8 +314,26 @@ int ui_display_transaction(void) {
 
     currentPage = 0;
     prepareTxPagesInfos();
-    reviewStart();
+}
 
+int ui_display_transaction(void) {
+    if (G_context.req_type != CONFIRM_TRANSACTION || G_context.state != STATE_PARSED) {
+        G_context.state = STATE_NONE;
+        return io_send_sw(SW_BAD_STATE);
+    }
+
+    prepare_display();
+    reviewTxStart();
+    return 0;
+}
+
+int ui_display_auth() {
+    if (G_context.req_type != CONFIRM_SOROBAN_AUTHORATION || G_context.state != STATE_PARSED) {
+        G_context.state = STATE_NONE;
+        return io_send_sw(SW_BAD_STATE);
+    }
+    prepare_display();
+    reviewAuthStart();
     return 0;
 }
 #endif  // HAVE_NBGL
