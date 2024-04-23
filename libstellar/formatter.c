@@ -1687,6 +1687,14 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
     //        formatter_index,
     //        parameters_index);
     // Argument _ of _
+    invoke_contract_args_t invoke_contract_args;
+    if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+        invoke_contract_args = fdata->envelope->soroban_authorization.invoke_contract_args;
+    } else {
+        invoke_contract_args =
+            fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args;
+    }
+
     char op_caption[OPERATION_CAPTION_MAX_LENGTH] = {0};
     size_t length;
     STRLCPY(op_caption, "Arg ", OPERATION_CAPTION_MAX_LENGTH);
@@ -1697,16 +1705,14 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
 
     STRLCAT(op_caption, " of ", sizeof(op_caption));
     length = strlen(op_caption);
-    FORMATTER_CHECK(print_uint(fdata->envelope->tx.op_details.invoke_host_function_op
-                                   .invoke_contract_args.parameters_length,
+    FORMATTER_CHECK(print_uint(invoke_contract_args.parameters_length,
                                op_caption + length,
                                OPERATION_CAPTION_MAX_LENGTH - length))
     STRLCPY(fdata->caption, op_caption, fdata->caption_len);
 
     buffer_t buffer = {.ptr = fdata->raw_data,
                        .size = fdata->raw_data_len,
-                       .offset = fdata->envelope->tx.op_details.invoke_host_function_op
-                                     .invoke_contract_args.parameters_position};
+                       .offset = invoke_contract_args.parameters_position};
     // Content
     for (uint8_t i = 0; i < parameters_index; i++) {
         read_scval_advance(&buffer);
@@ -1730,10 +1736,13 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
     }
 
     parameters_index++;
-    if (parameters_index == fdata->envelope->tx.op_details.invoke_host_function_op
-                                .invoke_contract_args.parameters_length) {
+    if (parameters_index == invoke_contract_args.parameters_length) {
         last_parameter_at_formatter_index = formatter_index;
-        format_operation_source_prepare(fdata);
+        if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+            FORMATTER_CHECK(push_to_formatter_stack(NULL))
+        } else {
+            format_operation_source_prepare(fdata);
+        }
     } else {
         FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args))
     }
@@ -1741,18 +1750,21 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
 }
 
 static bool format_invoke_host_function_func_name(formatter_data_t *fdata) {
+    invoke_contract_args_t invoke_contract_args;
+    if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+        invoke_contract_args = fdata->envelope->soroban_authorization.invoke_contract_args;
+    } else {
+        invoke_contract_args =
+            fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args;
+    }
     STRLCPY(fdata->caption, "Function", fdata->caption_len);
 
-    memcpy(
-        fdata->value,
-        fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args.function.name,
-        fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args.function
-            .name_size);
-    fdata->value[fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args
-                     .function.name_size] = '\0';
+    memcpy(fdata->value,
+           invoke_contract_args.function.name,
+           invoke_contract_args.function.name_size);
+    fdata->value[invoke_contract_args.function.name_size] = '\0';
 
-    if (fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args
-            .parameters_length == 0) {
+    if (invoke_contract_args.parameters_length == 0) {
         format_operation_source_prepare(fdata);
     } else {
         parameters_index = 0;
@@ -1762,14 +1774,18 @@ static bool format_invoke_host_function_func_name(formatter_data_t *fdata) {
 }
 
 static bool format_invoke_host_function_contract_id(formatter_data_t *fdata) {
+    invoke_contract_args_t invoke_contract_args;
+    if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+        invoke_contract_args = fdata->envelope->soroban_authorization.invoke_contract_args;
+    } else {
+        invoke_contract_args =
+            fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args;
+    }
+
     STRLCPY(fdata->caption, "Contract ID", fdata->caption_len);
 
-    FORMATTER_CHECK(print_sc_address(
-        &fdata->envelope->tx.op_details.invoke_host_function_op.invoke_contract_args.address,
-        fdata->value,
-        fdata->value_len,
-        0,
-        0))
+    FORMATTER_CHECK(
+        print_sc_address(&invoke_contract_args.address, fdata->value, fdata->value_len, 0, 0))
     push_to_formatter_stack(&format_invoke_host_function_func_name);
     return true;
 }
@@ -1791,6 +1807,24 @@ static bool format_invoke_host_function(formatter_data_t *fdata) {
             STRLCPY(fdata->value, "Upload Smart Contract Wasm", fdata->value_len);
             // TODO: check
             format_operation_source_prepare(fdata);
+            break;
+        default:
+            return false;
+    }
+    return true;
+}
+
+static bool format_auth_function(formatter_data_t *fdata) {
+    switch (fdata->envelope->soroban_authorization.function_type) {
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Invoke Smart Contract", fdata->value_len);
+            FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_contract_id));
+            break;
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
+            FORMATTER_CHECK(push_to_formatter_stack(NULL))
             break;
         default:
             return false;
@@ -1923,10 +1957,32 @@ static bool get_tx_details_formatter(formatter_data_t *fdata) {
     return true;
 }
 
+static bool format_auth_sig_exp(formatter_data_t *fdata) {
+    STRLCPY(fdata->caption, "Sig Exp Ledger", fdata->caption_len);
+    FORMATTER_CHECK(print_uint(fdata->envelope->soroban_authorization.signature_expiration_ledger,
+                               fdata->value,
+                               fdata->value_len))
+    FORMATTER_CHECK(push_to_formatter_stack(&format_auth_function));
+    return true;
+}
+
+static bool format_auth_nonce(formatter_data_t *fdata) {
+    STRLCPY(fdata->caption, "Nonce", fdata->caption_len);
+    FORMATTER_CHECK(
+        print_uint(fdata->envelope->soroban_authorization.nonce, fdata->value, fdata->value_len))
+    FORMATTER_CHECK(push_to_formatter_stack(&format_auth_sig_exp))
+    return true;
+}
+
 static bool format_network(formatter_data_t *fdata) {
     STRLCPY(fdata->caption, "Network", fdata->caption_len);
     STRLCPY(fdata->value, (char *) PIC(NETWORK_NAMES[fdata->envelope->network]), fdata->value_len);
-    return get_tx_details_formatter(fdata);
+    if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+        FORMATTER_CHECK(push_to_formatter_stack(&format_auth_nonce))
+    } else {
+        return get_tx_details_formatter(fdata);
+    }
+    return true;
 }
 
 static bool format_transaction_info(formatter_data_t *fdata) {
@@ -1938,25 +1994,41 @@ static bool format_transaction_info(formatter_data_t *fdata) {
     return true;
 }
 
+static bool format_soroban_authorization(formatter_data_t *fdata) {
+    if (fdata->envelope->network != 0) {
+        FORMATTER_CHECK(push_to_formatter_stack(&format_network))
+    } else {
+        FORMATTER_CHECK(push_to_formatter_stack(&format_auth_nonce))
+    }
+    return true;
+}
+
 static bool format(formatter_data_t *fdata, uint8_t data_index) {
     explicit_bzero(formatter_stack, sizeof(formatter_stack));
     formatter_index = 0;
-    if (data_index == 0) {
-        return format_transaction_info(fdata);
+    if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+        return format_soroban_authorization(fdata);
     } else {
-        uint8_t op_index = data_index - 1;
-        if (!parse_transaction_operation(fdata->raw_data,
-                                         fdata->raw_data_len,
-                                         fdata->envelope,
-                                         op_index)) {
-            return false;
-        };
-        FORMATTER_CHECK(push_to_formatter_stack(&format_confirm_operation))
+        if (data_index == 0) {
+            return format_transaction_info(fdata);
+        } else {
+            uint8_t op_index = data_index - 1;
+            if (!parse_transaction_operation(fdata->raw_data,
+                                             fdata->raw_data_len,
+                                             fdata->envelope,
+                                             op_index)) {
+                return false;
+            };
+            FORMATTER_CHECK(push_to_formatter_stack(&format_confirm_operation))
+        }
     }
     return true;
 }
 
 static uint8_t get_data_count(formatter_data_t *fdata) {
+    if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+        return 1;
+    }
     uint8_t op_cnt = fdata->envelope->tx.operations_count;
     return op_cnt + 1;
 }

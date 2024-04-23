@@ -106,5 +106,5 @@ int handler_sign_auth(buffer_t *cdata, bool is_first_chunk, bool more) {
         return io_send_sw(SW_TX_HASH_FAIL);
     }
 
-    return ui_display_transaction();
+    return ui_display_auth();
 };
