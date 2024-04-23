@@ -698,6 +698,22 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
     return true;
 }
 
+bool print_int32(const uint8_t *value, char *out, size_t out_len) {
+    return int256_to_decimal(value, 4, out, out_len);
+}
+
+bool print_uint32(const uint8_t *value, char *out, size_t out_len) {
+    return uint256_to_decimal(value, 4, out, out_len);
+}
+
+bool print_int64(const uint8_t *value, char *out, size_t out_len) {
+    return int256_to_decimal(value, 8, out, out_len);
+}
+
+bool print_uint64(const uint8_t *value, char *out, size_t out_len) {
+    return uint256_to_decimal(value, 8, out, out_len);
+}
+
 bool print_int128(const uint8_t *value, char *out, size_t out_len) {
     return int256_to_decimal(value, 16, out, out_len);
 }

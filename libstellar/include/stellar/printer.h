@@ -81,6 +81,18 @@ bool print_summary(const char *in,
 
 bool print_time(uint64_t seconds, char *out, size_t out_len);
 
+bool print_int32(const uint8_t *value, char *out, size_t out_len);
+
+bool print_uint32(const uint8_t *value, char *out, size_t out_len);
+
+bool print_int64(const uint8_t *value, char *out, size_t out_len);
+
+bool print_uint64(const uint8_t *value, char *out, size_t out_len);
+
 bool print_int128(const uint8_t *value, char *out, size_t out_len);
 
 bool print_uint128(const uint8_t *value, char *out, size_t out_len);
+
+bool print_int256(const uint8_t *value, char *out, size_t out_len);
+
+bool print_uint256(const uint8_t *value, char *out, size_t out_len);
