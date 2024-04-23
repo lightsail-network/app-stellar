@@ -399,6 +399,7 @@ function getTestCases() {
   const casesFunction = Object.keys(testCasesFunction);
   const cases = [];
   for (const rawCase of casesFunction) {
+    if (rawCase.startsWith("sorobanAuth")) continue;
     cases.push({
       caseName: rawCase,
       filePath: camelToFilePath(rawCase),

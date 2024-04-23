@@ -564,6 +564,13 @@ typedef enum {
     SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN = 1
 } soroban_authorization_function_type_t;
 
+typedef struct {
+    uint64_t nonce;
+    uint32_t signature_expiration_ledger;
+    soroban_authorization_function_type_t function_type;
+    invoke_contract_args_t invoke_contract_args;
+} soroban_authorization_t;
+
 // ************************* Soroban ************************* //
 
 typedef struct {
@@ -655,6 +662,7 @@ typedef struct {
 typedef struct {
     transaction_details_t tx;
     fee_bump_transaction_details_t fee_bump_tx;
+    soroban_authorization_t soroban_authorization;
     envelope_type_t type;
     uint8_t network;
 } envelope_t;

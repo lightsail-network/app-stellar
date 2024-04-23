@@ -1379,3 +1379,56 @@ bool parse_transaction_operation(const uint8_t *data,
     envelope->tx.operation_index = operation_index;
     return true;
 }
+
+bool parse_soroban_authorization_envelope(const uint8_t *data,
+                                          size_t data_len,
+                                          envelope_t *envelope) {
+    // PRINTF("parse_transaction_envelope: offset=%d\n", buffer->offset);
+    buffer_t buffer = {
+        .ptr = data,
+        .size = data_len,
+        .offset = 0,
+    };
+
+    explicit_bzero(&envelope->soroban_authorization, sizeof(soroban_authorization_t));
+
+    uint32_t envelope_type;
+    PARSER_CHECK(buffer_read32(&buffer, &envelope_type))
+    if (envelope_type != ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+        return false;
+    }
+    envelope->type = envelope_type;
+
+    PARSER_CHECK(parse_network(&buffer, &envelope->network))
+    PARSER_CHECK(buffer_read64(&buffer, &envelope->soroban_authorization.nonce))
+    PARSER_CHECK(
+        buffer_read32(&buffer, &envelope->soroban_authorization.signature_expiration_ledger))
+
+    // function
+    uint32_t type;
+    PARSER_CHECK(buffer_read32(&buffer, &type))
+    envelope->soroban_authorization.function_type = type;
+    switch (type) {
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN: {
+            // contractFn
+            PARSER_CHECK(
+                parse_invoke_contract_args(&buffer,
+                                           &envelope->soroban_authorization.invoke_contract_args));
+            break;
+        }
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
+            // createContractHostFn
+            PARSER_CHECK(read_create_contract_args_advance(&buffer))
+            break;
+        default:
+            return false;
+    }
+
+    // // subInvocations
+    // uint32_t len;
+    // PARSER_CHECK(buffer_read32(&buffer, &len))
+    // for (uint32_t i = 0; i < len; i++) {
+    //     PARSER_CHECK(read_soroban_authorized_invocation_advance(&buffer))
+    // }
+    return true;
+}

@@ -13,6 +13,10 @@ bool parse_transaction_operation(const uint8_t *data,
                                  envelope_t *envelope,
                                  uint8_t operation_index);
 
+bool parse_soroban_authorization_envelope(const uint8_t *data,
+                                          size_t data_len,
+                                          envelope_t *envelope);
+
 bool parse_uint64(buffer_t *buffer, uint64_t *n);
 
 bool parse_int64(buffer_t *buffer, int64_t *n);
