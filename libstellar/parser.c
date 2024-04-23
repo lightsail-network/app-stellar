@@ -55,8 +55,12 @@ static int64_t read_i64_be(const uint8_t *ptr, size_t offset) {
 }
 
 bool parse_uint64(buffer_t *buffer, uint64_t *n) {
-    PARSER_CHECK(buffer_read64(buffer, (uint64_t *) n))
+    PARSER_CHECK(buffer_read64(buffer, n))
     return true;
+}
+
+bool parse_bool(buffer_t *buffer, bool *b) {
+    return buffer_read_bool(buffer, b);
 }
 
 bool parse_int64(buffer_t *buffer, int64_t *n) {

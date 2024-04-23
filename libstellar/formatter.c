@@ -1721,10 +1721,64 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
     if (!buffer_read32(&buffer, &sc_type)) {
         return false;
     }
+
     switch (sc_type) {
-        case SCV_I128:
-            STRLCPY(fdata->value, "1,000,000,000", fdata->value_len);
+        case SCV_BOOL: {
+            bool b;
+            parse_bool(&buffer, &b);
+            STRLCPY(fdata->value, b ? "true" : "false", fdata->value_len);
             break;
+        }
+        case SCV_VOID:
+            STRLCPY(fdata->value, "[void]", fdata->value_len);
+            break;  // void
+        case SCV_U32:
+            FORMATTER_CHECK(
+                print_uint32(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        case SCV_I32:
+            FORMATTER_CHECK(
+                print_int32(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        case SCV_U64:
+            FORMATTER_CHECK(
+                print_uint64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        case SCV_I64:
+            FORMATTER_CHECK(
+                print_int64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        case SCV_TIMEPOINT: {
+            uint64_t timepoint;
+            FORMATTER_CHECK(parse_uint64(&buffer, &timepoint));
+            FORMATTER_CHECK(print_time(timepoint, fdata->value, fdata->value_len));
+            break;
+        }
+        case SCV_DURATION:
+            FORMATTER_CHECK(
+                print_int64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        case SCV_U128:
+            FORMATTER_CHECK(
+                print_uint128(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        case SCV_I128:
+            FORMATTER_CHECK(
+                print_int128(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        case SCV_U256:
+            FORMATTER_CHECK(
+                print_uint256(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        case SCV_I256:
+            FORMATTER_CHECK(
+                print_int256(buffer.ptr + buffer.offset, fdata->value, fdata->value_len));
+            break;
+        // case SCV_BYTES:
+        // case SCV_STRING:
+        // case SCV_SYMBOL: {
+        //     break;
+        // }
         case SCV_ADDRESS: {
             sc_address_t sc_address;
             FORMATTER_CHECK(parse_sc_address(&buffer, &sc_address));
