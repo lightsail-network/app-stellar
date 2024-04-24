@@ -1781,11 +1781,13 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
         case SCV_STRING: {
             scv_string_t scv_string;
             FORMATTER_CHECK(parse_scv_string(&buffer, &scv_string));
+            FORMATTER_CHECK(print_scv_string(&scv_string, fdata->value, fdata->value_len));
             break;
         }
         case SCV_SYMBOL: {
             scv_symbol_t scv_symbol;
             FORMATTER_CHECK(parse_scv_symbol(&buffer, &scv_symbol));
+            FORMATTER_CHECK(print_scv_symbol(&scv_symbol, fdata->value, fdata->value_len));
             break;
         }
         case SCV_ADDRESS: {
