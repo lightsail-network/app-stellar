@@ -354,8 +354,7 @@ static bool format_inflation(formatter_data_t *fdata) {
     (void) fdata;
     STRLCPY(fdata->caption, "Operation Type", fdata->caption_len);
     STRLCPY(fdata->value, "Inflation", fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_account_merge_destination(formatter_data_t *fdata) {
@@ -366,8 +365,7 @@ static bool format_account_merge_destination(formatter_data_t *fdata) {
                             fdata->value_len,
                             0,
                             0))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_account_merge_detail(formatter_data_t *fdata) {
@@ -419,8 +417,7 @@ static bool format_manage_data_value(formatter_data_t *fdata) {
                           sizeof(tmp)))
         FORMATTER_CHECK(print_summary(tmp, fdata->value, fdata->value_len, 6, 6))
     }
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_manage_data(formatter_data_t *fdata) {
@@ -429,7 +426,7 @@ static bool format_manage_data(formatter_data_t *fdata) {
         FORMATTER_CHECK(push_to_formatter_stack(&format_manage_data_value))
     } else {
         STRLCPY(fdata->caption, "Remove Data", fdata->caption_len);
-        format_operation_source_prepare(fdata);
+        return format_operation_source_prepare(fdata);
     }
     char tmp[65];
     memcpy(tmp,
@@ -446,8 +443,7 @@ static bool format_allow_trust_authorize(formatter_data_t *fdata) {
         print_allow_trust_flags(fdata->envelope->tx_details.tx.op_details.allow_trust_op.authorize,
                                 fdata->value,
                                 fdata->value_len))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_allow_trust_asset_code(formatter_data_t *fdata) {
@@ -485,8 +481,7 @@ static bool format_set_option_signer_weight(formatter_data_t *fdata) {
         print_uint(fdata->envelope->tx_details.tx.op_details.set_options_op.signer.weight,
                    fdata->value,
                    fdata->value_len))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_set_option_signer_detail(formatter_data_t *fdata) {
@@ -522,7 +517,7 @@ static bool format_set_option_signer_detail(formatter_data_t *fdata) {
     if (fdata->envelope->tx_details.tx.op_details.set_options_op.signer.weight != 0) {
         FORMATTER_CHECK(push_to_formatter_stack(&format_set_option_signer_weight))
     } else {
-        format_operation_source_prepare(fdata);
+        return format_operation_source_prepare(fdata);
     }
     return true;
 }
@@ -562,7 +557,7 @@ static bool format_set_option_signer_prepare(formatter_data_t *fdata) {
     if (fdata->envelope->tx_details.tx.op_details.set_options_op.signer_present) {
         FORMATTER_CHECK(push_to_formatter_stack(&format_set_option_signer))
     } else {
-        format_operation_source_prepare(fdata);
+        return format_operation_source_prepare(fdata);
     }
     return true;
 }
@@ -730,8 +725,7 @@ static bool format_set_options_empty_body(formatter_data_t *fdata) {
     (void) fdata;
     STRLCPY(fdata->caption, "SET OPTIONS", fdata->caption_len);
     STRLCPY(fdata->value, "BODY IS EMPTY", fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool is_empty_set_options_body(formatter_data_t *fdata) {
@@ -767,8 +761,7 @@ static bool format_change_trust_limit(formatter_data_t *fdata) {
                                  fdata->envelope->network,
                                  fdata->value,
                                  fdata->value_len))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_change_trust_detail_liquidity_pool_fee(formatter_data_t *fdata) {
@@ -784,7 +777,7 @@ static bool format_change_trust_detail_liquidity_pool_fee(formatter_data_t *fdat
         fdata->envelope->tx_details.tx.op_details.change_trust_op.limit != INT64_MAX) {
         FORMATTER_CHECK(push_to_formatter_stack(&format_change_trust_limit))
     } else {
-        format_operation_source_prepare(fdata);
+        return format_operation_source_prepare(fdata);
     }
     return true;
 }
@@ -830,7 +823,7 @@ static bool format_change_trust(formatter_data_t *fdata) {
                 fdata->envelope->tx_details.tx.op_details.change_trust_op.limit != INT64_MAX) {
                 FORMATTER_CHECK(push_to_formatter_stack(&format_change_trust_limit))
             } else {
-                format_operation_source_prepare(fdata);
+                return format_operation_source_prepare(fdata);
             }
             break;
         case ASSET_TYPE_POOL_SHARE:
@@ -867,8 +860,7 @@ static bool format_manage_sell_offer_price(formatter_data_t *fdata) {
                          tmp_asset_code,
                          sizeof(tmp_asset_code)))
     STRLCAT(fdata->value, tmp_asset_code, fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_manage_sell_offer_sell(formatter_data_t *fdata) {
@@ -901,7 +893,7 @@ static bool format_manage_sell_offer(formatter_data_t *fdata) {
             print_uint(fdata->envelope->tx_details.tx.op_details.manage_sell_offer_op.offer_id,
                        fdata->value,
                        fdata->value_len))
-        format_operation_source_prepare(fdata);
+        return format_operation_source_prepare(fdata);
     } else {
         if (fdata->envelope->tx_details.tx.op_details.manage_sell_offer_op.offer_id) {
             STRLCPY(fdata->caption, "Change Offer", fdata->caption_len);
@@ -940,8 +932,7 @@ static bool format_manage_buy_offer_price(formatter_data_t *fdata) {
                          tmp_asset_code,
                          sizeof(tmp_asset_code)))
     STRLCAT(fdata->value, tmp_asset_code, fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_manage_buy_offer_buy(formatter_data_t *fdata) {
@@ -973,7 +964,7 @@ static bool format_manage_buy_offer(formatter_data_t *fdata) {
     if (op->buy_amount == 0) {
         STRLCPY(fdata->caption, "Remove Offer", fdata->caption_len);
         FORMATTER_CHECK(print_uint(op->offer_id, fdata->value, fdata->value_len))
-        format_operation_source_prepare(fdata);
+        return format_operation_source_prepare(fdata);
     } else {
         if (op->offer_id) {
             STRLCPY(fdata->caption, "Change Offer", fdata->caption_len);
@@ -1010,8 +1001,7 @@ static bool format_create_passive_sell_offer_price(formatter_data_t *fdata) {
         tmp_asset_code,
         sizeof(tmp_asset_code)))
     STRLCAT(fdata->value, tmp_asset_code, fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_create_passive_sell_offer_sell(formatter_data_t *fdata) {
@@ -1053,8 +1043,7 @@ static bool format_path_payment_strict_receive_receive(formatter_data_t *fdata) 
         fdata->envelope->network,
         fdata->value,
         fdata->value_len))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_path_payment_strict_receive_destination(formatter_data_t *fdata) {
@@ -1089,8 +1078,7 @@ static bool format_path_payment_strict_send_receive(formatter_data_t *fdata) {
         fdata->envelope->network,
         fdata->value,
         fdata->value_len))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_path_payment_strict_send_destination(formatter_data_t *fdata) {
@@ -1125,8 +1113,7 @@ static bool format_payment_destination(formatter_data_t *fdata) {
                             fdata->value_len,
                             0,
                             0))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_payment(formatter_data_t *fdata) {
@@ -1149,8 +1136,7 @@ static bool format_create_account_amount(formatter_data_t *fdata) {
                      fdata->envelope->network,
                      fdata->value,
                      fdata->value_len))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_create_account_destination(formatter_data_t *fdata) {
@@ -1181,8 +1167,7 @@ static bool format_create_claimable_balance_warning(formatter_data_t *fdata) {
     STRLCPY(fdata->value,
             "Currently does not support displaying claimant details",
             fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_create_claimable_balance_balance(formatter_data_t *fdata) {
@@ -1213,8 +1198,7 @@ static bool format_claim_claimable_balance_balance_id(formatter_data_t *fdata) {
         fdata->value_len,
         12,
         12))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_claim_claimable_balance(formatter_data_t *fdata) {
@@ -1233,8 +1217,7 @@ static bool format_claim_claimable_balance_sponsored_id(formatter_data_t *fdata)
         fdata->value_len,
         0,
         0))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_begin_sponsoring_future_reserves(formatter_data_t *fdata) {
@@ -1249,8 +1232,7 @@ static bool format_end_sponsoring_future_reserves(formatter_data_t *fdata) {
     (void) fdata;
     STRLCPY(fdata->caption, "Operation Type", fdata->caption_len);
     STRLCPY(fdata->value, "End Sponsoring Future Reserves", fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_revoke_sponsorship_account(formatter_data_t *fdata) {
@@ -1261,8 +1243,7 @@ static bool format_revoke_sponsorship_account(formatter_data_t *fdata) {
                                      fdata->value_len,
                                      0,
                                      0))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_revoke_sponsorship_trust_line_asset(formatter_data_t *fdata) {
@@ -1284,8 +1265,7 @@ static bool format_revoke_sponsorship_trust_line_asset(formatter_data_t *fdata) 
                                     fdata->value,
                                     fdata->value_len))
     }
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_revoke_sponsorship_trust_line_account(formatter_data_t *fdata) {
@@ -1306,8 +1286,7 @@ static bool format_revoke_sponsorship_offer_offer_id(formatter_data_t *fdata) {
         fdata->value,
         fdata->value_len))
 
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_revoke_sponsorship_offer_seller_id(formatter_data_t *fdata) {
@@ -1331,8 +1310,7 @@ static bool format_revoke_sponsorship_data_data_name(formatter_data_t *fdata) {
             .data_name_size);
     fdata->value[fdata->envelope->tx_details.tx.op_details.revoke_sponsorship_op.ledger_key.data
                      .data_name_size] = '\0';
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_revoke_sponsorship_data_account(formatter_data_t *fdata) {
@@ -1356,8 +1334,7 @@ static bool format_revoke_sponsorship_claimable_balance(formatter_data_t *fdata)
                                    fdata->value_len,
                                    0,
                                    0))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_revoke_sponsorship_liquidity_pool(formatter_data_t *fdata) {
@@ -1369,8 +1346,7 @@ static bool format_revoke_sponsorship_liquidity_pool(formatter_data_t *fdata) {
                                  fdata->value_len,
                                  0,
                                  0))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_revoke_sponsorship_claimable_signer_signer_key_detail(formatter_data_t *fdata) {
@@ -1403,8 +1379,7 @@ static bool format_revoke_sponsorship_claimable_signer_signer_key_detail(formatt
         default:
             return false;
     }
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_revoke_sponsorship_claimable_signer_signer_key_type(formatter_data_t *fdata) {
@@ -1498,8 +1473,7 @@ static bool format_clawback_from(formatter_data_t *fdata) {
                                         fdata->value_len,
                                         0,
                                         0))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_clawback_amount(formatter_data_t *fdata) {
@@ -1529,8 +1503,7 @@ static bool format_clawback_claimable_balance_balance_id(formatter_data_t *fdata
         fdata->value_len,
         0,
         0))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_clawback_claimable_balance(formatter_data_t *fdata) {
@@ -1551,8 +1524,7 @@ static bool format_set_trust_line_set_flags(formatter_data_t *fdata) {
     } else {
         STRLCPY(fdata->value, "[none]", fdata->value_len);
     }
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_set_trust_line_clear_flags(formatter_data_t *fdata) {
@@ -1609,8 +1581,7 @@ static bool format_liquidity_pool_deposit_max_price(formatter_data_t *fdata) {
         fdata->envelope->tx_details.tx.op_details.liquidity_pool_deposit_op.max_price.d;
     FORMATTER_CHECK(
         print_amount(price, NULL, fdata->envelope->network, fdata->value, fdata->value_len))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_liquidity_pool_deposit_min_price(formatter_data_t *fdata) {
@@ -1679,8 +1650,7 @@ static bool format_liquidity_pool_withdraw_min_amount_b(formatter_data_t *fdata)
         fdata->envelope->network,
         fdata->value,
         fdata->value_len))
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_liquidity_pool_withdraw_min_amount_a(formatter_data_t *fdata) {
@@ -1761,17 +1731,15 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
                        .offset = invoke_contract_args.parameters_position};
     // Content
     for (uint8_t i = 0; i < parameters_index; i++) {
-        read_scval_advance(&buffer);
+        FORMATTER_CHECK(read_scval_advance(&buffer))
     }
     uint32_t sc_type;
-    if (!buffer_read32(&buffer, &sc_type)) {
-        return false;
-    }
+    FORMATTER_CHECK(buffer_read32(&buffer, &sc_type))
 
     switch (sc_type) {
         case SCV_BOOL: {
             bool b;
-            parse_bool(&buffer, &b);
+            FORMATTER_CHECK(parse_bool(&buffer, &b))
             STRLCPY(fdata->value, b ? "true" : "false", fdata->value_len);
             break;
         }
@@ -1851,7 +1819,7 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
         if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
             FORMATTER_CHECK(push_to_formatter_stack(NULL))
         } else {
-            format_operation_source_prepare(fdata);
+            return format_operation_source_prepare(fdata);
         }
     } else {
         FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args))
@@ -1875,7 +1843,7 @@ static bool format_invoke_host_function_func_name(formatter_data_t *fdata) {
     fdata->value[invoke_contract_args.function.name_size] = '\0';
 
     if (invoke_contract_args.parameters_length == 0) {
-        format_operation_source_prepare(fdata);
+        return format_operation_source_prepare(fdata);
     } else {
         parameters_index = 0;
         FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args))
@@ -1910,13 +1878,12 @@ static bool format_invoke_host_function(formatter_data_t *fdata) {
         case HOST_FUNCTION_TYPE_CREATE_CONTRACT:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
             STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
-            format_operation_source_prepare(fdata);
+            return format_operation_source_prepare(fdata);
             break;
         case HOST_FUNCTION_TYPE_UPLOAD_CONTRACT_WASM:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
             STRLCPY(fdata->value, "Upload Smart Contract Wasm", fdata->value_len);
-            // TODO: check
-            format_operation_source_prepare(fdata);
+            return format_operation_source_prepare(fdata);
             break;
         default:
             return false;
@@ -1945,15 +1912,13 @@ static bool format_auth_function(formatter_data_t *fdata) {
 static bool format_extend_footprint_ttl(formatter_data_t *fdata) {
     STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
     STRLCPY(fdata->value, "Extend Footprint TTL", fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static bool format_restore_footprint(formatter_data_t *fdata) {
     STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
     STRLCPY(fdata->value, "Restore Footprint", fdata->value_len);
-    format_operation_source_prepare(fdata);
-    return true;
+    return format_operation_source_prepare(fdata);
 }
 
 static const format_function_t formatters[] = {&format_create_account,
