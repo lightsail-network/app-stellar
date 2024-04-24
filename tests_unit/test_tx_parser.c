@@ -145,7 +145,7 @@ void test_parse_data(void **state) {
     uint8_t data[MAX_ENVELOPE_SIZE];
     size_t read_count = fread(data, sizeof(char), MAX_ENVELOPE_SIZE, file);
     assert_true(parse_transaction_envelope(data, read_count, &envelope));
-    for (uint8_t i = 0; i < envelope.tx.operations_count; i++) {
+    for (uint8_t i = 0; i < envelope.tx_details.tx.operations_count; i++) {
         assert_true(parse_transaction_operation(data, read_count, &envelope, i));
     }
 }

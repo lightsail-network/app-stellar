@@ -421,6 +421,12 @@ static bool format_manage_data_value(formatter_data_t *fdata) {
 }
 
 static bool format_manage_data(formatter_data_t *fdata) {
+    char tmp[65];
+    memcpy(tmp,
+           fdata->envelope->tx_details.tx.op_details.manage_data_op.data_name,
+           fdata->envelope->tx_details.tx.op_details.manage_data_op.data_name_size);
+    tmp[fdata->envelope->tx_details.tx.op_details.manage_data_op.data_name_size] = '\0';
+    STRLCPY(fdata->value, tmp, fdata->value_len);
     if (fdata->envelope->tx_details.tx.op_details.manage_data_op.data_value_size) {
         STRLCPY(fdata->caption, "Set Data", fdata->caption_len);
         FORMATTER_CHECK(push_to_formatter_stack(&format_manage_data_value))
@@ -428,12 +434,6 @@ static bool format_manage_data(formatter_data_t *fdata) {
         STRLCPY(fdata->caption, "Remove Data", fdata->caption_len);
         return format_operation_source_prepare(fdata);
     }
-    char tmp[65];
-    memcpy(tmp,
-           fdata->envelope->tx_details.tx.op_details.manage_data_op.data_name,
-           fdata->envelope->tx_details.tx.op_details.manage_data_op.data_name_size);
-    tmp[fdata->envelope->tx_details.tx.op_details.manage_data_op.data_name_size] = '\0';
-    STRLCPY(fdata->value, tmp, fdata->value_len);
     return true;
 }
 

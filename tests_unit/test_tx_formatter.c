@@ -367,6 +367,7 @@ void test_formatter_forward(void **state) {
     assert_true(get_next_data(&fdata, false, &data_exists, &is_op_header));
     assert_false(data_exists);
 }
+
 int main() {
     size_t testcases_len = sizeof(testcases) / sizeof(testcases[0]) + 1;
     struct CMUnitTest tests[testcases_len];

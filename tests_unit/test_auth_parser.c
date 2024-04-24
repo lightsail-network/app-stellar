@@ -11,7 +11,13 @@
 #define MAX_ENVELOPE_SIZE 1024
 
 const char *testcases[] = {
+    "../testcases/sorobanAuthCreateSmartContract.raw",
+    "../testcases/sorobanAuthInvokeContract.raw",
+    "../testcases/sorobanAuthInvokeContractWithoutArgs.raw",
+    "../testcases/sorobanAuthPublic.raw",
     "../testcases/sorobanAuthTemp.raw",
+    "../testcases/sorobanAuthTestnet.raw",
+    "../testcases/sorobanAuthUnknownNetwork.raw",
 };
 
 void test_parse_data(void **state) {
