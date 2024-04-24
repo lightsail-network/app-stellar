@@ -729,3 +729,30 @@ bool print_int256(const uint8_t *value, char *out, size_t out_len) {
 bool print_uint256(const uint8_t *value, char *out, size_t out_len) {
     return uint256_to_decimal(value, 32, out, out_len);
 }
+
+bool print_scv_symbol(const scv_symbol_t *scv_symbol, char *out, size_t out_len) {
+    if (scv_symbol->size > SCV_SYMBOL_MAX_SIZE || scv_symbol->size > out_len - 1) {
+        return false;
+    }
+    if (!is_printable_binary(scv_symbol->symbol, scv_symbol->size)) {
+        return false;
+    }
+    if (scv_symbol->size == 0) {
+        out[0] = '\0';
+        return true;
+    }
+    memcpy(out, scv_symbol->symbol, scv_symbol->size);
+    out[scv_symbol->size] = '\0';
+    return true;
+}
+
+bool print_scv_string(const scv_string_t *scv_string, char *out, size_t out_len) {
+    // if the string is not printable, print [unprintable string]
+    if (!is_printable_binary(scv_string->string, scv_string->size)) {
+        if (strlcpy(out, "[unprintable string]", out_len) >= out_len) {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}

@@ -96,3 +96,5 @@ bool print_uint128(const uint8_t *value, char *out, size_t out_len);
 bool print_int256(const uint8_t *value, char *out, size_t out_len);
 
 bool print_uint256(const uint8_t *value, char *out, size_t out_len);
+
+bool print_scv_symbol(const scv_symbol_t *scv_symbol, char *out, size_t out_len);

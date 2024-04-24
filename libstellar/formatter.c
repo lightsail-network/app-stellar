@@ -1784,8 +1784,8 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
         case SCV_SYMBOL: {
             scv_symbol_t scv_symbol;
             parse_scv_symbol(&buffer, &scv_symbol);
-            memcpy(fdata->value, scv_symbol.symbol, scv_symbol.symbol_size);
-            fdata->value[scv_symbol.symbol_size] = '\0';
+            memcpy(fdata->value, scv_symbol.symbol, scv_symbol.size);
+            fdata->value[scv_symbol.size] = '\0';
             break;
         }
         case SCV_ADDRESS: {

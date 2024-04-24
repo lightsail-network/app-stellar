@@ -27,6 +27,8 @@ bool parse_scv_i128(buffer_t *buffer, scv_i128_t *i128);
 
 bool parse_scv_symbol(buffer_t *buffer, scv_symbol_t *symbol);
 
+bool parse_scv_string(buffer_t *buffer, scv_string_t *string);
+
 bool buffer_read32(buffer_t *buffer, uint32_t *n);
 
 bool parse_sc_address(buffer_t *buffer, sc_address_t *sc_address);

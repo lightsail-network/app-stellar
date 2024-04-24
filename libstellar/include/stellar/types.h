@@ -519,9 +519,14 @@ typedef struct {
 } scv_i128_t;
 
 typedef struct {
-    uint32_t symbol_size;
+    uint32_t size;  // the max size of the symbol is SCV_SYMBOL_MAX_SIZE
     const uint8_t *symbol;
 } scv_symbol_t;
+
+typedef struct {
+    uint32_t size;  // dont include the null terminator
+    const uint8_t *string;
+} scv_string_t;
 
 typedef enum { SC_ADDRESS_TYPE_ACCOUNT = 0, SC_ADDRESS_TYPE_CONTRACT = 1 } sc_address_type_t;
 

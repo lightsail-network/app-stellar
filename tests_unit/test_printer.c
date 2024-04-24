@@ -916,6 +916,39 @@ void test_print_uint64() {
     assert_string_equal(out, "18446744073709551615");
 }
 
+void test_print_scv_symbol() {
+    char out[89];
+
+    uint8_t data0[] = {0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00};
+    scv_symbol_t symbol0 = {.symbol = data0, .size = 5};
+    assert_true(print_scv_symbol(&symbol0, out, sizeof(out)));
+    assert_string_equal(out, "hello");
+
+    uint8_t data1[] = {0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63,
+                       0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62,
+                       0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d};
+    scv_symbol_t symbol1 = {.symbol = data1, .size = 32};
+    assert_true(print_scv_symbol(&symbol1, out, sizeof(out)));
+    assert_string_equal(out, "abc-abc-abc-abc-abc-abc-abc-abc-");
+
+    uint8_t data2[] = {0x01};
+    scv_symbol_t symbol2 = {.symbol = data2, .size = 0};
+    assert_true(print_scv_symbol(&symbol2, out, sizeof(out)));
+    assert_string_equal(out, "");
+
+    uint8_t data3[] = {0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63,
+                       0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62,
+                       0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x2d};
+    scv_symbol_t symbol3 = {.symbol = data3, .size = 33};
+    assert_false(print_scv_symbol(&symbol3, out, sizeof(out)));
+
+    uint8_t data4[] = {0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63,
+                       0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62,
+                       0x63, 0x2d, 0x61, 0x62, 0x63, 0x2d, 0x61, 0x62, 0x63, 0x7f};
+    scv_symbol_t symbol4 = {.symbol = data4, .size = 33};
+    assert_false(print_scv_symbol(&symbol4, out, sizeof(out)));
+}
+
 int main() {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_print_account_id),
@@ -945,6 +978,7 @@ int main() {
         cmocka_unit_test(test_print_uint32),
         cmocka_unit_test(test_print_int64),
         cmocka_unit_test(test_print_uint64),
+        cmocka_unit_test(test_print_scv_symbol),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
