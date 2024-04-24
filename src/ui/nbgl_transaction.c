@@ -55,7 +55,6 @@ nbgl_layoutTagValue_t caption_value_pairs[TAG_VAL_LST_MAX_PAIR_NB];
 static char str_values[TAG_VAL_LST_MAX_PAIR_NB][DETAIL_VALUE_MAX_LENGTH];
 static char str_captions[TAG_VAL_LST_MAX_PAIR_NB][DETAIL_CAPTION_MAX_LENGTH];
 static page_infos_t pagesInfos[MAX_NUMBER_OF_PAGES];
-
 static formatter_data_t formatter_data;
 
 // Validate/Invalidate transaction and go back to home
@@ -209,8 +208,12 @@ static bool displayTransactionPage(uint8_t page, nbgl_pageContent_t *content) {
             content->tagValueList.nbMaxLinesForValue = 0;
         }
     } else {
+        if (formatter_data.envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+            content->infoLongPress.text = "Sign Soroban Auth?";
+        } else {
+            content->infoLongPress.text = "Sign transaction?";
+        }
         content->type = INFO_LONG_PRESS, content->infoLongPress.icon = &C_icon_stellar_64px;
-        content->infoLongPress.text = "Sign?";
         content->infoLongPress.longPressText = "Hold to sign";
     }
     return true;

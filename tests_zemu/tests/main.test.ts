@@ -425,6 +425,40 @@ describe("soroban auth", () => {
       }
     });
   });
+
+  test.each(models)("reject soroban auth ($dev.name)", async ({ dev, startText }) => {
+    const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContract();
+    const sim = new Zemu(dev.path);
+    try {
+      await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
+      const transport = await sim.getTransport();
+      const str = new Str(transport);
+      expect(() => str.signSorobanAuthoration("44'/148'/0'", hashIdPreimage.toXDR("raw"))).rejects.toThrow(
+        new Error("Soroban authoration approval request was rejected")
+      );
+
+      let textToFind = "Cancel";
+      if (dev.name == "stax") {
+        textToFind = "Sign Soroban Auth?";
+      }
+      const events = await sim.getEvents();
+      await sim.waitForScreenChanges(events);
+      await sim.navigateAndCompareUntilText(
+        ".",
+        `${dev.prefix.toLowerCase()}-soroban-auth-reject`,
+        textToFind,
+        true,
+        undefined,
+        1000 * 60 * 60
+      );
+      if (dev.name == "stax") {
+        const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav.schedule, true, false);
+      }
+    } finally {
+      await sim.close();
+    }
+  });
 });
 
 function camelToFilePath(str: string) {
