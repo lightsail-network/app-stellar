@@ -15,7 +15,6 @@ const char *testcases[] = {
     "../testcases/sorobanAuthInvokeContract.raw",
     "../testcases/sorobanAuthInvokeContractWithoutArgs.raw",
     "../testcases/sorobanAuthPublic.raw",
-    "../testcases/sorobanAuthTemp.raw",
     "../testcases/sorobanAuthTestnet.raw",
     "../testcases/sorobanAuthUnknownNetwork.raw",
 };

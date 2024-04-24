@@ -210,7 +210,7 @@ static bool displayTransactionPage(uint8_t page, nbgl_pageContent_t *content) {
         }
     } else {
         content->type = INFO_LONG_PRESS, content->infoLongPress.icon = &C_icon_stellar_64px;
-        content->infoLongPress.text = "Sign transaction?";
+        content->infoLongPress.text = "Sign?";
         content->infoLongPress.longPressText = "Hold to sign";
     }
     return true;
@@ -300,7 +300,7 @@ void prepare_display() {
     formatter_data_t fdata = {
         .raw_data = G_context.raw,
         .raw_data_len = G_context.raw_size,
-        .envelope = &G_context.tx_info,
+        .envelope = &G_context.envelope,
         .caption = G.ui.detail_caption,
         .value = G.ui.detail_value,
         .signing_key = G_context.raw_public_key,

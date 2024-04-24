@@ -4,6 +4,7 @@ import * as testCasesFunction from "tests-common";
 import { Keypair } from "@stellar/stellar-base";
 import Str from "@ledgerhq/hw-app-str";
 import Zemu from "@zondax/zemu";
+import { sha256 } from 'sha.js'
 
 beforeAll(async () => {
   await Zemu.checkAndPullImage();
@@ -187,7 +188,7 @@ describe("hash signing", () => {
 });
 
 describe("transactions", () => {
-  describe.each(getTestCases())("$caseName", (c) => {
+  describe.each(getTxTestCases())("$caseName", (c) => {
     test.each(models)("device ($dev.name)", async ({ dev, startText }) => {
       const tx = c.txFunction();
       const sim = new Zemu(dev.path);
@@ -391,11 +392,46 @@ describe("transactions", () => {
   });
 });
 
+
+describe("soroban auth", () => {
+  describe.each(getAuthTestCases())("$caseName", (c) => {
+    test.each(models)("device ($dev.name)", async ({ dev, startText }) => {
+      const hashIdPreimage = c.txFunction();
+      const sim = new Zemu(dev.path);
+      try {
+        await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
+        const transport = await sim.getTransport();
+        const str = new Str(transport);
+        const result = str.signSorobanAuthoration("44'/148'/0'", hashIdPreimage.toXDR("raw"));
+        const events = await sim.getEvents();
+        await sim.waitForScreenChanges(events);
+        let textToFind = "Finalize";
+        if (dev.name == "stax") {
+          textToFind = "Hold to";
+        }
+        await sim.navigateAndCompareUntilText(
+          ".",
+          `${dev.prefix.toLowerCase()}-${c.filePath}`,
+          textToFind,
+          true,
+          undefined,
+          1000 * 60 * 60
+        );
+        const kp = Keypair.fromSecret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK");
+        const signature = kp.sign(hash(hashIdPreimage.toXDR()))
+        expect((await result).signature).toStrictEqual(signature);
+      } finally {
+        await sim.close();
+      }
+    });
+  });
+});
+
 function camelToFilePath(str: string) {
   return str.replace(/([A-Z])/g, "-$1").toLowerCase();
 }
 
-function getTestCases() {
+function getTxTestCases() {
   const casesFunction = Object.keys(testCasesFunction);
   const cases = [];
   for (const rawCase of casesFunction) {
@@ -407,4 +443,24 @@ function getTestCases() {
     });
   }
   return cases;
+}
+
+function getAuthTestCases() {
+  const casesFunction = Object.keys(testCasesFunction);
+  const cases = [];
+  for (const rawCase of casesFunction) {
+    if (!rawCase.startsWith("sorobanAuth")) continue;
+    cases.push({
+      caseName: rawCase,
+      filePath: camelToFilePath(rawCase),
+      txFunction: (testCasesFunction as any)[rawCase], // dirty hack
+    });
+  }
+  return cases;
+}
+
+function hash(data: Buffer) {
+  const hasher = new sha256()
+  hasher.update(data)
+  return hasher.digest()
 }
