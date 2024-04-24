@@ -702,9 +702,8 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
 
 static bool add_separator_to_number(char *out, size_t out_len) {
     size_t length = strlen(out);
-    uint8_t negative = (out[0] == '-') ? 1 : 0;  // Check if the number is negative
-    uint8_t new_length =
-        length + (length - negative - 1) / 3;  // Calculate the new length with commas
+    int negative = (out[0] == '-') ? 1 : 0;                 // Check if the number is negative
+    int new_length = length + (length - negative - 1) / 3;  // Calculate the new length with commas
 
     // If the new length is greater than the maximum length, return false
     if (new_length >= out_len) {
@@ -714,7 +713,7 @@ static bool add_separator_to_number(char *out, size_t out_len) {
     out[new_length] = '\0';  // Set the end of the new string
 
     // Start from the end of the string and move the digits to their new positions
-    for (uint8_t i = length - 1, j = new_length - 1; i >= 0; i--, j--) {
+    for (int i = length - 1, j = new_length - 1; i >= 0; i--, j--) {
         out[j] = out[i];
 
         // If the current position is a multiple of 3 and it's not the first digit, add a comma
