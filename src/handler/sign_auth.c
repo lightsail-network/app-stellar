@@ -72,7 +72,7 @@ int handler_sign_auth(buffer_t *cdata, bool is_first_chunk, bool more) {
 
     if (!parse_soroban_authorization_envelope(G_context.raw,
                                               G_context.raw_size,
-                                              &G_context.tx_info)) {
+                                              &G_context.envelope)) {
         THROW(SW_TX_PARSING_FAIL);
     }
 

@@ -127,7 +127,7 @@ static void prepareTxPagesInfos(void) {
         pageLineNb += tagLineNb;
         // If there are multiple operations and a new operation is reached, create a
         // special page with only one caption/value pair to display operation number.
-        if (is_op_header && G_context.tx_info.tx.operations_count > 1) {
+        if (is_op_header && G_context.envelope.tx_details.tx.operations_count > 1) {
             INCR_AND_CHECK_PAGE_NB();
             pagesInfos[nbPages].pagePairNb = 1;
             pagesInfos[nbPages].data_idx = data_index;

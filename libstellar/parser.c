@@ -1353,30 +1353,30 @@ bool parse_transaction_envelope(const uint8_t *data, size_t data_len, envelope_t
         .offset = 0,
     };
 
-    explicit_bzero(&envelope->tx, sizeof(transaction_details_t));
-    explicit_bzero(&envelope->fee_bump_tx, sizeof(fee_bump_transaction_details_t));
+    explicit_bzero(&envelope->tx_details, sizeof(tx_details_t));
     uint32_t envelope_type;
     PARSER_CHECK(parse_network(&buffer, &envelope->network))
     PARSER_CHECK(buffer_read32(&buffer, &envelope_type))
     envelope->type = envelope_type;
     switch (envelope_type) {
         case ENVELOPE_TYPE_TX:
-            PARSER_CHECK(parse_transaction_details(&buffer, &envelope->tx))
+            PARSER_CHECK(parse_transaction_details(&buffer, &envelope->tx_details.tx))
             break;
         case ENVELOPE_TYPE_TX_FEE_BUMP:
-            PARSER_CHECK(parse_fee_bump_transaction_details(&buffer, &envelope->fee_bump_tx))
+            PARSER_CHECK(
+                parse_fee_bump_transaction_details(&buffer, &envelope->tx_details.fee_bump_tx))
             uint32_t inner_envelope_type;
             PARSER_CHECK(buffer_read32(&buffer, &inner_envelope_type))
             if (inner_envelope_type != ENVELOPE_TYPE_TX) {
                 return false;
             }
-            PARSER_CHECK(parse_transaction_details(&buffer, &envelope->tx))
+            PARSER_CHECK(parse_transaction_details(&buffer, &envelope->tx_details.tx))
             break;
         default:
             return false;
     }
 
-    envelope->tx.operation_position = buffer.offset;
+    envelope->tx_details.tx.operation_position = buffer.offset;
     return true;
 }
 
@@ -1387,12 +1387,12 @@ bool parse_transaction_operation(const uint8_t *data,
     buffer_t buffer = {
         .ptr = data,
         .size = data_len,
-        .offset = envelope->tx.operation_position,
+        .offset = envelope->tx_details.tx.operation_position,
     };
     for (uint8_t i = 0; i <= operation_index; i++) {
-        PARSER_CHECK(parse_operation(&buffer, &envelope->tx.op_details));
+        PARSER_CHECK(parse_operation(&buffer, &envelope->tx_details.tx.op_details));
     }
-    envelope->tx.operation_index = operation_index;
+    envelope->tx_details.tx.operation_index = operation_index;
     return true;
 }
 

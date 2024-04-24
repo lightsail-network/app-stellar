@@ -668,7 +668,13 @@ typedef struct {
 typedef struct {
     transaction_details_t tx;
     fee_bump_transaction_details_t fee_bump_tx;
-    soroban_authorization_t soroban_authorization;
+} tx_details_t;
+
+typedef struct {
+    union {
+        tx_details_t tx_details;
+        soroban_authorization_t soroban_authorization;
+    };
     envelope_type_t type;
     uint8_t network;
 } envelope_t;

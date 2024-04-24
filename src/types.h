@@ -47,7 +47,7 @@ enum e_state {
  * Structure for global context.
  */
 typedef struct {
-    envelope_t tx_info;
+    envelope_t envelope;
     uint8_t raw[RAW_TX_MAX_SIZE];
     uint32_t raw_size;
     uint8_t raw_public_key[RAW_ED25519_PUBLIC_KEY_SIZE];  // BIP32 path public key

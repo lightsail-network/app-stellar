@@ -209,7 +209,7 @@ void prepare_display() {
     formatter_data_t fdata = {
         .raw_data = G_context.raw,
         .raw_data_len = G_context.raw_size,
-        .envelope = &G_context.tx_info,
+        .envelope = &G_context.envelope,
         .caption = G.ui.detail_caption,
         .value = G.ui.detail_value,
         .signing_key = G_context.raw_public_key,
