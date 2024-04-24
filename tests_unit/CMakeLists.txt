@@ -40,7 +40,6 @@ include_directories($ENV{BOLOS_SDK}/lib_standard_app)
 
 add_executable(test_parser test_parser.c)
 add_executable(test_auth_parser test_auth_parser.c)
-add_executable(test_scval test_scval.c)
 add_executable(test_printer test_printer.c)
 add_executable(test_formatter test_formatter.c)
 
@@ -70,17 +69,6 @@ target_link_libraries(test_parser PUBLIC
                       bsd)
 
 target_link_libraries(test_auth_parser PUBLIC 
-                      parser
-                      buffer
-                      bip32
-                      cmocka 
-                      gcov
-                      varint
-                      write
-                      read
-                      bsd)
-
-target_link_libraries(test_scval PUBLIC 
                       parser
                       buffer
                       bip32
@@ -122,6 +110,5 @@ target_link_libraries(test_formatter PUBLIC
 
 add_test(test_parser test_parser)
 add_test(test_auth_parser test_auth_parser)
-add_test(test_scval test_scval)
 add_test(test_printer test_printer)
 add_test(test_formatter test_formatter)

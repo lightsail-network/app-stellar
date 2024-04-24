@@ -23,8 +23,6 @@ bool parse_uint64(buffer_t *buffer, uint64_t *n);
 
 bool parse_int64(buffer_t *buffer, int64_t *n);
 
-bool parse_scv_i128(buffer_t *buffer, scv_i128_t *i128);
-
 bool parse_scv_symbol(buffer_t *buffer, scv_symbol_t *symbol);
 
 bool parse_scv_string(buffer_t *buffer, scv_string_t *string);

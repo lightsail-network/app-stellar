@@ -514,11 +514,6 @@ typedef enum SCValType {
 } sc_val_type_t;
 
 typedef struct {
-    int64_t hi;
-    uint64_t lo;
-} scv_i128_t;
-
-typedef struct {
     uint32_t size;  // the max size of the symbol is SCV_SYMBOL_MAX_SIZE
     const uint8_t *symbol;
 } scv_symbol_t;

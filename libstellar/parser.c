@@ -72,12 +72,6 @@ bool parse_int64(buffer_t *buffer, int64_t *n) {
     return buffer_seek_cur(buffer, 8);
 }
 
-bool parse_scv_i128(buffer_t *buffer, scv_i128_t *i128) {
-    PARSER_CHECK(parse_int64(buffer, &i128->hi))
-    PARSER_CHECK(parse_uint64(buffer, &i128->lo))
-    return true;
-}
-
 size_t num_bytes(size_t size) {
     size_t remainder = size % 4;
     if (remainder == 0) {
