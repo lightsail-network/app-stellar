@@ -1489,7 +1489,7 @@ export function opInvokeHostFunctionAssetApprove() {
   return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
 }
 
-export function opInvokeHostFunctionScvals() {
+export function opInvokeHostFunctionScvalsCase0() {
   // from stellar_sdk import *
   // from stellar_sdk import xdr
 
@@ -1505,6 +1505,33 @@ export function opInvokeHostFunctionScvals() {
   //     scval.to_int64(454546),
   //     scval.to_timepoint(2356623562),
   //     scval.to_duration(34543643),
+  // ]
+  // tx = (
+  //     TransactionBuilder(source, Network.TESTNET_NETWORK_PASSPHRASE, 500)
+  //     .append_invoke_contract_function_op(
+  //         contract_id="CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+  //         function_name="test",
+  //         parameters=scvals,
+  //     )
+  //     .add_time_bounds(0, 0)
+  //     .build()
+  // )
+
+  // print(tx.to_xdr())
+  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAEdGVzdAAAAAgAAAAAAAAAAQAAAAEAAAADAAAE0gAAAAQAADA5AAAABQAAAAABZY0FAAAABgAAAAAABu+SAAAABwAAAACMdzjKAAAACAAAAAACDxgbAAAAAAAAAAAAAAAA";
+  return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
+}
+
+
+export function opInvokeHostFunctionScvalsCase1() {
+  // from stellar_sdk import *
+  // from stellar_sdk import xdr
+
+  // kp0 = Keypair.from_secret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK")
+  // source = Account(kp0.public_key, 1234567890)
+
+  // scvals = [
+  //     scval.to_duration(34543643),
   //     scval.to_uint128(43543645645645),
   //     scval.to_int128(43543645645645),
   //     scval.to_uint256(24358729874358025473024572),
@@ -1513,6 +1540,34 @@ export function opInvokeHostFunctionScvals() {
   //     scval.to_string("hello this is test string"),
   //     scval.to_symbol("testfunc"),
   //     scval.to_vec([scval.to_bool(True), scval.to_bool(False)]),
+  // ]
+  // tx = (
+  //     TransactionBuilder(source, Network.TESTNET_NETWORK_PASSPHRASE, 500)
+  //     .append_invoke_contract_function_op(
+  //         contract_id="CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+  //         function_name="test",
+  //         parameters=scvals,
+  //     )
+  //     .add_time_bounds(0, 0)
+  //     .build()
+  // )
+
+  // print(tx.to_xdr())
+  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAEdGVzdAAAAAkAAAAIAAAAAAIPGBsAAAAJAAAAAAAAAAAAACeaS4frTQAAAAoAAAAAAAAAAAAAJ5pLh+tNAAAACwAAAAAAAAAAAAAAAAAAAAAAAAAAABQmKWR21pHyWOI8AAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAABQmKWR21pHyWOI8AAAADQAAABJ0aGlzIGlzIHRlc3QgYnl0ZXMAAAAAAA4AAAAZaGVsbG8gdGhpcyBpcyB0ZXN0IHN0cmluZwAAAAAAAA8AAAAIdGVzdGZ1bmMAAAAQAAAAAQAAAAIAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAA";
+  return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
+}
+
+
+
+
+export function opInvokeHostFunctionScvalsCase2() {
+  // from stellar_sdk import *
+  // from stellar_sdk import xdr
+
+  // kp0 = Keypair.from_secret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK")
+  // source = Account(kp0.public_key, 1234567890)
+
+  // scvals = [
   //     scval.to_map(
   //         {
   //             scval.to_symbol("true"): scval.to_bool(True),
@@ -1564,7 +1619,7 @@ export function opInvokeHostFunctionScvals() {
   // )
 
   // print(tx.to_xdr())
-  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAEdGVzdAAAABcAAAAAAAAAAQAAAAEAAAADAAAE0gAAAAQAADA5AAAABQAAAAABZY0FAAAABgAAAAAABu+SAAAABwAAAACMdzjKAAAACAAAAAACDxgbAAAACQAAAAAAAAAAAAAnmkuH600AAAAKAAAAAAAAAAAAACeaS4frTQAAAAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAUJilkdtaR8ljiPAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAUJilkdtaR8ljiPAAAAA0AAAASdGhpcyBpcyB0ZXN0IGJ5dGVzAAAAAAAOAAAAGWhlbGxvIHRoaXMgaXMgdGVzdCBzdHJpbmcAAAAAAAAPAAAACHRlc3RmdW5jAAAAEAAAAAEAAAACAAAAAAAAAAEAAAAAAAAAAAAAABEAAAABAAAAAgAAAA8AAAAEdHJ1ZQAAAAAAAAABAAAADwAAAAVmYWxzZQAAAAAAAAAAAAAAAAAAEgAAAAAAAAAA6TOIu/0vvRGAbdC9Wc6pB558xwznseFU8RTN/k5Gbs0AAAASAAAAAdeSi3LCcDzP6vfrn/TvTVBKVai5efybRQ6iyEK00c5hAAAAFAAAABUAAAAAAAAAZAAAABMAAAABAAAAAAAAABMAAAAAz4iEU9ZgVry2rlkqkZBztZO1llv/y8/DBKxHVJ6s2tYAAAABAAAAAgAAAA8AAAAEdHJ1ZQAAAAAAAAABAAAADwAAAAVmYWxzZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAEdGVzdAAAAAcAAAARAAAAAQAAAAIAAAAPAAAABHRydWUAAAAAAAAAAQAAAA8AAAAFZmFsc2UAAAAAAAAAAAAAAAAAABIAAAAAAAAAAOkziLv9L70RgG3QvVnOqQeefMcM57HhVPEUzf5ORm7NAAAAEgAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAABQAAAAVAAAAAAAAAGQAAAATAAAAAQAAAAAAAAATAAAAAM+IhFPWYFa8tq5ZKpGQc7WTtZZb/8vPwwSsR1SerNrWAAAAAQAAAAIAAAAPAAAABHRydWUAAAAAAAAAAQAAAA8AAAAFZmFsc2UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
   return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
 }
 
