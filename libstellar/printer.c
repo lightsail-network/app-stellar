@@ -626,8 +626,9 @@ static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out
             // Not enough space to hold "0" and \0.
             return false;
         }
-        // TODO
-        strcpy(out, "0");
+        if (strlcpy(out, "0", out_len) >= out_len) {
+            return false;
+        }
         return true;
     }
 
