@@ -11,6 +11,7 @@
 #define BINARY_MAX_SIZE                   36
 #define AMOUNT_WITH_COMMAS_MAX_LENGTH     24   // 922,337,203,685.4775807
 #define ED25519_SIGNED_PAYLOAD_MAX_LENGTH 166  // include the null terminator
+#define INT256_WITH_COMMAS_MAX_LENGTH     104
 
 uint16_t crc16(const uint8_t *input_str, int num_bytes) {
     uint16_t crc;
@@ -699,36 +700,69 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
     return true;
 }
 
-bool print_int32(const uint8_t *value, char *out, size_t out_len) {
-    return int256_to_decimal(value, 4, out, out_len);
+static bool add_separator_to_number(char *out, size_t out_len) {
+    int length = strlen(out);
+    int negative = (out[0] == '-') ? 1 : 0;                 // Check if the number is negative
+    int new_length = length + (length - negative - 1) / 3;  // Calculate the new length with commas
+
+    // If the new length is greater than the maximum length, return false
+    if (new_length >= out_len) {
+        return false;
+    }
+
+    out[new_length] = '\0';  // Set the end of the new string
+
+    // Start from the end of the string and move the digits to their new positions
+    for (int i = length - 1, j = new_length - 1; i >= 0; i--, j--) {
+        out[j] = out[i];
+
+        // If the current position is a multiple of 3 and it's not the first digit, add a comma
+        if ((length - i) % 3 == 0 && i != negative) {
+            out[--j] = ',';
+        }
+    }
+
+    return true;
 }
 
-bool print_uint32(const uint8_t *value, char *out, size_t out_len) {
-    return uint256_to_decimal(value, 4, out, out_len);
+bool print_int32(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+    return int256_to_decimal(value, 4, out, out_len) &&
+           (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_int64(const uint8_t *value, char *out, size_t out_len) {
-    return int256_to_decimal(value, 8, out, out_len);
+bool print_uint32(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+    return uint256_to_decimal(value, 4, out, out_len) &&
+           (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_uint64(const uint8_t *value, char *out, size_t out_len) {
-    return uint256_to_decimal(value, 8, out, out_len);
+bool print_int64(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+    return int256_to_decimal(value, 8, out, out_len) &&
+           (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_int128(const uint8_t *value, char *out, size_t out_len) {
-    return int256_to_decimal(value, 16, out, out_len);
+bool print_uint64(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+    return uint256_to_decimal(value, 8, out, out_len) &&
+           (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_uint128(const uint8_t *value, char *out, size_t out_len) {
-    return uint256_to_decimal(value, 16, out, out_len);
+bool print_int128(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+    return int256_to_decimal(value, 16, out, out_len) &&
+           (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_int256(const uint8_t *value, char *out, size_t out_len) {
-    return int256_to_decimal(value, 32, out, out_len);
+bool print_uint128(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+    return uint256_to_decimal(value, 16, out, out_len) &&
+           (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_uint256(const uint8_t *value, char *out, size_t out_len) {
-    return uint256_to_decimal(value, 32, out, out_len);
+bool print_int256(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+    return int256_to_decimal(value, 32, out, out_len) &&
+           (!add_separator || add_separator_to_number(out, out_len));
+}
+
+bool print_uint256(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+    return uint256_to_decimal(value, 32, out, out_len) &&
+           (!add_separator || add_separator_to_number(out, out_len));
 }
 
 bool print_scv_symbol(const scv_symbol_t *scv_symbol, char *out, size_t out_len) {
