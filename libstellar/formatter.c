@@ -2112,7 +2112,6 @@ void reset_formatter() {
     explicit_bzero(formatter_stack, sizeof(formatter_stack));
     formatter_index = 0;
     current_data_index = 0;
-    last_parameter_at_formatter_index = 255;
 }
 
 bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, bool *is_op_header) {
@@ -2133,6 +2132,7 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
             }
             FORMATTER_CHECK(formatter_stack[0](fdata));
             *data_exists = true;
+            last_parameter_at_formatter_index = 255;
         } else if (current_data_index < total_data - 1 &&
                    formatter_stack[formatter_index - 1] == NULL) {
             current_data_index++;
@@ -2140,9 +2140,10 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
             if (formatter_stack[0] == NULL) {
                 return false;
             }
-            *is_op_header = true;
             FORMATTER_CHECK(formatter_stack[0](fdata));
+            *is_op_header = true;
             *data_exists = true;
+            last_parameter_at_formatter_index = 255;
         } else if (current_data_index == total_data - 1 &&
                    formatter_stack[formatter_index - 1] == NULL) {
             formatter_index++;  // we can back from the approve page
@@ -2168,6 +2169,7 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
             if (current_data_index > 0) {
                 *is_op_header = true;
             }
+            last_parameter_at_formatter_index = 255;
         } else {
             formatter_index -= 2;
 
