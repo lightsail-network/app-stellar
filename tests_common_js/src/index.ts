@@ -1319,7 +1319,7 @@ export function opInvokeHostFunctionCreateContractWrapAsset() {
   return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
 }
 
-export function opInvokeHostFunctionUnverifiedContract() {
+export function opInvokeHostFunctionWithoutArgs() {
   /**
    * soroban --very-verbose contract invoke \
     --id CAQOBZUNLWA3GRTIKKGH2RT2G3MKEHELBJ4ZII2N25A3IBDSUSUOAUQU  \
@@ -1330,87 +1330,6 @@ export function opInvokeHostFunctionUnverifiedContract() {
     increment
    */
   const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQABxvgALZ/tAAAABAAAAAAAAAAAAAAAAQAAAAAAAAAYAAAAAAAAAAEg4OaNXYGzRmhSjH1GejbYohyLCnmUI03XQbQEcqSo4AAAAAlpbmNyZW1lbnQAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAcT4WhYveSrUKAG2/BxciiPPsGdhkDRqFMBbGDBXCURFwAAAAEAAAAGAAAAASDg5o1dgbNGaFKMfUZ6NtiiHIsKeZQjTddBtARypKjgAAAAFAAAAAEAGQovAAADSAAAAIQAAAAAAAANSQAAAAFORm7NAAAAQMeYqOX1HnwH9heyEgce5OcjQEakm+vFFqtXBEdaHMqDvMBVCcy4u8WhVAbOWCvNQf+/wjIaj03un47sRyLJtwc=";
-  return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
-}
-
-export function opInvokeHostFunctionUnverifiedContractWithTransferFunction() {
-  // from stellar_sdk import Keypair, Network, SorobanServer, TransactionBuilder, scval
-
-  // rpc_server_url = "https://soroban-testnet.stellar.org:443"
-  // soroban_server = SorobanServer(rpc_server_url)
-  // network_passphrase = Network.TESTNET_NETWORK_PASSPHRASE
-
-  // alice_kp = Keypair.from_secret(
-  //     "SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK"
-  // )  # GDUTHCF37UX32EMANXIL2WOOVEDZ47GHBTT3DYKU6EKM37SOIZXM2FN7
-  // bob_kp = Keypair.from_secret(
-  //     "SAE52G23WPAS7MIR2OFGILLICLXXR4K6HSXZHMKD6C33JCAVVILIWYAA"
-  // )  # GDRMNAIPTNIJWJSL6JOF76CJORN47TDVMWERTXO2G2WKOMXGNHUFL5QX
-  // native_token_contract_id = "CAQOBZUNLWA3GRTIKKGH2RT2G3MKEHELBJ4ZII2N25A3IBDSUSUOAUQU"
-
-  // alice_source = soroban_server.load_account(alice_kp.public_key)
-
-  // args = [
-  //     scval.to_address(alice_kp.public_key),  # from
-  //     scval.to_address(bob_kp.public_key),  # spender
-  //     scval.to_int128(100 * 10 ** 7),  # amount, 100 XLM
-  //     scval.to_uint32(2990592)
-  // ]
-
-  // tx = (
-  //     TransactionBuilder(alice_source, network_passphrase, base_fee=500)
-  //     .add_time_bounds(0, 0)
-  //     .append_invoke_contract_function_op(
-  //         contract_id=native_token_contract_id,
-  //         function_name="approve",
-  //         parameters=args,
-  //     )
-  //     .build()
-  // )
-
-  // print(f"Unsigned XDR:\n{tx.to_xdr()}")
-  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQALZ/tAAAACAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAABIODmjV2Bs0ZoUox9Rno22KIciwp5lCNN10G0BHKkqOAAAAAHYXBwcm92ZQAAAAAEAAAAEgAAAAAAAAAA6TOIu/0vvRGAbdC9Wc6pB558xwznseFU8RTN/k5Gbs0AAAASAAAAAAAAAADixoEPm1CbJkvyXF/4SXRbz8x1ZYkZ3do2rKcy5mnoVQAAAAoAAAAAAAAAAAAAAAA7msoAAAAAAwAtogAAAAAAAAAAAAAAAAA=";
-  return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
-}
-
-export function opInvokeHostFunctionUnverifiedContractWithApproveFunction() {
-  //   from stellar_sdk import Keypair, Network, SorobanServer, TransactionBuilder, scval
-
-  // rpc_server_url = "https://soroban-testnet.stellar.org:443"
-  // soroban_server = SorobanServer(rpc_server_url)
-  // network_passphrase = Network.TESTNET_NETWORK_PASSPHRASE
-
-  // alice_kp = Keypair.from_secret(
-  //     "SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK"
-  // )  # GDUTHCF37UX32EMANXIL2WOOVEDZ47GHBTT3DYKU6EKM37SOIZXM2FN7
-  // bob_kp = Keypair.from_secret(
-  //     "SAE52G23WPAS7MIR2OFGILLICLXXR4K6HSXZHMKD6C33JCAVVILIWYAA"
-  // )  # GDRMNAIPTNIJWJSL6JOF76CJORN47TDVMWERTXO2G2WKOMXGNHUFL5QX
-  // native_token_contract_id = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
-
-  // alice_source = soroban_server.load_account(alice_kp.public_key)
-
-  // args = [
-  //     scval.to_address(alice_kp.public_key),  # from
-  //     scval.to_address(bob_kp.public_key),  # spender
-  //     scval.to_int128(100 * 10 ** 7),  # amount, 100 XLM
-  //     scval.to_uint32(2990592)
-  // ]
-
-  // tx = (
-  //     TransactionBuilder(alice_source, network_passphrase, base_fee=500)
-  //     .add_time_bounds(0, 0)
-  //     .append_invoke_contract_function_op(
-  //         contract_id=native_token_contract_id,
-  //         function_name="mock",
-  //         parameters=args,
-  //         source=alice_kp.public_key
-  //     )
-  //     .build()
-  // )
-
-  // print(f"Unsigned XDR:\n{tx.to_xdr()}")
-  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQALZ/tAAAACwAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAOkziLv9L70RgG3QvVnOqQeefMcM57HhVPEUzf5ORm7NAAAAGAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAEbW9jawAAAAQAAAASAAAAAAAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAABIAAAAAAAAAAOLGgQ+bUJsmS/JcX/hJdFvPzHVliRnd2jaspzLmaehVAAAACgAAAAAAAAAAAAAAADuaygAAAAADAC2iAAAAAAAAAAAAAAAAAA==";
   return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
 }
 

@@ -49,7 +49,7 @@ static format_function_t formatter_stack[MAX_FORMATTERS_PER_OPERATION];
 static int8_t formatter_index;
 static uint8_t current_data_index;
 static uint8_t parameters_index;
-static uint8_t last_parameter_at_formatter_index;
+static uint8_t last_parameter_at_formatter_index;  // TODO: reset it
 
 static bool push_to_formatter_stack(format_function_t formatter) {
     if (formatter_index >= MAX_FORMATTERS_PER_OPERATION) {
