@@ -53,6 +53,7 @@ static uint8_t last_parameter_at_formatter_index;
 
 static bool push_to_formatter_stack(format_function_t formatter) {
     if (formatter_index >= MAX_FORMATTERS_PER_OPERATION) {
+        // PRINTF("Formatter stack overflow\n");
         return false;
     }
 
@@ -2099,6 +2100,7 @@ void reset_formatter() {
     explicit_bzero(formatter_stack, sizeof(formatter_stack));
     formatter_index = 0;
     current_data_index = 0;
+    last_parameter_at_formatter_index = 255;
 }
 
 bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, bool *is_op_header) {
