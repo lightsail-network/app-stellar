@@ -10,7 +10,7 @@ VERSION="{version}"
 MODEL="{model}"
 APPNAME="Stellar"
 APPPATH="44'/148'"
-LOAD_PARAMS=(--targetId {target_id} --targetVersion="" --fileName bin/app.hex --appName "Stellar" --appFlags {app_flags} --delete --tlv --dataSize {data_size} --installparamsSize {install_params_size})
+LOAD_PARAMS=(--targetId {target_id} --targetVersion="" --apiLevel 5 --fileName bin/app.hex --appName "Stellar" --appFlags {app_flags} --delete --tlv --dataSize {data_size} --installparamsSize {install_params_size})
 DELETE_PARAMS=(--targetId {target_id} --appName "Stellar")
 
 APPHEX="{app_hex}"
