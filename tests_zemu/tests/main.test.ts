@@ -126,7 +126,7 @@ describe("hash signing", () => {
           ButtonKind.NavRightButton,
           ButtonKind.ToggleSettingButton1,
         ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, settingNav.schedule, true, false);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, settingNav.schedule, true, true);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
@@ -202,7 +202,7 @@ describe("transactions", () => {
             ButtonKind.NavRightButton,
             ButtonKind.ToggleSettingButton2,
           ]);
-          await sim.navigate(".", `tx`, settingNav.schedule, true, false);
+          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav.schedule, true, true);
         } else {
           await sim.clickRight();
           await sim.clickBoth(undefined, false);
@@ -249,7 +249,7 @@ describe("transactions", () => {
           ButtonKind.NavRightButton,
           ButtonKind.ToggleSettingButton2,
         ]);
-        await sim.navigate(".", `reject tx`, settingNav.schedule, true, false);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav.schedule, true, false);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
@@ -273,7 +273,7 @@ describe("transactions", () => {
       );
       if (dev.name == "stax") {
         const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `reject tx`, settingNav.schedule, true, false);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav.schedule, true, false);
       }
     } finally {
       await sim.close();
@@ -297,7 +297,7 @@ describe("transactions", () => {
           ButtonKind.NavRightButton,
           ButtonKind.ToggleSettingButton2,
         ]);
-        await sim.navigate(".", `reject fee bump tx`, settingNav.schedule, true, false);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav.schedule, true, false);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
@@ -321,7 +321,7 @@ describe("transactions", () => {
       );
       if (dev.name == "stax") {
         const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `reject fee bump tx`, settingNav.schedule, true, false);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav.schedule, true, false);
       }
     } finally {
       await sim.close();
