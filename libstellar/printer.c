@@ -700,7 +700,7 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
     return true;
 }
 
-static bool add_separator_to_number(char *out, size_t out_len) {
+bool add_separator_to_number(char *out, size_t out_len) {
     size_t length = strlen(out);
     uint8_t negative = (out[0] == '-') ? 1 : 0;  // Check if the number is negative
 
@@ -708,11 +708,13 @@ static bool add_separator_to_number(char *out, size_t out_len) {
     size_t new_length = 0;
     if (negative) {
         if (length < 2) {
+            // The string is too short to have a negative number
             return false;
         }
         new_length = length + (length - 2) / 3;
     } else {
         if (length < 1) {
+            // The string is too short to have a positive number
             return false;
         }
         new_length = length + (length - 1) / 3;
@@ -730,7 +732,7 @@ static bool add_separator_to_number(char *out, size_t out_len) {
         out[j] = out[i];
 
         // If the current position is a multiple of 3 and it's not the first digit, add a comma
-        if ((length - i) % 3 == 0 && i != negative) {
+        if ((length - i) % 3 == 0 && i != negative && j > 0) {
             out[--j] = ',';
         }
     }

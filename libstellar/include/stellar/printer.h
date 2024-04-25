@@ -100,3 +100,5 @@ bool print_uint256(const uint8_t *value, char *out, size_t out_len, bool add_sep
 bool print_scv_symbol(const scv_symbol_t *scv_symbol, char *out, size_t out_len);
 
 bool print_scv_string(const scv_string_t *scv_string, char *out, size_t out_len);
+
+bool add_separator_to_number(char *out, size_t out_len);
