@@ -707,8 +707,14 @@ static bool add_separator_to_number(char *out, size_t out_len) {
     // Calculate the new length of the string with the commas
     size_t new_length = 0;
     if (negative) {
+        if (length < 2) {
+            return false;
+        }
         new_length = length + (length - 2) / 3;
     } else {
+        if (length < 1) {
+            return false;
+        }
         new_length = length + (length - 1) / 3;
     }
 
