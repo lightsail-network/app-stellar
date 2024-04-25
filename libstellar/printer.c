@@ -703,8 +703,14 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
 static bool add_separator_to_number(char *out, size_t out_len) {
     size_t length = strlen(out);
     uint8_t negative = (out[0] == '-') ? 1 : 0;  // Check if the number is negative
-    uint8_t new_length =
-        length + (length - negative - 1) / 3;  // Calculate the new length with commas
+
+    // Calculate the new length of the string with the commas
+    size_t new_length = 0;
+    if (negative) {
+        new_length = length + (length - 2) / 3;
+    } else {
+        new_length = length + (length - 1) / 3;
+    }
 
     // If the new length is greater than the maximum length, return false
     if (new_length >= out_len) {
