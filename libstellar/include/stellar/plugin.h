@@ -31,9 +31,9 @@ typedef enum {
 
 // Transaction data available to the plugin READ-ONLY
 typedef struct {
-    envelope_t *envelope;
-    size_t raw_size;
-    uint8_t *raw;
+    const envelope_t *envelope;
+    const size_t raw_size;
+    const uint8_t *raw;
 } stellar_plugin_shared_ro_t;
 
 typedef struct {
@@ -41,7 +41,7 @@ typedef struct {
     stellar_plugin_result_t result;
 
     // in
-    stellar_plugin_shared_ro_t *plugin_shared_ro;
+    const stellar_plugin_shared_ro_t *plugin_shared_ro;
 } stellar_plugin_init_contract_t;
 
 typedef struct {
@@ -49,7 +49,7 @@ typedef struct {
     uint8_t data_pair_count;
 
     // in
-    stellar_plugin_shared_ro_t *plugin_shared_ro;
+    const stellar_plugin_shared_ro_t *plugin_shared_ro;
 } stellar_plugin_query_data_pair_count_t;
 
 typedef struct {
@@ -60,6 +60,6 @@ typedef struct {
     uint8_t value_len;    // the max length of the value, including the null terminator
 
     // in
-    uint8_t data_pair_index;
-    stellar_plugin_shared_ro_t *plugin_shared_ro;
+    const uint8_t data_pair_index;
+    const stellar_plugin_shared_ro_t *plugin_shared_ro;
 } stellar_plugin_query_data_pair_t;
