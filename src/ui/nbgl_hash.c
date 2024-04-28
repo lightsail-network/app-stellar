@@ -1,6 +1,6 @@
 /*****************************************************************************
  *   Ledger Stellar App.
- *   (c) 2022 Ledger SAS.
+ *   (c) 2024 Ledger SAS.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ static void prepare_page(void) {
 
     // Hash caption/value preparation.
     caption_value_pairs[1].item = "Hash";
-    if (!format_hex(G_context.hash, 32, str_values[1], DETAIL_VALUE_MAX_LENGTH)) {
+    if (!format_hex(G_context.hash, HASH_SIZE, str_values[1], DETAIL_VALUE_MAX_LENGTH)) {
         io_send_sw(SW_DISPLAY_TRANSACTION_HASH_FAIL);
         return;
     }
