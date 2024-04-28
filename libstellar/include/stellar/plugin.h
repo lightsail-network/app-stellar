@@ -36,6 +36,9 @@ typedef struct {
     const uint8_t *raw;
 } stellar_plugin_shared_ro_t;
 
+/**
+ * Structure for the plugin to initialize itself for a given contract.
+ */
 typedef struct {
     stellar_plugin_interface_version_t interface_version;
     stellar_plugin_result_t result;
@@ -44,6 +47,9 @@ typedef struct {
     const stellar_plugin_shared_ro_t *plugin_shared_ro;
 } stellar_plugin_init_contract_t;
 
+/**
+ * Structure for the plugin to return the number of data pairs it can provide.
+ */
 typedef struct {
     stellar_plugin_result_t result;
     uint8_t data_pair_count;
@@ -52,6 +58,9 @@ typedef struct {
     const stellar_plugin_shared_ro_t *plugin_shared_ro;
 } stellar_plugin_query_data_pair_count_t;
 
+/**
+ * Structure for the plugin to return a specific data pair.
+ */
 typedef struct {
     stellar_plugin_result_t result;
     char *caption;        // to store the caption
