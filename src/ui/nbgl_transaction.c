@@ -64,15 +64,15 @@ static void ui_action_validate_transaction(bool choice) {
     ui_menu_main();
 }
 
-static void reviewTxContinue(void);
-static void reviewTxStart(void);
-static void rejectTxConfirmation(void);
-static void rejectTxChoice(void);
+static void review_tx_continue(void);
+static void review_tx_start(void);
+static void reject_tx_confirmation(void);
+static void reject_tx_choice(void);
 
-static void reviewAuthContinue(void);
-static void reviewAuthStart(void);
-static void rejectAuthConfirmation(void);
-static void rejectAuthChoice(void);
+static void review_auth_continue(void);
+static void review_auth_start(void);
+static void reject_auth_confirmation(void);
+static void reject_auth_choice(void);
 
 // Functions definitions
 static inline void INCR_AND_CHECK_PAGE_NB(void) {
@@ -83,8 +83,8 @@ static inline void INCR_AND_CHECK_PAGE_NB(void) {
     }
 }
 
-static void prepareTxPagesInfos(void) {
-    PRINTF("prepareTxPagesInfos\n");
+static void prepare_tx_pages_infos(void) {
+    PRINTF("prepare_tx_pages_infos\n");
     uint8_t tagLineNb = 0;
     uint8_t tagItemLineNb = 0;
     uint8_t tagValueLineNb = 0;
@@ -162,8 +162,8 @@ static void prepareTxPagesInfos(void) {
     }
 }
 
-static void preparePage(uint8_t page) {
-    PRINTF("preparePage, page: %d\n", page);
+static void prepare_page(uint8_t page) {
+    PRINTF("prepare_page, page: %d\n", page);
     reset_formatter();
     uint8_t data_start_index = pagesInfos[page].data_idx;
     bool data_exists = true;
@@ -186,11 +186,11 @@ static void preparePage(uint8_t page) {
     }
 }
 
-static bool displayTransactionPage(uint8_t page, nbgl_pageContent_t *content) {
-    PRINTF("displayTransactionPage, page: %d\n", page);
+static bool display_transaction_page(uint8_t page, nbgl_pageContent_t *content) {
+    PRINTF("display_transaction_page, page: %d\n", page);
     currentPage = page;
     if (page < nbPages) {
-        preparePage(page);
+        prepare_page(page);
         if (pagesInfos[page].centered_info) {
             content->type = CENTERED_INFO;
             content->centeredInfo.style = LARGE_CASE_INFO;
@@ -220,84 +220,84 @@ static bool displayTransactionPage(uint8_t page, nbgl_pageContent_t *content) {
     return true;
 }
 
-static void rejectTxConfirmation(void) {
+static void reject_tx_confirmation(void) {
     ui_action_validate_transaction(false);
     nbgl_useCaseStatus("Transaction\nRejected", false, ui_menu_main);
 }
 
-static void rejectTxChoice(void) {
+static void reject_tx_choice(void) {
     nbgl_useCaseConfirm("Reject transaction?",
                         NULL,
                         "Yes, Reject",
                         "Go back to transaction",
-                        rejectTxConfirmation);
+                        reject_tx_confirmation);
 }
 
-static void reviewTxChoice(bool confirm) {
+static void review_tx_choice(bool confirm) {
     if (confirm) {
         ui_action_validate_transaction(true);
         nbgl_useCaseStatus("TRANSACTION\nSIGNED", true, ui_menu_main);
     } else {
-        rejectTxChoice();
+        reject_tx_choice();
     }
 }
 
-static void reviewTxContinue(void) {
+static void review_tx_continue(void) {
     nbgl_useCaseRegularReview(currentPage,
                               nbPages + 1,
                               "Reject transaction",
                               NULL,
-                              displayTransactionPage,
-                              reviewTxChoice);
+                              display_transaction_page,
+                              review_tx_choice);
 }
 
-static void reviewTxStart(void) {
+static void review_tx_start(void) {
     nbgl_useCaseReviewStart(&C_icon_stellar_64px,
                             "Review transaction",
                             NULL,
                             "Reject transaction",
-                            reviewTxContinue,
-                            rejectTxChoice);
+                            review_tx_continue,
+                            reject_tx_choice);
 }
 
-static void rejectAuthConfirmation(void) {
+static void reject_auth_confirmation(void) {
     ui_action_validate_transaction(false);
     nbgl_useCaseStatus("Soroban Auth\nRejected", false, ui_menu_main);
 }
 
-static void rejectAuthChoice(void) {
+static void reject_auth_choice(void) {
     nbgl_useCaseConfirm("Reject Soroban Auth?",
                         NULL,
                         "Yes, Reject",
                         "Go back to Soroban Auth",
-                        rejectAuthConfirmation);
+                        reject_auth_confirmation);
 }
 
-static void reviewAuthChoice(bool confirm) {
+static void review_auth_choice(bool confirm) {
     if (confirm) {
         ui_action_validate_transaction(true);
         nbgl_useCaseStatus("SOROBAN AUTH\nSIGNED", true, ui_menu_main);
     } else {
-        rejectAuthChoice();
+        reject_auth_choice();
     }
 }
 
-static void reviewAuthContinue(void) {
+static void review_auth_continue(void) {
     nbgl_useCaseRegularReview(currentPage,
                               nbPages + 1,
                               "Reject Soroban Auth",
                               NULL,
-                              displayTransactionPage,
-                              reviewAuthChoice);
+                              display_transaction_page,
+                              review_auth_choice);
 }
 
-static void reviewAuthStart(void) {
+static void review_auth_start(void) {
     nbgl_useCaseReviewStart(&C_icon_stellar_64px,
                             "Review Soroban Auth",
                             NULL,
                             "Reject Soroban Auth",
-                            reviewAuthContinue,
-                            rejectAuthChoice);
+                            review_auth_continue,
+                            reject_auth_choice);
 }
 
 void prepare_display() {
@@ -321,7 +321,7 @@ void prepare_display() {
     memcpy(&formatter_data, &fdata, sizeof(formatter_data_t));
 
     currentPage = 0;
-    prepareTxPagesInfos();
+    prepare_tx_pages_infos();
 }
 
 int ui_display_transaction(void) {
@@ -331,7 +331,7 @@ int ui_display_transaction(void) {
     }
 
     prepare_display();
-    reviewTxStart();
+    review_tx_start();
     return 0;
 }
 
@@ -341,7 +341,7 @@ int ui_display_auth() {
         return io_send_sw(SW_BAD_STATE);
     }
     prepare_display();
-    reviewAuthStart();
+    review_auth_start();
     return 0;
 }
 #endif  // HAVE_NBGL
