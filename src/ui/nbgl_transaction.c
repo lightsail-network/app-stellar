@@ -43,19 +43,19 @@
 #define MAX_NUMBER_OF_PAGES 40
 // Enums and Structs
 typedef struct {
-    uint8_t pagePairNb;  // how many data pairs are on the page
-    bool centered_info;  // if true, only one caption/value pair is displayed on page, and it is
-                         // centered.
+    uint8_t page_pair_nb;  // how many data pairs are on the page
+    bool centered_info;    // if true, only one caption/value pair is displayed on page, and it is
+                           // centered.
     uint8_t data_idx;
 } page_infos_t;
 
 // Globals
-static uint8_t nbPages;      // (nbPages + 1) = Number of pages to display transaction.
-static int16_t currentPage;  // start from 0, eht sign confirmation page is nbPages + 1.
+static uint8_t nb_pages;      // (nb_pages + 1) = Number of pages to display transaction.
+static int16_t current_page;  // start from 0, eht sign confirmation page is nb_pages + 1.
 nbgl_layoutTagValue_t caption_value_pairs[TAG_VAL_LST_MAX_PAIR_NB];
 static char str_values[TAG_VAL_LST_MAX_PAIR_NB][DETAIL_VALUE_MAX_LENGTH];
 static char str_captions[TAG_VAL_LST_MAX_PAIR_NB][DETAIL_CAPTION_MAX_LENGTH];
-static page_infos_t pagesInfos[MAX_NUMBER_OF_PAGES];
+static page_infos_t pages_infos[MAX_NUMBER_OF_PAGES];
 static formatter_data_t formatter_data;
 
 // Validate/Invalidate transaction and go back to home
@@ -76,8 +76,8 @@ static void reject_auth_choice(void);
 
 // Functions definitions
 static inline void INCR_AND_CHECK_PAGE_NB(void) {
-    nbPages++;
-    if (nbPages >= MAX_NUMBER_OF_PAGES) {
+    nb_pages++;
+    if (nb_pages >= MAX_NUMBER_OF_PAGES) {
         // TODO
         THROW(SW_BAD_STATE);
     }
@@ -94,10 +94,10 @@ static void prepare_tx_pages_infos(void) {
     reset_formatter();
 
     // Reset globals.
-    nbPages = 0;
+    nb_pages = 0;
 
-    explicit_bzero(pagesInfos, sizeof(pagesInfos));
-    pagesInfos[0].data_idx = data_index;
+    explicit_bzero(pages_infos, sizeof(pages_infos));
+    pages_infos[0].data_idx = data_index;
 
     while (true) {  // Execute loop until last tx formatter is reached.
         bool data_exists = true;
@@ -110,7 +110,7 @@ static void prepare_tx_pages_infos(void) {
             break;
         }
         PRINTF("Page %d - Item : %s - Value : %s\n",
-               nbPages,
+               nb_pages,
                G.ui.detail_caption,
                G.ui.detail_value);
 
@@ -129,43 +129,43 @@ static void prepare_tx_pages_infos(void) {
         // special page with only one caption/value pair to display operation number.
         if (is_op_header && G_context.envelope.tx_details.tx.operations_count > 1) {
             INCR_AND_CHECK_PAGE_NB();
-            pagesInfos[nbPages].pagePairNb = 1;
-            pagesInfos[nbPages].data_idx = data_index;
-            pagesInfos[nbPages].centered_info = true;
+            pages_infos[nb_pages].page_pair_nb = 1;
+            pages_infos[nb_pages].data_idx = data_index;
+            pages_infos[nb_pages].centered_info = true;
             INCR_AND_CHECK_PAGE_NB();
             pageLineNb = 0;
-            pagesInfos[nbPages].pagePairNb = 0;
-            pagesInfos[nbPages].data_idx = data_index + 1;
+            pages_infos[nb_pages].page_pair_nb = 0;
+            pages_infos[nb_pages].data_idx = data_index + 1;
         }
         // Else if number of lines occupied on page > allowed max number of lines per page,
         // go to next page.
         else if (pageLineNb > TAG_VAL_LST_MAX_LINES_PER_PAGE) {
             INCR_AND_CHECK_PAGE_NB();
             pageLineNb = tagLineNb;
-            pagesInfos[nbPages].pagePairNb = 1;
-            pagesInfos[nbPages].data_idx = data_index;
+            pages_infos[nb_pages].page_pair_nb = 1;
+            pages_infos[nb_pages].data_idx = data_index;
         } else
         // Otherwise save number of pairs on current page
         {
-            pagesInfos[nbPages].pagePairNb++;
+            pages_infos[nb_pages].page_pair_nb++;
         }
         data_index++;
     }
 
     INCR_AND_CHECK_PAGE_NB();
 
-    for (uint8_t i = 0; i < nbPages; i++) {
+    for (uint8_t i = 0; i < nb_pages; i++) {
         PRINTF("Page %d - PairNb : %d - DataIdx : %d\n",
                i,
-               pagesInfos[i].pagePairNb,
-               pagesInfos[i].data_idx);
+               pages_infos[i].page_pair_nb,
+               pages_infos[i].data_idx);
     }
 }
 
 static void prepare_page(uint8_t page) {
     PRINTF("prepare_page, page: %d\n", page);
     reset_formatter();
-    uint8_t data_start_index = pagesInfos[page].data_idx;
+    uint8_t data_start_index = pages_infos[page].data_idx;
     bool data_exists = true;
     bool is_op_header = false;
 
@@ -175,7 +175,7 @@ static void prepare_page(uint8_t page) {
         };
     }
 
-    for (uint8_t i = 0; i < pagesInfos[page].pagePairNb; i++) {
+    for (uint8_t i = 0; i < pages_infos[page].page_pair_nb; i++) {
         if (!get_next_data(&formatter_data, true, &data_exists, &is_op_header)) {
             THROW(SW_FORMATTING_FAIL);
         };
@@ -188,10 +188,10 @@ static void prepare_page(uint8_t page) {
 
 static bool display_transaction_page(uint8_t page, nbgl_pageContent_t *content) {
     PRINTF("display_transaction_page, page: %d\n", page);
-    currentPage = page;
-    if (page < nbPages) {
+    current_page = page;
+    if (page < nb_pages) {
         prepare_page(page);
-        if (pagesInfos[page].centered_info) {
+        if (pages_infos[page].centered_info) {
             content->type = CENTERED_INFO;
             content->centeredInfo.style = LARGE_CASE_INFO;
             content->centeredInfo.text1 = "Please review";
@@ -202,7 +202,7 @@ static bool display_transaction_page(uint8_t page, nbgl_pageContent_t *content) 
             content->centeredInfo.onTop = false;
         } else {
             content->type = TAG_VALUE_LIST;
-            content->tagValueList.nbPairs = pagesInfos[page].pagePairNb;
+            content->tagValueList.nbPairs = pages_infos[page].page_pair_nb;
             content->tagValueList.pairs = (nbgl_layoutTagValue_t *) &caption_value_pairs;
             content->tagValueList.smallCaseForValue = false;
             content->tagValueList.wrapping = true;
@@ -243,8 +243,8 @@ static void review_tx_choice(bool confirm) {
 }
 
 static void review_tx_continue(void) {
-    nbgl_useCaseRegularReview(currentPage,
-                              nbPages + 1,
+    nbgl_useCaseRegularReview(current_page,
+                              nb_pages + 1,
                               "Reject transaction",
                               NULL,
                               display_transaction_page,
@@ -283,8 +283,8 @@ static void review_auth_choice(bool confirm) {
 }
 
 static void review_auth_continue(void) {
-    nbgl_useCaseRegularReview(currentPage,
-                              nbPages + 1,
+    nbgl_useCaseRegularReview(current_page,
+                              nb_pages + 1,
                               "Reject Soroban Auth",
                               NULL,
                               display_transaction_page,
@@ -320,7 +320,7 @@ void prepare_display() {
     // init formatter_data
     memcpy(&formatter_data, &fdata, sizeof(formatter_data_t));
 
-    currentPage = 0;
+    current_page = 0;
     prepare_tx_pages_infos();
 }
 
