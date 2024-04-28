@@ -36,7 +36,7 @@
 
 int handler_sign_hash(buffer_t *cdata) {
     if (!HAS_SETTING(S_HASH_SIGNING_ENABLED)) {
-        return io_send_sw(SW_TX_HASH_SIGNING_MODE_NOT_ENABLED);
+        return io_send_sw(SW_HASH_SIGNING_MODE_NOT_ENABLED);
     }
 
     explicit_bzero(&G_context, sizeof(G_context));
