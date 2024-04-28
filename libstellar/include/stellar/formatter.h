@@ -60,6 +60,7 @@ void reset_formatter();
  * @param forward True if the data should be fetched forward, false if backward.
  * @param data_exists True if data exists, false otherwise.
  * @param is_op_header True if the data is an operation header, false otherwise.
+ *
  * @return True if the data was fetched successfully, false otherwise.
  */
 bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, bool *is_op_header);

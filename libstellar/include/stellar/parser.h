@@ -102,7 +102,7 @@ bool parse_scv_string(buffer_t *buffer, scv_string_t *string);
  *
  * @return True if the parsing was successful, false otherwise.
  */
-* / bool buffer_read32(buffer_t *buffer, uint32_t *n);
+bool buffer_read32(buffer_t *buffer, uint32_t *n);
 
 /**
  * Parse a sc_address from a buffer.
@@ -116,5 +116,9 @@ bool parse_sc_address(buffer_t *buffer, sc_address_t *sc_address);
 
 /**
  * Read a sc_value from a buffer, advancing the buffer.
+ *
+ * @param buffer The buffer to read from.
+ *
+ * @return True if the reading was successful, false otherwise.
  */
 bool read_scval_advance(buffer_t *buffer);
