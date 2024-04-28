@@ -54,7 +54,7 @@ jobs:
           files: ./tests_unit/coverage.info
           flags: unittests
           name: codecov-app-stellar
-          fail_ci_if_error: true
+          fail_ci_if_error: false
           verbose: true
 
   e2e_tests:
