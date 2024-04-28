@@ -85,11 +85,11 @@ static inline void INCR_AND_CHECK_PAGE_NB(void) {
 
 static void prepare_tx_pages_infos(void) {
     PRINTF("prepare_tx_pages_infos\n");
-    uint8_t tagLineNb = 0;
-    uint8_t tagItemLineNb = 0;
-    uint8_t tagValueLineNb = 0;
-    uint8_t pageLineNb = 0;
-    uint16_t fieldLen = 0;
+    uint8_t tag_line_nb = 0;
+    uint8_t tag_item_line_nb = 0;
+    uint8_t tag_value_line_nb = 0;
+    uint8_t page_line_nb = 0;
+    uint8_t field_len = 0;
     uint8_t data_index = 0;
     reset_formatter();
 
@@ -115,16 +115,16 @@ static void prepare_tx_pages_infos(void) {
                G.ui.detail_value);
 
         // Compute number of lines filled by tag item string.
-        fieldLen = strlen(G.ui.detail_caption);
-        tagItemLineNb = fieldLen / TAG_VAL_LST_ITEM_MAX_CHAR_PER_LINE;
-        tagItemLineNb += (fieldLen % TAG_VAL_LST_ITEM_MAX_CHAR_PER_LINE != 0) ? 1 : 0;
+        field_len = strlen(G.ui.detail_caption);
+        tag_item_line_nb = field_len / TAG_VAL_LST_ITEM_MAX_CHAR_PER_LINE;
+        tag_item_line_nb += (field_len % TAG_VAL_LST_ITEM_MAX_CHAR_PER_LINE != 0) ? 1 : 0;
         // Compute number of lines filled by tag value string.
-        fieldLen = strlen(G.ui.detail_value);
-        tagValueLineNb = fieldLen / TAG_VAL_LST_VAL_MAX_CHAR_PER_LINE;
-        tagValueLineNb += (fieldLen % TAG_VAL_LST_VAL_MAX_CHAR_PER_LINE != 0) ? 1 : 0;
+        field_len = strlen(G.ui.detail_value);
+        tag_value_line_nb = field_len / TAG_VAL_LST_VAL_MAX_CHAR_PER_LINE;
+        tag_value_line_nb += (field_len % TAG_VAL_LST_VAL_MAX_CHAR_PER_LINE != 0) ? 1 : 0;
         // Add number of screen lines occupied by tag pair to total lines occupied in page.
-        tagLineNb = tagValueLineNb + tagItemLineNb;
-        pageLineNb += tagLineNb;
+        tag_line_nb = tag_value_line_nb + tag_item_line_nb;
+        page_line_nb += tag_line_nb;
         // If there are multiple operations and a new operation is reached, create a
         // special page with only one caption/value pair to display operation number.
         if (is_op_header && G_context.envelope.tx_details.tx.operations_count > 1) {
@@ -133,15 +133,15 @@ static void prepare_tx_pages_infos(void) {
             pages_infos[nb_pages].data_idx = data_index;
             pages_infos[nb_pages].centered_info = true;
             INCR_AND_CHECK_PAGE_NB();
-            pageLineNb = 0;
+            page_line_nb = 0;
             pages_infos[nb_pages].page_pair_nb = 0;
             pages_infos[nb_pages].data_idx = data_index + 1;
         }
         // Else if number of lines occupied on page > allowed max number of lines per page,
         // go to next page.
-        else if (pageLineNb > TAG_VAL_LST_MAX_LINES_PER_PAGE) {
+        else if (page_line_nb > TAG_VAL_LST_MAX_LINES_PER_PAGE) {
             INCR_AND_CHECK_PAGE_NB();
-            pageLineNb = tagLineNb;
+            page_line_nb = tag_line_nb;
             pages_infos[nb_pages].page_pair_nb = 1;
             pages_infos[nb_pages].data_idx = data_index;
         } else
