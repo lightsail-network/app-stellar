@@ -38,19 +38,19 @@ static void ui_action_validate_transaction(bool choice) {
 
 // Globals
 static char str_values[TAG_VAL_LST_PAIR_NB][DETAIL_VALUE_MAX_LENGTH];
-static nbgl_pageInfoLongPress_t infoLongPress;
+static nbgl_pageInfoLongPress_t info_long_press;
 static nbgl_layoutTagValue_t caption_value_pairs[TAG_VAL_LST_PAIR_NB];
-static nbgl_layoutTagValueList_t pairList;
+static nbgl_layoutTagValueList_t pair_list;
 
 // Static functions declarations
-static void reviewStart(void);
-static void reviewWarning(void);
-static void reviewContinue(void);
-static void rejectConfirmation(void);
-static void rejectChoice(void);
+static void review_start(void);
+static void review_warning(void);
+static void review_continue(void);
+static void reject_confirmation(void);
+static void reject_choice(void);
 
 // Functions definitions
-static void preparePage(void) {
+static void prepare_page(void) {
     explicit_bzero(caption_value_pairs, sizeof(caption_value_pairs));
     explicit_bzero(str_values, sizeof(str_values));
 
@@ -71,53 +71,57 @@ static void preparePage(void) {
     caption_value_pairs[1].value = str_values[1];
 }
 
-static void rejectConfirmation(void) {
+static void reject_confirmation(void) {
     ui_action_validate_transaction(false);
     nbgl_useCaseStatus("Hash Rejected", false, ui_menu_main);
 }
 
-static void rejectChoice(void) {
-    nbgl_useCaseConfirm("Reject hash?", NULL, "Yes, Reject", "Go back to hash", rejectConfirmation);
+static void reject_choice(void) {
+    nbgl_useCaseConfirm("Reject hash?",
+                        NULL,
+                        "Yes, Reject",
+                        "Go back to hash",
+                        reject_confirmation);
 }
 
-static void reviewChoice(bool confirm) {
+static void review_choice(bool confirm) {
     if (confirm) {
         ui_action_validate_transaction(true);
         nbgl_useCaseStatus("HASH SIGNED", true, ui_menu_main);
     } else {
-        rejectChoice();
+        reject_choice();
     }
 }
 
-static void reviewStart(void) {
+static void review_start(void) {
     nbgl_useCaseReviewStart(&C_icon_stellar_64px,
                             "Review hash signing",
                             "",
                             "Reject hash",
-                            reviewWarning,
-                            rejectChoice);
+                            review_warning,
+                            reject_choice);
 }
 
-static void reviewWarning(void) {
+static void review_warning(void) {
     nbgl_useCaseReviewStart(NULL,
                             "WARNING",
                             "Dangerous Operation",
                             "Reject hash",
-                            reviewContinue,
-                            rejectChoice);
+                            review_continue,
+                            reject_choice);
 }
 
-static void reviewContinue(void) {
-    pairList.pairs = caption_value_pairs;
-    pairList.nbPairs = TAG_VAL_LST_PAIR_NB;
+static void review_continue(void) {
+    pair_list.pairs = caption_value_pairs;
+    pair_list.nbPairs = TAG_VAL_LST_PAIR_NB;
 
-    infoLongPress.text = "Sign hash?";
-    infoLongPress.icon = &C_icon_stellar_64px;
-    infoLongPress.longPressText = "Hold to sign";
-    infoLongPress.longPressToken = 0;
-    infoLongPress.tuneId = TUNE_TAP_CASUAL;
+    info_long_press.text = "Sign hash?";
+    info_long_press.icon = &C_icon_stellar_64px;
+    info_long_press.longPressText = "Hold to sign";
+    info_long_press.longPressToken = 0;
+    info_long_press.tuneId = TUNE_TAP_CASUAL;
 
-    nbgl_useCaseStaticReview(&pairList, &infoLongPress, "Reject hash", reviewChoice);
+    nbgl_useCaseStaticReview(&pair_list, &info_long_press, "Reject hash", review_choice);
 }
 
 int ui_display_hash() {
@@ -125,8 +129,8 @@ int ui_display_hash() {
         G_context.state = STATE_NONE;
         return io_send_sw(SW_BAD_STATE);
     }
-    preparePage();
-    reviewStart();
+    prepare_page();
+    review_start();
     return 0;
 }
 #endif  // HAVE_NBGL
