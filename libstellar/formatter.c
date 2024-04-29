@@ -1699,6 +1699,80 @@ static bool format_liquidity_pool_withdraw(formatter_data_t *fdata) {
     return true;
 }
 
+static bool print_scval(buffer_t buffer, char *value, uint8_t value_len) {
+    uint32_t sc_type;
+    FORMATTER_CHECK(buffer_read32(&buffer, &sc_type))
+
+    switch (sc_type) {
+        case SCV_BOOL: {
+            bool b;
+            FORMATTER_CHECK(parse_bool(&buffer, &b))
+            STRLCPY(value, b ? "true" : "false", value_len);
+            break;
+        }
+        case SCV_VOID:
+            STRLCPY(value, "[void]", value_len);
+            break;  // void
+        case SCV_U32:
+            FORMATTER_CHECK(print_uint32(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_I32:
+            FORMATTER_CHECK(print_int32(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_U64:
+            FORMATTER_CHECK(print_uint64(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_I64:
+            FORMATTER_CHECK(print_int64(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_TIMEPOINT: {
+            uint64_t timepoint;
+            FORMATTER_CHECK(parse_uint64(&buffer, &timepoint));
+            FORMATTER_CHECK(print_time(timepoint, value, value_len));
+            break;
+        }
+        case SCV_DURATION:
+            FORMATTER_CHECK(print_int64(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_U128:
+            FORMATTER_CHECK(print_uint128(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_I128:
+            FORMATTER_CHECK(print_int128(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_U256:
+            FORMATTER_CHECK(print_uint256(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_I256:
+            FORMATTER_CHECK(print_int256(buffer.ptr + buffer.offset, value, value_len, true));
+            break;
+        case SCV_BYTES:
+            STRLCPY(value, "[Bytes Data]", value_len);
+            break;
+        case SCV_STRING: {
+            scv_string_t scv_string;
+            FORMATTER_CHECK(parse_scv_string(&buffer, &scv_string));
+            FORMATTER_CHECK(print_scv_string(&scv_string, value, value_len));
+            break;
+        }
+        case SCV_SYMBOL: {
+            scv_symbol_t scv_symbol;
+            FORMATTER_CHECK(parse_scv_symbol(&buffer, &scv_symbol));
+            FORMATTER_CHECK(print_scv_symbol(&scv_symbol, value, value_len));
+            break;
+        }
+        case SCV_ADDRESS: {
+            sc_address_t sc_address;
+            FORMATTER_CHECK(parse_sc_address(&buffer, &sc_address));
+            FORMATTER_CHECK(print_sc_address(&sc_address, value, value_len, 0, 0));
+            break;
+        }
+        default:
+            STRLCPY(value, "[unable to display]", value_len);
+    }
+    return true;
+}
+
 static bool format_invoke_host_function_args(formatter_data_t *fdata) {
     // PRINTF("++++++++++ formatter_index: %d, parameters_index: %d\n",
     //        formatter_index,
@@ -1734,85 +1808,8 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
     for (uint8_t i = 0; i < parameters_index; i++) {
         FORMATTER_CHECK(read_scval_advance(&buffer))
     }
-    uint32_t sc_type;
-    FORMATTER_CHECK(buffer_read32(&buffer, &sc_type))
 
-    switch (sc_type) {
-        case SCV_BOOL: {
-            bool b;
-            FORMATTER_CHECK(parse_bool(&buffer, &b))
-            STRLCPY(fdata->value, b ? "true" : "false", fdata->value_len);
-            break;
-        }
-        case SCV_VOID:
-            STRLCPY(fdata->value, "[void]", fdata->value_len);
-            break;  // void
-        case SCV_U32:
-            FORMATTER_CHECK(
-                print_uint32(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_I32:
-            FORMATTER_CHECK(
-                print_int32(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_U64:
-            FORMATTER_CHECK(
-                print_uint64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_I64:
-            FORMATTER_CHECK(
-                print_int64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_TIMEPOINT: {
-            uint64_t timepoint;
-            FORMATTER_CHECK(parse_uint64(&buffer, &timepoint));
-            FORMATTER_CHECK(print_time(timepoint, fdata->value, fdata->value_len));
-            break;
-        }
-        case SCV_DURATION:
-            FORMATTER_CHECK(
-                print_int64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_U128:
-            FORMATTER_CHECK(
-                print_uint128(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_I128:
-            FORMATTER_CHECK(
-                print_int128(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_U256:
-            FORMATTER_CHECK(
-                print_uint256(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_I256:
-            FORMATTER_CHECK(
-                print_int256(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
-            break;
-        case SCV_BYTES:
-            STRLCPY(fdata->value, "[Bytes Data]", fdata->value_len);
-            break;
-        case SCV_STRING: {
-            scv_string_t scv_string;
-            FORMATTER_CHECK(parse_scv_string(&buffer, &scv_string));
-            FORMATTER_CHECK(print_scv_string(&scv_string, fdata->value, fdata->value_len));
-            break;
-        }
-        case SCV_SYMBOL: {
-            scv_symbol_t scv_symbol;
-            FORMATTER_CHECK(parse_scv_symbol(&buffer, &scv_symbol));
-            FORMATTER_CHECK(print_scv_symbol(&scv_symbol, fdata->value, fdata->value_len));
-            break;
-        }
-        case SCV_ADDRESS: {
-            sc_address_t sc_address;
-            FORMATTER_CHECK(parse_sc_address(&buffer, &sc_address));
-            FORMATTER_CHECK(print_sc_address(&sc_address, fdata->value, fdata->value_len, 0, 0));
-            break;
-        }
-        default:
-            STRLCPY(fdata->value, "[unable to display]", fdata->value_len);
-    }
+    FORMATTER_CHECK(print_scval(buffer, fdata->value, fdata->value_len))
 
     parameters_index++;
     if (parameters_index == invoke_contract_args.parameters_length) {
