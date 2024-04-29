@@ -1473,7 +1473,7 @@ bool parse_soroban_authorization_envelope(const uint8_t *data,
 
     // function
     PARSER_CHECK(parse_auth_function(&buffer,
-                                     &envelope->soroban_authorization.function_type,
+                                     &envelope->soroban_authorization.auth_function_type,
                                      &envelope->soroban_authorization.invoke_contract_args))
     // subInvocations
     uint32_t len;
