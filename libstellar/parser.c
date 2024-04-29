@@ -1424,6 +1424,29 @@ bool parse_transaction_operation(const uint8_t *data,
     return true;
 }
 
+bool parse_auth_function(buffer_t *buffer,
+                         soroban_authorization_function_type_t *type,
+                         invoke_contract_args_t *args) {
+    // function
+    uint32_t function_type;
+    PARSER_CHECK(buffer_read32(buffer, &function_type))
+    *type = function_type;
+    switch (function_type) {
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN: {
+            // contractFn
+            PARSER_CHECK(parse_invoke_contract_args(buffer, args))
+            break;
+        }
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
+            // createContractHostFn
+            PARSER_CHECK(read_create_contract_args_advance(buffer))
+            break;
+        default:
+            return false;
+    }
+    return true;
+}
+
 bool parse_soroban_authorization_envelope(const uint8_t *data,
                                           size_t data_len,
                                           envelope_t *envelope) {
@@ -1449,25 +1472,9 @@ bool parse_soroban_authorization_envelope(const uint8_t *data,
         buffer_read32(&buffer, &envelope->soroban_authorization.signature_expiration_ledger))
 
     // function
-    uint32_t type;
-    PARSER_CHECK(buffer_read32(&buffer, &type))
-    envelope->soroban_authorization.function_type = type;
-    switch (type) {
-        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN: {
-            // contractFn
-            PARSER_CHECK(
-                parse_invoke_contract_args(&buffer,
-                                           &envelope->soroban_authorization.invoke_contract_args));
-            break;
-        }
-        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
-            // createContractHostFn
-            PARSER_CHECK(read_create_contract_args_advance(&buffer))
-            break;
-        default:
-            return false;
-    }
-
+    PARSER_CHECK(parse_auth_function(&buffer,
+                                     &envelope->soroban_authorization.function_type,
+                                     &envelope->soroban_authorization.invoke_contract_args))
     // subInvocations
     uint32_t len;
     uint8_t sub_invocations_count = 0;

@@ -580,6 +580,7 @@ typedef struct {
     invoke_contract_args_t invoke_contract_args;
     size_t sub_invocation_positions[MAX_SUB_INVOCATIONS_SIZE];
     uint8_t sub_invocations_count;
+    uint8_t sub_invocation_index;
 } soroban_authorization_t;
 
 // ************************* Soroban ************************* //

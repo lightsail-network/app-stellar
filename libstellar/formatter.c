@@ -50,7 +50,6 @@ static format_function_t formatter_stack[MAX_FORMATTERS_PER_OPERATION];
 static int8_t formatter_index;
 static uint8_t current_data_index;
 static uint8_t parameters_index;
-static uint8_t last_parameter_at_formatter_index;
 static uint8_t plugin_data_pair_count;
 
 static bool push_to_formatter_stack(format_function_t formatter) {
@@ -1772,6 +1771,61 @@ static bool print_scval(buffer_t buffer, char *value, uint8_t value_len) {
     }
     return true;
 }
+static bool format_confirm_sub_invocation(formatter_data_t *fdata);
+static bool format_confirm_sub_invocation_auth_final(formatter_data_t *fdata) {
+    formatter_index = 0;
+    fdata->envelope->soroban_authorization.sub_invocation_index++;
+    return format_confirm_sub_invocation(fdata);
+}
+
+static bool format_confirm_sub_invocation_auth_function(formatter_data_t *fdata) {
+    PRINTF("function_type: %d\n", fdata->envelope->soroban_authorization.function_type);
+    switch (fdata->envelope->soroban_authorization.function_type) {
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Invoke Smart Contract", fdata->value_len);
+            FORMATTER_CHECK(push_to_formatter_stack(&format_confirm_sub_invocation_auth_final));
+            break;
+        // case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
+        //     STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+        //     STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
+        //     FORMATTER_CHECK(push_to_formatter_stack(NULL))
+        //     break;
+        default:
+            return false;
+    }
+    return true;
+}
+
+static bool format_confirm_sub_invocation(formatter_data_t *fdata) {
+    PRINTF("sub_invocation_index: %d, sub_invocations_count: %d\n",
+           fdata->envelope->soroban_authorization.sub_invocation_index,
+           fdata->envelope->soroban_authorization.sub_invocations_count);
+    char op_caption[OPERATION_CAPTION_MAX_LENGTH] = {0};
+    size_t length;
+    STRLCPY(op_caption, "Sub-Auth ", OPERATION_CAPTION_MAX_LENGTH);
+    length = strlen(op_caption);
+    FORMATTER_CHECK(print_uint(fdata->envelope->soroban_authorization.sub_invocation_index + 1,
+                               op_caption + length,
+                               OPERATION_CAPTION_MAX_LENGTH - length))
+    STRLCAT(op_caption, " of ", sizeof(op_caption));
+    length = strlen(op_caption);
+    FORMATTER_CHECK(print_uint(fdata->envelope->soroban_authorization.sub_invocations_count,
+                               op_caption + length,
+                               OPERATION_CAPTION_MAX_LENGTH - length))
+    STRLCPY(fdata->caption, op_caption, fdata->caption_len);
+    buffer_t buffer = {.ptr = fdata->raw_data,
+                       .size = fdata->raw_data_len,
+                       .offset = fdata->envelope->soroban_authorization.sub_invocation_positions
+                                     [fdata->envelope->soroban_authorization.sub_invocation_index]};
+
+    FORMATTER_CHECK(
+        parse_auth_function(&buffer,
+                            &fdata->envelope->soroban_authorization.function_type,
+                            &fdata->envelope->soroban_authorization.invoke_contract_args))
+    FORMATTER_CHECK(push_to_formatter_stack(&format_confirm_sub_invocation_auth_function))
+    return true;
+}
 
 static bool format_invoke_host_function_args(formatter_data_t *fdata) {
     // PRINTF("++++++++++ formatter_index: %d, parameters_index: %d\n",
@@ -1813,9 +1867,8 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
 
     parameters_index++;
     if (parameters_index == invoke_contract_args.parameters_length) {
-        last_parameter_at_formatter_index = formatter_index;
         if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
-            FORMATTER_CHECK(push_to_formatter_stack(NULL))
+            FORMATTER_CHECK(push_to_formatter_stack(format_confirm_sub_invocation))
         } else {
             return format_operation_source_prepare(fdata);
         }
@@ -1848,7 +1901,6 @@ static bool format_invoke_host_function_args_with_plugin(formatter_data_t *fdata
 
     parameters_index++;
     if (parameters_index == plugin_data_pair_count) {
-        last_parameter_at_formatter_index = formatter_index;
         if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
             FORMATTER_CHECK(push_to_formatter_stack(NULL))
         } else {
@@ -2209,7 +2261,6 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
             }
             FORMATTER_CHECK(formatter_stack[0](fdata));
             *data_exists = true;
-            last_parameter_at_formatter_index = 255;
         } else if (current_data_index < total_data - 1 &&
                    formatter_stack[formatter_index - 1] == NULL) {
             current_data_index++;
@@ -2220,7 +2271,6 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
             FORMATTER_CHECK(formatter_stack[0](fdata));
             *is_op_header = true;
             *data_exists = true;
-            last_parameter_at_formatter_index = 255;
         } else if (current_data_index == total_data - 1 &&
                    formatter_stack[formatter_index - 1] == NULL) {
             formatter_index++;  // we can back from the approve page
@@ -2233,9 +2283,7 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
         if (current_data_index == 0 && formatter_index == 2) {
             formatter_index = 0;
             *data_exists = false;
-        }
-
-        else if (current_data_index > 0 && formatter_index == 2) {
+        } else if (current_data_index > 0 && formatter_index == 2) {
             current_data_index -= 1;
             FORMATTER_CHECK(format(fdata, current_data_index));
             if (formatter_stack[0] == NULL) {
@@ -2246,32 +2294,14 @@ bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, boo
             if (current_data_index > 0) {
                 *is_op_header = true;
             }
-            last_parameter_at_formatter_index = 255;
         } else {
-            formatter_index -= 2;
-
-            // For display the parameter of the soroabn operation
-            if (formatter_index <= last_parameter_at_formatter_index) {
-                if (last_parameter_at_formatter_index == formatter_index) {
-                    parameters_index -= 1;
-                } else {
-                    if (parameters_index < 2) {
-                        parameters_index = 0;
-                    } else {
-                        parameters_index -= 2;
-                    }
-                }
+            FORMATTER_CHECK(format(fdata, current_data_index));
+            if (formatter_stack[0] == NULL) {
+                return false;
             }
-            // PRINTF(
-            //     "---------- last_parameter_at_formatter_index: %d. formatter_index: %d, "
-            //     "parameters_index: %d\n",
-            //     last_parameter_at_formatter_index,
-            //     formatter_index - 1,
-            //     parameters_index);
-
-            FORMATTER_CHECK(formatter_stack[formatter_index - 1](fdata));
+            FORMATTER_CHECK(formatter_stack[0](fdata));
             *data_exists = true;
-            if (current_data_index > 0 && formatter_index == 2) {
+            if (current_data_index > 0) {
                 *is_op_header = true;
             }
         }
