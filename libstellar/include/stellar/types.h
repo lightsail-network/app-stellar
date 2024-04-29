@@ -40,6 +40,8 @@
 /* max amount is max int64 scaled down: "922337203685.4775807" */
 #define AMOUNT_MAX_LENGTH 21
 
+#define MAX_SUB_INVOCATIONS_SIZE 16
+
 #define HASH_SIZE                 32
 #define LIQUIDITY_POOL_ID_SIZE    32
 #define CLAIMABLE_BALANCE_ID_SIZE 32
@@ -554,6 +556,8 @@ typedef struct {
     host_function_type_t host_function_type;
     invoke_contract_args_t
         invoke_contract_args;  // exists if host_function_type == HOST_FUNCTION_TYPE_INVOKE_CONTRACT
+    size_t sub_invocation_positions[MAX_SUB_INVOCATIONS_SIZE];
+    uint8_t sub_invocations_count;
 } invoke_host_function_op_t;
 
 typedef struct {
@@ -574,6 +578,8 @@ typedef struct {
     uint32_t signature_expiration_ledger;
     soroban_authorization_function_type_t function_type;
     invoke_contract_args_t invoke_contract_args;
+    size_t sub_invocation_positions[MAX_SUB_INVOCATIONS_SIZE];
+    uint8_t sub_invocations_count;
 } soroban_authorization_t;
 
 // ************************* Soroban ************************* //

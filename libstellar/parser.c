@@ -984,7 +984,7 @@ static bool parse_restore_footprint(buffer_t *buffer, restore_footprint_op_t *op
     return true;
 }
 
-static bool read_parse_soroban_credentials_advance(buffer_t *buffer) {
+static bool read_parse_soroban_credentials_advance(buffer_t *buffer, uint32_t *credentials_type) {
     uint32_t type;
     PARSER_CHECK(buffer_read32(buffer, &type))
     switch (type) {
@@ -1002,6 +1002,7 @@ static bool read_parse_soroban_credentials_advance(buffer_t *buffer) {
         default:
             return false;
     }
+    *credentials_type = type;
     return true;
 }
 
@@ -1084,7 +1085,15 @@ static bool read_soroban_authorized_function_advance(buffer_t *buffer) {
     return true;
 }
 
-static bool read_soroban_authorized_invocation_advance(buffer_t *buffer) {
+static bool read_soroban_authorized_invocation_advance(buffer_t *buffer,
+                                                       uint8_t *count,
+                                                       size_t *positions) {
+    if (count != NULL && positions != NULL) {
+        if (*count >= MAX_SUB_INVOCATIONS_SIZE) {
+            return false;
+        }
+        positions[(*count)++] = buffer->offset;
+    }
     // function
     PARSER_CHECK(read_soroban_authorized_function_advance(buffer))
 
@@ -1092,14 +1101,22 @@ static bool read_soroban_authorized_invocation_advance(buffer_t *buffer) {
     uint32_t len;
     PARSER_CHECK(buffer_read32(buffer, &len))
     for (uint32_t i = 0; i < len; i++) {
-        PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer))
+        PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, count, positions))
     }
     return true;
 }
 
-static bool read_soroban_authorization_entry_advance(buffer_t *buffer) {
-    PARSER_CHECK(read_parse_soroban_credentials_advance(buffer))
-    PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer))
+static bool read_soroban_authorization_entry_advance(buffer_t *buffer,
+                                                     uint8_t *count,
+                                                     size_t *positions) {
+    uint32_t credentials_type;
+    PARSER_CHECK(read_parse_soroban_credentials_advance(buffer, &credentials_type))
+
+    if (credentials_type == SOROBAN_CREDENTIALS_SOURCE_ACCOUNT) {
+        PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, count, positions))
+    } else {
+        PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, NULL, NULL))
+    }
     return true;
 }
 
@@ -1128,9 +1145,18 @@ static bool parse_invoke_host_function(buffer_t *buffer, invoke_host_function_op
 
     // auth<>
     uint32_t auth_len;
+    uint8_t sub_invocations_count = 0;
     PARSER_CHECK(buffer_read32(buffer, &auth_len))
     for (uint32_t i = 0; i < auth_len; i++) {
-        PARSER_CHECK(read_soroban_authorization_entry_advance(buffer))
+        PARSER_CHECK(read_soroban_authorization_entry_advance(buffer,
+                                                              &sub_invocations_count,
+                                                              op->sub_invocation_positions))
+    }
+    op->sub_invocations_count = sub_invocations_count;
+
+    PRINTF("sub_invocations_count=%d\n", sub_invocations_count);
+    for (uint8_t i = 0; i < 16; i++) {
+        PRINTF("sub_invocation_positions[%d]=%d\n", i, op->sub_invocation_positions[i]);
     }
     return true;
 }
@@ -1444,9 +1470,20 @@ bool parse_soroban_authorization_envelope(const uint8_t *data,
 
     // subInvocations
     uint32_t len;
+    uint8_t sub_invocations_count = 0;
     PARSER_CHECK(buffer_read32(&buffer, &len))
     for (uint32_t i = 0; i < len; i++) {
-        PARSER_CHECK(read_soroban_authorized_invocation_advance(&buffer))
+        PARSER_CHECK(read_soroban_authorized_invocation_advance(
+            &buffer,
+            &sub_invocations_count,
+            envelope->soroban_authorization.sub_invocation_positions));
     }
+    envelope->soroban_authorization.sub_invocations_count = sub_invocations_count;
+    // PRINTF("sub_invocations_count=%d\n", sub_invocations_count);
+    // for (uint8_t i = 0; i < 16; i++) {
+    //     PRINTF("sub_invocation_positions[%d]=%d\n",
+    //            i,
+    //            envelope->soroban_authorization.sub_invocation_positions[i]);
+    // }
     return true;
 }
