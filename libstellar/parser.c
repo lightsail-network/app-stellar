@@ -1106,19 +1106,19 @@ static bool read_soroban_authorized_invocation_advance(buffer_t *buffer,
     return true;
 }
 
-static bool read_soroban_authorization_entry_advance(buffer_t *buffer,
-                                                     uint8_t *count,
-                                                     size_t *positions) {
-    uint32_t credentials_type;
-    PARSER_CHECK(read_parse_soroban_credentials_advance(buffer, &credentials_type))
+// static bool read_soroban_authorization_entry_advance(buffer_t *buffer,
+//                                                      uint8_t *count,
+//                                                      size_t *positions) {
+//     uint32_t credentials_type;
+//     PARSER_CHECK(read_parse_soroban_credentials_advance(buffer, &credentials_type))
 
-    if (credentials_type == SOROBAN_CREDENTIALS_SOURCE_ACCOUNT) {
-        PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, count, positions))
-    } else {
-        PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, NULL, NULL))
-    }
-    return true;
-}
+//     if (credentials_type == SOROBAN_CREDENTIALS_SOURCE_ACCOUNT) {
+//         PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, count, positions))
+//     } else {
+//         PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, NULL, NULL))
+//     }
+//     return true;
+// }
 
 static bool parse_invoke_host_function(buffer_t *buffer, invoke_host_function_op_t *op) {
     // hostFunction
@@ -1148,9 +1148,29 @@ static bool parse_invoke_host_function(buffer_t *buffer, invoke_host_function_op
     uint8_t sub_invocations_count = 0;
     PARSER_CHECK(buffer_read32(buffer, &auth_len))
     for (uint32_t i = 0; i < auth_len; i++) {
-        PARSER_CHECK(read_soroban_authorization_entry_advance(buffer,
-                                                              &sub_invocations_count,
-                                                              op->sub_invocation_positions))
+        // PARSER_CHECK(read_soroban_authorization_entry_advance(buffer,
+        //                                                       &sub_invocations_count,
+        //                                                       op->sub_invocation_positions))
+        // PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, count, positions))
+        // 1. read credentials
+        uint32_t credentials_type;
+        PARSER_CHECK(read_parse_soroban_credentials_advance(buffer, &credentials_type))
+        // 2. read rootInvocation.function
+        PARSER_CHECK(read_soroban_authorized_function_advance(buffer))
+        // 3. read rootInvocation.subInvocations
+        // subInvocations
+        uint32_t len;
+        PARSER_CHECK(buffer_read32(buffer, &len))
+        for (uint32_t i = 0; i < len; i++) {
+            if (credentials_type == SOROBAN_CREDENTIALS_SOURCE_ACCOUNT) {
+                PARSER_CHECK(
+                    read_soroban_authorized_invocation_advance(buffer,
+                                                               &sub_invocations_count,
+                                                               op->sub_invocation_positions))
+            } else {
+                PARSER_CHECK(read_soroban_authorized_invocation_advance(buffer, NULL, NULL))
+            }
+        }
     }
     op->sub_invocations_count = sub_invocations_count;
 
