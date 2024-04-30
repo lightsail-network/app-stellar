@@ -1161,7 +1161,7 @@ static bool parse_invoke_host_function(buffer_t *buffer, invoke_host_function_op
         // subInvocations
         uint32_t len;
         PARSER_CHECK(buffer_read32(buffer, &len))
-        for (uint32_t i = 0; i < len; i++) {
+        for (uint32_t j = 0; j < len; j++) {
             if (credentials_type == SOROBAN_CREDENTIALS_SOURCE_ACCOUNT) {
                 PARSER_CHECK(
                     read_soroban_authorized_invocation_advance(buffer,

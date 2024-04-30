@@ -2083,11 +2083,17 @@ static bool format_confirm_sub_invocation(formatter_data_t *fdata) {
             ? &fdata->envelope->soroban_authorization.invoke_contract_args
             : &fdata->envelope->tx_details.tx.op_details.invoke_host_function_op
                    .invoke_contract_args))
+    PRINTF(">>>>>>>>>> parameters_position: %d\n",
+           fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.invoke_contract_args
+               .parameters_position);
     FORMATTER_CHECK(push_to_formatter_stack(&format_confirm_sub_invocation_auth_function))
     return true;
 }
 
 static bool format_invoke_host_function_args(formatter_data_t *fdata) {
+    PRINTF(">>>>>>>>>> parameters_position: %d\n",
+           fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.invoke_contract_args
+               .parameters_position);
     // PRINTF("++++++++++ formatter_index: %d, parameters_index: %d\n",
     //        formatter_index,
     //        parameters_index);
