@@ -347,6 +347,7 @@ void test_print_allow_trust_flags() {
     assert_true(print_allow_trust_flags(2, out, sizeof(out)));
     assert_string_equal(out, "AUTHORIZED_TO_MAINTAIN_LIABILITIES");
 }
+
 void test_print_uint64_num() {
     char out[24];
 
@@ -481,6 +482,8 @@ void test_print_int128() {
     assert_string_equal(out, "0");
     assert_true(print_int128(data0, 0, out, sizeof(out), true));
     assert_string_equal(out, "0");
+    assert_true(print_int128(data0, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0");
 
     uint8_t data1[] = {0x00,
                        0x00,
@@ -502,6 +505,8 @@ void test_print_int128() {
     assert_string_equal(out, "1");
     assert_true(print_int128(data1, 0, out, sizeof(out), true));
     assert_string_equal(out, "1");
+    assert_true(print_int128(data1, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0.0000001");
 
     uint8_t data2[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -510,6 +515,8 @@ void test_print_int128() {
     assert_string_equal(out, "-1");
     assert_true(print_int128(data2, 0, out, sizeof(out), true));
     assert_string_equal(out, "-1");
+    assert_true(print_int128(data2, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-0.0000001");
 
     uint8_t data3[] = {0x00,
                        0x00,
@@ -531,6 +538,8 @@ void test_print_int128() {
     assert_string_equal(out, "18446744073709551616");
     assert_true(print_int128(data3, 0, out, sizeof(out), true));
     assert_string_equal(out, "18,446,744,073,709,551,616");
+    assert_true(print_int128(data3, 7, out, sizeof(out), true));
+    assert_string_equal(out, "1,844,674,407,370.9551616");
 
     uint8_t data4[] = {0xff,
                        0xff,
@@ -552,6 +561,8 @@ void test_print_int128() {
     assert_string_equal(out, "-18446744073709551616");
     assert_true(print_int128(data4, 0, out, sizeof(out), true));
     assert_string_equal(out, "-18,446,744,073,709,551,616");
+    assert_true(print_int128(data4, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-1,844,674,407,370.9551616");
 
     uint8_t data5[] = {0x7f,
                        0xff,
@@ -573,6 +584,8 @@ void test_print_int128() {
     assert_string_equal(out, "170141183460469231731687303715884105727");
     assert_true(print_int128(data5, 0, out, sizeof(out), true));
     assert_string_equal(out, "170,141,183,460,469,231,731,687,303,715,884,105,727");
+    assert_true(print_int128(data5, 7, out, sizeof(out), true));
+    assert_string_equal(out, "17,014,118,346,046,923,173,168,730,371,588.4105727");
 
     uint8_t data6[] = {0x80,
                        0x00,
@@ -594,6 +607,8 @@ void test_print_int128() {
     assert_string_equal(out, "-170141183460469231731687303715884105728");
     assert_true(print_int128(data6, 0, out, sizeof(out), true));
     assert_string_equal(out, "-170,141,183,460,469,231,731,687,303,715,884,105,728");
+    assert_true(print_int128(data6, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-17,014,118,346,046,923,173,168,730,371,588.4105728");
 }
 
 void test_print_uint128() {
@@ -618,6 +633,8 @@ void test_print_uint128() {
     assert_string_equal(out, "0");
     assert_true(print_uint128(data0, 0, out, sizeof(out), true));
     assert_string_equal(out, "0");
+    assert_true(print_uint128(data0, 8, out, sizeof(out), true));
+    assert_string_equal(out, "0");
 
     uint8_t data1[] = {0x00,
                        0x00,
@@ -639,6 +656,8 @@ void test_print_uint128() {
     assert_string_equal(out, "1");
     assert_true(print_uint128(data1, 0, out, sizeof(out), true));
     assert_string_equal(out, "1");
+    assert_true(print_uint128(data1, 8, out, sizeof(out), true));
+    assert_string_equal(out, "0.00000001");
 
     uint8_t data2[] = {0x00,
                        0x00,
@@ -660,6 +679,8 @@ void test_print_uint128() {
     assert_string_equal(out, "18446744073709551616");
     assert_true(print_uint128(data2, 0, out, sizeof(out), true));
     assert_string_equal(out, "18,446,744,073,709,551,616");
+    assert_true(print_uint128(data2, 8, out, sizeof(out), true));
+    assert_string_equal(out, "184,467,440,737.09551616");
 
     uint8_t data3[] = {0xff,
                        0xff,
@@ -681,6 +702,8 @@ void test_print_uint128() {
     assert_string_equal(out, "340282366920938463463374607431768211455");
     assert_true(print_uint128(data3, 0, out, sizeof(out), true));
     assert_string_equal(out, "340,282,366,920,938,463,463,374,607,431,768,211,455");
+    assert_true(print_uint128(data3, 8, out, sizeof(out), true));
+    assert_string_equal(out, "3,402,823,669,209,384,634,633,746,074,317.68211455");
 }
 
 void test_print_int256() {
@@ -692,6 +715,8 @@ void test_print_int256() {
     assert_string_equal(out, "0");
     assert_true(print_int256(data0, 0, out, sizeof(out), true));
     assert_string_equal(out, "0");
+    assert_true(print_int256(data0, 18, out, sizeof(out), true));
+    assert_string_equal(out, "0");
 
     uint8_t data1[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -700,6 +725,8 @@ void test_print_int256() {
     assert_string_equal(out, "1");
     assert_true(print_int256(data1, 0, out, sizeof(out), true));
     assert_string_equal(out, "1");
+    assert_true(print_int256(data1, 18, out, sizeof(out), true));
+    assert_string_equal(out, "0.000000000000000001");
 
     uint8_t data2[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -708,6 +735,8 @@ void test_print_int256() {
     assert_string_equal(out, "-1");
     assert_true(print_int256(data2, 0, out, sizeof(out), true));
     assert_string_equal(out, "-1");
+    assert_true(print_int256(data2, 18, out, sizeof(out), true));
+    assert_string_equal(out, "-0.000000000000000001");
 
     uint8_t data3[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -716,6 +745,8 @@ void test_print_int256() {
     assert_string_equal(out, "18446744073709551616");
     assert_true(print_int256(data3, 0, out, sizeof(out), true));
     assert_string_equal(out, "18,446,744,073,709,551,616");
+    assert_true(print_int256(data3, 18, out, sizeof(out), true));
+    assert_string_equal(out, "18.446744073709551616");
 
     uint8_t data4[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -724,6 +755,8 @@ void test_print_int256() {
     assert_string_equal(out, "-18446744073709551616");
     assert_true(print_int256(data4, 0, out, sizeof(out), true));
     assert_string_equal(out, "-18,446,744,073,709,551,616");
+    assert_true(print_int256(data4, 18, out, sizeof(out), true));
+    assert_string_equal(out, "-18.446744073709551616");
 
     uint8_t data5[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -732,6 +765,8 @@ void test_print_int256() {
     assert_string_equal(out, "340282366920938463463374607431768211456");
     assert_true(print_int256(data5, 0, out, sizeof(out), true));
     assert_string_equal(out, "340,282,366,920,938,463,463,374,607,431,768,211,456");
+    assert_true(print_int256(data5, 18, out, sizeof(out), true));
+    assert_string_equal(out, "340,282,366,920,938,463,463.374607431768211456");
 
     uint8_t data6[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                        0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -740,6 +775,8 @@ void test_print_int256() {
     assert_string_equal(out, "-340282366920938463463374607431768211456");
     assert_true(print_int256(data6, 0, out, sizeof(out), true));
     assert_string_equal(out, "-340,282,366,920,938,463,463,374,607,431,768,211,456");
+    assert_true(print_int256(data6, 18, out, sizeof(out), true));
+    assert_string_equal(out, "-340,282,366,920,938,463,463.374607431768211456");
 
     uint8_t data7[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -750,6 +787,9 @@ void test_print_int256() {
     assert_string_equal(
         out,
         "6,277,101,735,386,680,763,835,789,423,207,666,416,102,355,444,464,034,512,896");
+    assert_true(print_int256(data7, 18, out, sizeof(out), true));
+    assert_string_equal(out,
+                        "6,277,101,735,386,680,763,835,789,423,207,666,416,102.355444464034512896");
 
     uint8_t data8[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -760,6 +800,10 @@ void test_print_int256() {
     assert_string_equal(
         out,
         "-6,277,101,735,386,680,763,835,789,423,207,666,416,102,355,444,464,034,512,896");
+    assert_true(print_int256(data8, 18, out, sizeof(out), true));
+    assert_string_equal(
+        out,
+        "-6,277,101,735,386,680,763,835,789,423,207,666,416,102.355444464034512896");
 
     uint8_t data9[] = {0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -772,6 +816,10 @@ void test_print_int256() {
     assert_string_equal(out,
                         "57,896,044,618,658,097,711,785,492,504,343,953,926,634,992,332,820,282,"
                         "019,728,792,003,956,564,819,967");
+    assert_true(print_int256(data9, 18, out, sizeof(out), true));
+    assert_string_equal(out,
+                        "57,896,044,618,658,097,711,785,492,504,343,953,926,634,992,332,820,282,"
+                        "019,728.792003956564819967");
 
     uint8_t data10[] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -784,6 +832,10 @@ void test_print_int256() {
     assert_string_equal(out,
                         "-57,896,044,618,658,097,711,785,492,504,343,953,926,634,992,332,820,282,"
                         "019,728,792,003,956,564,819,968");
+    assert_true(print_int256(data10, 18, out, sizeof(out), true));
+    assert_string_equal(out,
+                        "-57,896,044,618,658,097,711,785,492,504,343,953,926,634,992,332,820,282,"
+                        "019,728.792003956564819968");
 
     uint8_t data11[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -794,6 +846,9 @@ void test_print_int256() {
     assert_string_equal(
         out,
         "6,277,101,735,386,680,763,835,789,423,207,666,567,218,082,896,292,727,716,521");
+    assert_true(print_int256(data11, 18, out, sizeof(out), true));
+    assert_string_equal(out,
+                        "6,277,101,735,386,680,763,835,789,423,207,666,567,218.082896292727716521");
 
     uint8_t data12[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xff,
                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -804,6 +859,10 @@ void test_print_int256() {
     assert_string_equal(
         out,
         "-6,277,101,735,386,680,763,835,789,423,207,666,567,218,082,896,292,727,716,521");
+    assert_true(print_int256(data12, 18, out, sizeof(out), true));
+    assert_string_equal(
+        out,
+        "-6,277,101,735,386,680,763,835,789,423,207,666,567,218.082896292727716521");
 }
 
 void test_print_uint256() {
@@ -815,6 +874,8 @@ void test_print_uint256() {
     assert_string_equal(out, "0");
     assert_true(print_uint256(data0, 0, out, sizeof(out), true));
     assert_string_equal(out, "0");
+    assert_true(print_uint256(data0, 13, out, sizeof(out), true));
+    assert_string_equal(out, "0");
 
     uint8_t data1[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -823,6 +884,8 @@ void test_print_uint256() {
     assert_string_equal(out, "1");
     assert_true(print_uint256(data1, 0, out, sizeof(out), true));
     assert_string_equal(out, "1");
+    assert_true(print_uint256(data1, 13, out, sizeof(out), true));
+    assert_string_equal(out, "0.0000000000001");
 
     uint8_t data2[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -831,6 +894,8 @@ void test_print_uint256() {
     assert_string_equal(out, "18446744073709551616");
     assert_true(print_uint256(data2, 0, out, sizeof(out), true));
     assert_string_equal(out, "18,446,744,073,709,551,616");
+    assert_true(print_uint256(data2, 13, out, sizeof(out), true));
+    assert_string_equal(out, "1,844,674.4073709551616");
 
     uint8_t data3[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -839,6 +904,8 @@ void test_print_uint256() {
     assert_string_equal(out, "340282366920938463463374607431768211456");
     assert_true(print_uint256(data3, 0, out, sizeof(out), true));
     assert_string_equal(out, "340,282,366,920,938,463,463,374,607,431,768,211,456");
+    assert_true(print_uint256(data3, 13, out, sizeof(out), true));
+    assert_string_equal(out, "34,028,236,692,093,846,346,337,460.7431768211456");
 
     uint8_t data4[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -849,6 +916,10 @@ void test_print_uint256() {
     assert_string_equal(
         out,
         "6,277,101,735,386,680,763,835,789,423,207,666,416,102,355,444,464,034,512,896");
+    assert_true(print_uint256(data4, 13, out, sizeof(out), true));
+    assert_string_equal(
+        out,
+        "627,710,173,538,668,076,383,578,942,320,766,641,610,235,544.4464034512896");
 
     uint8_t data5[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -859,6 +930,10 @@ void test_print_uint256() {
     assert_string_equal(
         out,
         "6,277,101,735,386,680,763,835,789,423,207,666,567,218,082,896,292,727,716,521");
+    assert_true(print_uint256(data5, 13, out, sizeof(out), true));
+    assert_string_equal(
+        out,
+        "627,710,173,538,668,076,383,578,942,320,766,656,721,808,289.6292727716521");
 
     uint8_t data6[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -871,6 +946,10 @@ void test_print_uint256() {
     assert_string_equal(out,
                         "115,792,089,237,316,195,423,570,985,008,687,907,853,269,984,665,640,564,"
                         "039,457,584,007,913,129,639,935");
+    assert_true(print_uint256(data6, 13, out, sizeof(out), true));
+    assert_string_equal(out,
+                        "11,579,208,923,731,619,542,357,098,500,868,790,785,326,998,466,564,056,"
+                        "403,945,758,400.7913129639935");
 }
 
 void test_print_int32() {
@@ -880,54 +959,72 @@ void test_print_int32() {
     assert_string_equal(out, "0");
     assert_true(print_int32(data0, 0, out, sizeof(out), true));
     assert_string_equal(out, "0");
+    assert_true(print_int32(data0, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0");
 
     uint8_t data1[] = {0x00, 0x00, 0x00, 0x01};
     assert_true(print_int32(data1, 0, out, sizeof(out), false));
     assert_string_equal(out, "1");
     assert_true(print_int32(data1, 0, out, sizeof(out), true));
     assert_string_equal(out, "1");
+    assert_true(print_int32(data1, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0.0000001");
 
     uint8_t data2[] = {0xff, 0xff, 0xff, 0xff};
     assert_true(print_int32(data2, 0, out, sizeof(out), false));
     assert_string_equal(out, "-1");
     assert_true(print_int32(data2, 0, out, sizeof(out), true));
     assert_string_equal(out, "-1");
+    assert_true(print_int32(data2, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-0.0000001");
 
     uint8_t data3[] = {0x00, 0x01, 0x00, 0x00};
     assert_true(print_int32(data3, 0, out, sizeof(out), false));
     assert_string_equal(out, "65536");
     assert_true(print_int32(data3, 0, out, sizeof(out), true));
     assert_string_equal(out, "65,536");
+    assert_true(print_int32(data3, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0.0065536");
 
     uint8_t data4[] = {0xff, 0xff, 0x00, 0x00};
     assert_true(print_int32(data4, 0, out, sizeof(out), false));
     assert_string_equal(out, "-65536");
     assert_true(print_int32(data4, 0, out, sizeof(out), true));
     assert_string_equal(out, "-65,536");
+    assert_true(print_int32(data4, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-0.0065536");
 
     uint8_t data5[] = {0x02, 0x10, 0x17, 0x4b};
     assert_true(print_int32(data5, 0, out, sizeof(out), false));
     assert_string_equal(out, "34608971");
     assert_true(print_int32(data5, 0, out, sizeof(out), true));
     assert_string_equal(out, "34,608,971");
+    assert_true(print_int32(data5, 7, out, sizeof(out), true));
+    assert_string_equal(out, "3.4608971");
 
     uint8_t data6[] = {0xfd, 0xf1, 0xe8, 0xb5};
     assert_true(print_int32(data6, 0, out, sizeof(out), false));
     assert_string_equal(out, "-34477899");
     assert_true(print_int32(data6, 0, out, sizeof(out), true));
     assert_string_equal(out, "-34,477,899");
+    assert_true(print_int32(data6, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-3.4477899");
 
     uint8_t data7[] = {0x7f, 0xff, 0xff, 0xff};
     assert_true(print_int32(data7, 0, out, sizeof(out), false));
     assert_string_equal(out, "2147483647");
     assert_true(print_int32(data7, 0, out, sizeof(out), true));
     assert_string_equal(out, "2,147,483,647");
+    assert_true(print_int32(data7, 7, out, sizeof(out), true));
+    assert_string_equal(out, "214.7483647");
 
     uint8_t data8[] = {0x80, 0x00, 0x00, 0x00};
     assert_true(print_int32(data8, 0, out, sizeof(out), false));
     assert_string_equal(out, "-2147483648");
     assert_true(print_int32(data8, 0, out, sizeof(out), true));
     assert_string_equal(out, "-2,147,483,648");
+    assert_true(print_int32(data8, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-214.7483648");
 }
 
 void test_print_uint32() {
@@ -937,30 +1034,40 @@ void test_print_uint32() {
     assert_string_equal(out, "0");
     assert_true(print_uint32(data0, 0, out, sizeof(out), true));
     assert_string_equal(out, "0");
+    assert_true(print_uint32(data0, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0");
 
     uint8_t data1[] = {0x00, 0x00, 0x00, 0x01};
     assert_true(print_uint32(data1, 0, out, sizeof(out), false));
     assert_string_equal(out, "1");
     assert_true(print_uint32(data1, 0, out, sizeof(out), true));
     assert_string_equal(out, "1");
+    assert_true(print_uint32(data1, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0.0000001");
 
     uint8_t data2[] = {0x00, 0x01, 0x00, 0x00};
     assert_true(print_uint32(data2, 0, out, sizeof(out), false));
     assert_string_equal(out, "65536");
     assert_true(print_uint32(data2, 0, out, sizeof(out), true));
     assert_string_equal(out, "65,536");
+    assert_true(print_uint32(data2, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0.0065536");
 
     uint8_t data3[] = {0xfd, 0xf0, 0xe8, 0xb5};
     assert_true(print_uint32(data3, 0, out, sizeof(out), false));
     assert_string_equal(out, "4260423861");
     assert_true(print_uint32(data3, 0, out, sizeof(out), true));
     assert_string_equal(out, "4,260,423,861");
+    assert_true(print_uint32(data3, 7, out, sizeof(out), true));
+    assert_string_equal(out, "426.0423861");
 
     uint8_t data4[] = {0xff, 0xff, 0xff, 0xff};
     assert_true(print_uint32(data4, 0, out, sizeof(out), false));
     assert_string_equal(out, "4294967295");
     assert_true(print_uint32(data4, 0, out, sizeof(out), true));
     assert_string_equal(out, "4,294,967,295");
+    assert_true(print_uint32(data4, 7, out, sizeof(out), true));
+    assert_string_equal(out, "429.4967295");
 }
 
 void test_print_int64() {
@@ -970,54 +1077,72 @@ void test_print_int64() {
     assert_string_equal(out, "0");
     assert_true(print_int64(data0, 0, out, sizeof(out), true));
     assert_string_equal(out, "0");
+    assert_true(print_int64(data0, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0");
 
     uint8_t data1[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
     assert_true(print_int64(data1, 0, out, sizeof(out), false));
     assert_string_equal(out, "1");
     assert_true(print_int64(data1, 0, out, sizeof(out), true));
     assert_string_equal(out, "1");
+    assert_true(print_int64(data1, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0.0000001");
 
     uint8_t data2[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     assert_true(print_int64(data2, 0, out, sizeof(out), false));
     assert_string_equal(out, "-1");
     assert_true(print_int64(data2, 0, out, sizeof(out), true));
     assert_string_equal(out, "-1");
+    assert_true(print_int64(data2, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-0.0000001");
 
     uint8_t data3[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
     assert_true(print_int64(data3, 0, out, sizeof(out), false));
     assert_string_equal(out, "4294967296");
     assert_true(print_int64(data3, 0, out, sizeof(out), true));
     assert_string_equal(out, "4,294,967,296");
+    assert_true(print_int64(data3, 7, out, sizeof(out), true));
+    assert_string_equal(out, "429.4967296");
 
     uint8_t data4[] = {0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00};
     assert_true(print_int64(data4, 0, out, sizeof(out), false));
     assert_string_equal(out, "-4294967296");
     assert_true(print_int64(data4, 0, out, sizeof(out), true));
     assert_string_equal(out, "-4,294,967,296");
+    assert_true(print_int64(data4, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-429.4967296");
 
     uint8_t data5[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x38, 0xb9};
     assert_true(print_int64(data5, 0, out, sizeof(out), false));
     assert_string_equal(out, "4294981817");
     assert_true(print_int64(data5, 0, out, sizeof(out), true));
     assert_string_equal(out, "4,294,981,817");
+    assert_true(print_int64(data5, 7, out, sizeof(out), true));
+    assert_string_equal(out, "429.4981817");
 
     uint8_t data6[] = {0xff, 0xff, 0xff, 0xfe, 0xff, 0xff, 0xc7, 0x47};
     assert_true(print_int64(data6, 0, out, sizeof(out), false));
     assert_string_equal(out, "-4294981817");
     assert_true(print_int64(data6, 0, out, sizeof(out), true));
     assert_string_equal(out, "-4,294,981,817");
+    assert_true(print_int64(data6, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-429.4981817");
 
     uint8_t data7[] = {0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     assert_true(print_int64(data7, 0, out, sizeof(out), false));
     assert_string_equal(out, "9223372036854775807");
     assert_true(print_int64(data7, 0, out, sizeof(out), true));
     assert_string_equal(out, "9,223,372,036,854,775,807");
+    assert_true(print_int64(data7, 7, out, sizeof(out), true));
+    assert_string_equal(out, "922,337,203,685.4775807");
 
     uint8_t data8[] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     assert_true(print_int64(data8, 0, out, sizeof(out), false));
     assert_string_equal(out, "-9223372036854775808");
     assert_true(print_int64(data8, 0, out, sizeof(out), true));
     assert_string_equal(out, "-9,223,372,036,854,775,808");
+    assert_true(print_int64(data8, 7, out, sizeof(out), true));
+    assert_string_equal(out, "-922,337,203,685.4775808");
 }
 
 void test_print_uint64() {
@@ -1027,30 +1152,40 @@ void test_print_uint64() {
     assert_string_equal(out, "0");
     assert_true(print_uint64(data0, 0, out, sizeof(out), true));
     assert_string_equal(out, "0");
+    assert_true(print_uint64(data0, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0");
 
     uint8_t data1[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
     assert_true(print_uint64(data1, 0, out, sizeof(out), false));
     assert_string_equal(out, "1");
     assert_true(print_uint64(data1, 0, out, sizeof(out), true));
     assert_string_equal(out, "1");
+    assert_true(print_uint64(data1, 7, out, sizeof(out), true));
+    assert_string_equal(out, "0.0000001");
 
     uint8_t data2[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
     assert_true(print_uint64(data2, 0, out, sizeof(out), false));
     assert_string_equal(out, "4294967296");
     assert_true(print_uint64(data2, 0, out, sizeof(out), true));
     assert_string_equal(out, "4,294,967,296");
+    assert_true(print_uint64(data2, 7, out, sizeof(out), true));
+    assert_string_equal(out, "429.4967296");
 
     uint8_t data3[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x38, 0xb9};
     assert_true(print_uint64(data3, 0, out, sizeof(out), false));
     assert_string_equal(out, "4294981817");
     assert_true(print_uint64(data3, 0, out, sizeof(out), true));
     assert_string_equal(out, "4,294,981,817");
+    assert_true(print_uint64(data3, 7, out, sizeof(out), true));
+    assert_string_equal(out, "429.4981817");
 
     uint8_t data4[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     assert_true(print_uint64(data4, 0, out, sizeof(out), false));
     assert_string_equal(out, "18446744073709551615");
     assert_true(print_uint64(data4, 0, out, sizeof(out), true));
     assert_string_equal(out, "18,446,744,073,709,551,615");
+    assert_true(print_uint64(data4, 7, out, sizeof(out), true));
+    assert_string_equal(out, "1,844,674,407,370.9551615");
 }
 
 void test_print_scv_symbol() {
