@@ -610,7 +610,7 @@ static int allzeroes(const void *buf, size_t n) {
 }
 
 /**
- * Convert  a 128-bit or 256-bit unsigned integer to a decimal string.
+ * Convert a 128-bit or 256-bit unsigned integer to a decimal string.
  */
 static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out, size_t out_len) {
     if (value_len > INT256_LENGTH) {
