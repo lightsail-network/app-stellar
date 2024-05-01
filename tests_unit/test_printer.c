@@ -347,58 +347,58 @@ void test_print_allow_trust_flags() {
     assert_true(print_allow_trust_flags(2, out, sizeof(out)));
     assert_string_equal(out, "AUTHORIZED_TO_MAINTAIN_LIABILITIES");
 }
-void test_print_uint() {
+void test_print_uint64_num() {
     char out[24];
 
-    assert_true(print_uint(0, out, sizeof(out)));
+    assert_true(print_uint64_num(0, out, sizeof(out)));
     assert_string_equal(out, "0");
 
-    assert_true(print_uint(1230, out, sizeof(out)));
+    assert_true(print_uint64_num(1230, out, sizeof(out)));
     assert_string_equal(out, "1230");
 
-    assert_true(print_uint((uint64_t) 18446744073709551615, out, sizeof(out)));
+    assert_true(print_uint64_num((uint64_t) 18446744073709551615, out, sizeof(out)));
     assert_string_equal(out, "18446744073709551615");
 
     // output buffer too small
-    assert_false(print_uint(1230, out, 4));
+    assert_false(print_uint64_num(1230, out, 4));
 
     // output buffer just big enough to store output data
-    assert_true(print_uint(9999, out, 5));
+    assert_true(print_uint64_num(9999, out, 5));
     assert_string_equal(out, "9999");
 
     // output buffer just big enough to store output data
-    assert_true(print_uint(9999, out, 5));
+    assert_true(print_uint64_num(9999, out, 5));
     assert_string_equal(out, "9999");
 }
 
-void test_print_int() {
+void test_print_int64_num() {
     char out[24];
 
-    assert_true(print_int((int64_t) 0, out, sizeof(out)));
+    assert_true(print_int64_num((int64_t) 0, out, sizeof(out)));
     assert_string_equal(out, "0");
 
-    assert_true(print_int((int64_t) 1230, out, sizeof(out)));
+    assert_true(print_int64_num((int64_t) 1230, out, sizeof(out)));
     assert_string_equal(out, "1230");
 
-    assert_true(print_int((int64_t) -1230, out, sizeof(out)));
+    assert_true(print_int64_num((int64_t) -1230, out, sizeof(out)));
     assert_string_equal(out, "-1230");
 
     // test overflow, ignore the warngins
-    assert_true(print_int((int64_t) 9223372036854775807, out, sizeof(out)));
+    assert_true(print_int64_num((int64_t) 9223372036854775807, out, sizeof(out)));
     assert_string_equal(out, "9223372036854775807");
 
     // test overflow, ignore the warngins
-    assert_true(print_int((int64_t) -9223372036854775808, out, sizeof(out)));
+    assert_true(print_int64_num((int64_t) -9223372036854775808, out, sizeof(out)));
     assert_string_equal(out, "-9223372036854775808");
 
     // output buffer too small
-    assert_false(print_int((int64_t) -1230, out, 5));
-    assert_false(print_int(1230, out, 4));
+    assert_false(print_int64_num((int64_t) -1230, out, 5));
+    assert_false(print_int64_num(1230, out, 4));
 
     // output buffer just big enough to store output data
-    assert_true(print_int((int64_t) -9999, out, 6));
+    assert_true(print_int64_num((int64_t) -9999, out, 6));
     assert_string_equal(out, "-9999");
-    assert_true(print_int((int64_t) 9999, out, 5));
+    assert_true(print_int64_num((int64_t) 9999, out, 5));
     assert_string_equal(out, "9999");
 }
 
@@ -2678,8 +2678,8 @@ int main() {
         cmocka_unit_test(test_print_account_flags),
         cmocka_unit_test(test_print_trust_line_flags),
         cmocka_unit_test(test_print_allow_trust_flags),
-        cmocka_unit_test(test_print_uint),
-        cmocka_unit_test(test_print_int),
+        cmocka_unit_test(test_print_uint64_num),
+        cmocka_unit_test(test_print_int64_num),
         cmocka_unit_test(test_is_printable_binary),
         cmocka_unit_test(test_print_binary),
         cmocka_unit_test(test_print_time),

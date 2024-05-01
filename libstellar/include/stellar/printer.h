@@ -211,7 +211,7 @@ bool print_allow_trust_flags(uint32_t flag, char *out, size_t out_len);
  *
  * @return True if the unsigned integer was printed successfully, false otherwise.
  */
-bool print_uint(uint64_t num, char *out, size_t out_len);
+bool print_uint64_num(uint64_t num, char *out, size_t out_len);
 
 /**
  * Print a signed 64-bit integer in a human-readable format.
@@ -222,7 +222,7 @@ bool print_uint(uint64_t num, char *out, size_t out_len);
  *
  * @return True if the signed integer was printed successfully, false otherwise.
  */
-bool print_int(int64_t num, char *out, size_t out_len);
+bool print_int64_num(int64_t num, char *out, size_t out_len);
 
 /**
  * Check if a binary string is printable.

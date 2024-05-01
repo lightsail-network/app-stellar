@@ -304,9 +304,7 @@ bool print_claimable_balance_id(const claimable_balance_id_t *claimable_balance_
     return print_binary(data, 36, out, out_len, num_chars_l, num_chars_r);
 }
 
-bool print_uint(uint64_t num, char *out, size_t out_len) {
-    // num is be
-    // use print_uint64 to print the number
+bool print_uint64_num(uint64_t num, char *out, size_t out_len) {
     uint8_t data[8] = {0};
     for (int i = 0; i < 8; i++) {
         data[i] = num >> (8 * (7 - i));
@@ -314,9 +312,7 @@ bool print_uint(uint64_t num, char *out, size_t out_len) {
     return print_uint64(data, out, out_len, false);
 }
 
-bool print_int(int64_t num, char *out, size_t out_len) {
-    // num is be
-    // use print_int64 to print the number
+bool print_int64_num(int64_t num, char *out, size_t out_len) {
     uint8_t data[8] = {0};
     for (int i = 0; i < 8; i++) {
         data[i] = num >> (8 * (7 - i));
