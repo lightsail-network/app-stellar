@@ -410,3 +410,14 @@ bool print_scv_string(const scv_string_t *scv_string, char *out, size_t out_len)
  * @return True if the separator was added successfully, false otherwise.
  */
 bool add_separator_to_number(char *out, size_t out_len);
+
+/**
+ * Add a decimal point to a number printed in the output buffer.
+ *
+ * @param out The output buffer where the decimal point will be added.
+ * @param out_len The length of the output buffer.
+ * @param decimals The number of decimal places to add.
+ *
+ * @return True if the decimal point was added successfully, false otherwise.
+ */
+bool add_decimal_point(char *out, size_t out_len, uint8_t decimals);

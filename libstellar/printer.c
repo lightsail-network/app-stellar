@@ -11,7 +11,6 @@
 #define BINARY_MAX_SIZE                   36
 #define AMOUNT_WITH_COMMAS_MAX_LENGTH     24   // 922,337,203,685.4775807
 #define ED25519_SIGNED_PAYLOAD_MAX_LENGTH 166  // include the null terminator
-#define INT256_WITH_COMMAS_MAX_LENGTH     104
 
 uint16_t crc16(const uint8_t *input_str, int num_bytes) {
     uint16_t crc;
@@ -610,7 +609,7 @@ static int allzeroes(const void *buf, size_t n) {
 }
 
 /**
- * Convert  a 128-bit or 256-bit unsigned integer to a decimal string.
+ * Convert a 128-bit or 256-bit unsigned integer to a decimal string.
  */
 static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out, size_t out_len) {
     if (value_len > INT256_LENGTH) {
@@ -653,6 +652,62 @@ static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out
     }
     memmove(out, out + pos, out_len - pos);
     out[out_len - pos] = 0;
+    return true;
+}
+
+bool add_decimal_point(char *out, size_t out_len, uint8_t decimals) {
+    if (out == NULL || out_len == 0) {
+        return false;
+    }
+
+    bool is_negative = out[0] == '-';
+    if (is_negative) {
+        if (decimals >= out_len - 2) {
+            // Not enough space to add decimal point and leading zero.
+            return false;
+        }
+    } else {
+        if (decimals >= out_len - 1) {
+            // Not enough space to add decimal point.
+            return false;
+        }
+    }
+
+    char *start = is_negative ? out + 1 : out;
+
+    size_t len = strlen(start);
+    if (len == 0 || decimals == 0) {
+        return true;
+    }
+
+    if (len <= decimals) {
+        memmove(start + decimals - len + 2, start, len + 1);
+        start[0] = '0';
+        start[1] = '.';
+        for (size_t i = 2; i < decimals - len + 2; ++i) {
+            start[i] = '0';
+        }
+    } else {
+        memmove(start + len - decimals + 1, start + len - decimals, decimals + 1);
+        start[len - decimals] = '.';
+    }
+
+    // Remove trailing zeros after decimal point
+    char *p = start + strlen(start) - 1;
+    while (p > start && *p == '0') {
+        *p-- = '\0';
+    }
+
+    // Remove decimal point if it's the last character
+    if (p > start && *p == '.') {
+        *p = '\0';
+    }
+
+    if (is_negative && out[0] != '-') {
+        memmove(out + 1, out, strlen(out) + 1);
+        out[0] = '-';
+    }
+
     return true;
 }
 
