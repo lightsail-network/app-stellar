@@ -11,6 +11,7 @@
 #define BINARY_MAX_SIZE                   36
 #define AMOUNT_WITH_COMMAS_MAX_LENGTH     24   // 922,337,203,685.4775807
 #define ED25519_SIGNED_PAYLOAD_MAX_LENGTH 166  // include the null terminator
+#define NUMBER_WITH_COMMAS_MAX_LENGTH     105
 
 uint16_t crc16(const uint8_t *input_str, int num_bytes) {
     uint16_t crc;
@@ -309,7 +310,7 @@ bool print_uint64_num(uint64_t num, char *out, size_t out_len) {
     for (int i = 0; i < 8; i++) {
         data[i] = num >> (8 * (7 - i));
     }
-    return print_uint64(data, out, out_len, false);
+    return print_uint64(data, 0, out, out_len, false);
 }
 
 bool print_int64_num(int64_t num, char *out, size_t out_len) {
@@ -317,7 +318,7 @@ bool print_int64_num(int64_t num, char *out, size_t out_len) {
     for (int i = 0; i < 8; i++) {
         data[i] = num >> (8 * (7 - i));
     }
-    return print_int64(data, out, out_len, false);
+    return print_int64(data, 0, out, out_len, false);
 }
 
 bool print_time(uint64_t seconds, char *out, size_t out_len) {
@@ -601,7 +602,7 @@ static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out
         n[i] = __builtin_bswap16(*p++);
     }
     int pos = out_len;
-    int result_len = 0;
+    size_t result_len = 0;
     while (!allzeroes(n, sizeof(n))) {
         if (pos == 0) {
             return false;
@@ -629,6 +630,9 @@ bool add_decimal_point(char *out, size_t out_len, uint8_t decimals) {
     if (out == NULL || out_len == 0) {
         return false;
     }
+    if (decimals == 0) {
+        return true;
+    }
 
     bool is_negative = out[0] == '-';
     if (is_negative) {
@@ -646,7 +650,7 @@ bool add_decimal_point(char *out, size_t out_len, uint8_t decimals) {
     char *start = is_negative ? out + 1 : out;
 
     size_t len = strlen(start);
-    if (len == 0 || decimals == 0) {
+    if (len == 0) {
         return true;
     }
 
@@ -703,7 +707,7 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
         memcpy(n + INT256_LENGTH - value_len, value, value_len);
     }
 
-    int result_len = 0;
+    size_t result_len = 0;
     char *p = out + out_len - 1;
     *p = '\0';
     do {
@@ -770,12 +774,12 @@ bool add_separator_to_number(char *out, size_t out_len) {
     }
 
     // If the new length is greater than the maximum length, return false
-    if (new_length >= out_len) {
+    if (new_length >= out_len || new_length >= NUMBER_WITH_COMMAS_MAX_LENGTH) {
         return false;
     }
 
-    char temp[out_len];
-    if (strlcpy(temp, out, out_len) >= out_len) {
+    char temp[NUMBER_WITH_COMMAS_MAX_LENGTH];
+    if (strlcpy(temp, out, NUMBER_WITH_COMMAS_MAX_LENGTH) >= NUMBER_WITH_COMMAS_MAX_LENGTH) {
         return false;
     }
 
@@ -793,7 +797,7 @@ bool add_separator_to_number(char *out, size_t out_len) {
 
     // If there is a decimal point, append the part after the decimal point
     if (decimal_point) {
-        strlcpy(temp + new_length, decimal_point, out_len - new_length);
+        strlcpy(temp + new_length, decimal_point, NUMBER_WITH_COMMAS_MAX_LENGTH - new_length);
     }
 
     if (strlcpy(out, temp, out_len) >= out_len) {
@@ -803,43 +807,81 @@ bool add_separator_to_number(char *out, size_t out_len) {
     return true;
 }
 
-bool print_int32(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
-    return int256_to_decimal(value, 4, out, out_len) &&
+bool print_int32(const uint8_t *value,
+                 uint8_t decimals,
+                 char *out,
+                 size_t out_len,
+                 bool add_separator) {
+    return int256_to_decimal(value, 4, out, out_len) && add_decimal_point(out, out_len, decimals) &&
            (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_uint32(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+bool print_uint32(const uint8_t *value,
+                  uint8_t decimals,
+                  char *out,
+                  size_t out_len,
+                  bool add_separator) {
     return uint256_to_decimal(value, 4, out, out_len) &&
+           add_decimal_point(out, out_len, decimals) &&
            (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_int64(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
-    return int256_to_decimal(value, 8, out, out_len) &&
+bool print_int64(const uint8_t *value,
+                 uint8_t decimals,
+                 char *out,
+                 size_t out_len,
+                 bool add_separator) {
+    return int256_to_decimal(value, 8, out, out_len) && add_decimal_point(out, out_len, decimals) &&
            (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_uint64(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+bool print_uint64(const uint8_t *value,
+                  uint8_t decimals,
+                  char *out,
+                  size_t out_len,
+                  bool add_separator) {
     return uint256_to_decimal(value, 8, out, out_len) &&
+           add_decimal_point(out, out_len, decimals) &&
            (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_int128(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+bool print_int128(const uint8_t *value,
+                  uint8_t decimals,
+                  char *out,
+                  size_t out_len,
+                  bool add_separator) {
     return int256_to_decimal(value, 16, out, out_len) &&
+           add_decimal_point(out, out_len, decimals) &&
            (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_uint128(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+bool print_uint128(const uint8_t *value,
+                   uint8_t decimals,
+                   char *out,
+                   size_t out_len,
+                   bool add_separator) {
     return uint256_to_decimal(value, 16, out, out_len) &&
+           add_decimal_point(out, out_len, decimals) &&
            (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_int256(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+bool print_int256(const uint8_t *value,
+                  uint8_t decimals,
+                  char *out,
+                  size_t out_len,
+                  bool add_separator) {
     return int256_to_decimal(value, 32, out, out_len) &&
+           add_decimal_point(out, out_len, decimals) &&
            (!add_separator || add_separator_to_number(out, out_len));
 }
 
-bool print_uint256(const uint8_t *value, char *out, size_t out_len, bool add_separator) {
+bool print_uint256(const uint8_t *value,
+                   uint8_t decimals,
+                   char *out,
+                   size_t out_len,
+                   bool add_separator) {
     return uint256_to_decimal(value, 32, out, out_len) &&
+           add_decimal_point(out, out_len, decimals) &&
            (!add_separator || add_separator_to_number(out, out_len));
 }
 

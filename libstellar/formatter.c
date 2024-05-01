@@ -1753,19 +1753,19 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
             break;  // void
         case SCV_U32:
             FORMATTER_CHECK(
-                print_uint32(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_uint32(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_I32:
             FORMATTER_CHECK(
-                print_int32(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_int32(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_U64:
             FORMATTER_CHECK(
-                print_uint64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_uint64(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_I64:
             FORMATTER_CHECK(
-                print_int64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_int64(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_TIMEPOINT: {
             uint64_t timepoint;
@@ -1775,23 +1775,23 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
         }
         case SCV_DURATION:
             FORMATTER_CHECK(
-                print_int64(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_int64(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_U128:
             FORMATTER_CHECK(
-                print_uint128(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_uint128(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_I128:
             FORMATTER_CHECK(
-                print_int128(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_int128(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_U256:
             FORMATTER_CHECK(
-                print_uint256(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_uint256(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_I256:
             FORMATTER_CHECK(
-                print_int256(buffer.ptr + buffer.offset, fdata->value, fdata->value_len, true));
+                print_int256(buffer.ptr + buffer.offset, 0, fdata->value, fdata->value_len, true));
             break;
         case SCV_BYTES:
             STRLCPY(fdata->value, "[Bytes Data]", fdata->value_len);
