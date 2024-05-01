@@ -1152,7 +1152,7 @@ void test_print_scv_string() {
     assert_string_equal(out, "abc-abc-abc-abc-abc-abc-ab");
 }
 
-void test_add_separator_to_number_positive() {
+void test_add_separator_to_integer_positive() {
     // len = 1
     char out1[104] = {'3', '\0'};
     assert_true(add_separator_to_number(out1, sizeof(out1)));
@@ -1788,7 +1788,7 @@ void test_add_separator_to_number_positive() {
     assert_false(add_separator_to_number(out79, sizeof(out79)));
 }
 
-void test_add_separator_to_number_negative() {
+void test_add_separator_to_integer_negative() {
     // len = 1
     char out1[104] = {'-', '3', '\0'};
     assert_true(add_separator_to_number(out1, sizeof(out1)));
@@ -2418,6 +2418,78 @@ void test_add_separator_to_number_negative() {
     assert_false(add_separator_to_number(out78, sizeof(out78)));
 }
 
+void test_add_separator_to_float_positive() {
+    char out1[105] = {'-', '0', '.', '1', '\0'};
+    assert_true(add_separator_to_number(out1, sizeof(out1)));
+    assert_string_equal(out1, "-0.1");
+
+    char out2[105] = {'-', '0', '.', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\0'};
+    assert_true(add_separator_to_number(out2, sizeof(out2)));
+    assert_string_equal(out2, "-0.123456789");
+
+    char out3[105] = {'-', '1', '2', '3', '4', '5', '6', '7', '8', '.', '9', '0', '\0'};
+    assert_true(add_separator_to_number(out3, sizeof(out3)));
+    assert_string_equal(out3, "-12,345,678.90");
+
+    char out4[105] = {'-', '1', '1', '5', '7', '9', '2', '0', '8', '9', '2', '3', '7', '3',
+                      '1', '6', '1', '9', '5', '4', '2', '3', '5', '7', '0', '9', '8', '5',
+                      '0', '0', '8', '6', '8', '7', '9', '0', '7', '8', '5', '3', '2', '6',
+                      '9', '9', '8', '4', '6', '6', '5', '6', '4', '0', '5', '6', '4', '0',
+                      '3', '9', '4', '5', '7', '5', '8', '4', '0', '0', '7', '9', '1', '3',
+                      '1', '2', '9', '6', '3', '.', '9', '9', '3', '5', '\0'};
+    assert_true(add_separator_to_number(out4, sizeof(out4)));
+    assert_string_equal(out4,
+                        "-11,579,208,923,731,619,542,357,098,500,868,790,785,326,998,466,564,056,"
+                        "403,945,758,400,791,312,963.9935");
+
+    char out5[105] = {'-', '1', '1', '5', '7', '9', '2', '0', '8', '9', '2', '3', '7', '3',
+                      '1', '6', '1', '9', '5', '4', '2', '3', '5', '.', '7', '0', '9', '8',
+                      '5', '0', '0', '8', '6', '8', '7', '9', '0', '7', '8', '5', '3', '2',
+                      '6', '9', '9', '8', '4', '6', '6', '5', '6', '4', '0', '5', '6', '4',
+                      '0', '3', '9', '4', '5', '7', '5', '8', '4', '0', '0', '7', '9', '1',
+                      '3', '1', '2', '9', '6', '3', '9', '9', '3', '5', '\0'};
+    assert_true(add_separator_to_number(out5, sizeof(out5)));
+    assert_string_equal(
+        out5,
+        "-1,157,920,892,373,161,954,235.70985008687907853269984665640564039457584007913129639935");
+}
+
+void test_add_separator_to_float_negative() {
+    char out1[105] = {'0', '.', '1', '\0'};
+    assert_true(add_separator_to_number(out1, sizeof(out1)));
+    assert_string_equal(out1, "0.1");
+
+    char out2[105] = {'0', '.', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\0'};
+    assert_true(add_separator_to_number(out2, sizeof(out2)));
+    assert_string_equal(out2, "0.123456789");
+
+    char out3[105] = {'1', '2', '3', '4', '5', '6', '7', '8', '.', '9', '0', '\0'};
+    assert_true(add_separator_to_number(out3, sizeof(out3)));
+    assert_string_equal(out3, "12,345,678.90");
+
+    char out4[105] = {'1', '1', '5', '7', '9', '2', '0', '8', '9', '2', '3', '7', '3', '1',
+                      '6', '1', '9', '5', '4', '2', '3', '5', '7', '0', '9', '8', '5', '0',
+                      '0', '8', '6', '8', '7', '9', '0', '7', '8', '5', '3', '2', '6', '9',
+                      '9', '8', '4', '6', '6', '5', '6', '4', '0', '5', '6', '4', '0', '3',
+                      '9', '4', '5', '7', '5', '8', '4', '0', '0', '7', '9', '1', '3', '1',
+                      '2', '9', '6', '3', '.', '9', '9', '3', '5', '\0'};
+    assert_true(add_separator_to_number(out4, sizeof(out4)));
+    assert_string_equal(out4,
+                        "11,579,208,923,731,619,542,357,098,500,868,790,785,326,998,466,564,056,"
+                        "403,945,758,400,791,312,963.9935");
+
+    char out5[105] = {'1', '1', '5', '7', '9', '2', '0', '8', '9', '2', '3', '7', '3', '1',
+                      '6', '1', '9', '5', '4', '2', '3', '5', '.', '7', '0', '9', '8', '5',
+                      '0', '0', '8', '6', '8', '7', '9', '0', '7', '8', '5', '3', '2', '6',
+                      '9', '9', '8', '4', '6', '6', '5', '6', '4', '0', '5', '6', '4', '0',
+                      '3', '9', '4', '5', '7', '5', '8', '4', '0', '0', '7', '9', '1', '3',
+                      '1', '2', '9', '6', '3', '9', '9', '3', '5', '\0'};
+    assert_true(add_separator_to_number(out5, sizeof(out5)));
+    assert_string_equal(
+        out5,
+        "1,157,920,892,373,161,954,235.70985008687907853269984665640564039457584007913129639935");
+}
+
 void test_add_decimal_point() {
     char out0[105] = {'1', '\0'};
     assert_true(add_decimal_point(out0, sizeof(out0), 0));
@@ -2621,8 +2693,10 @@ int main() {
         cmocka_unit_test(test_print_uint64),
         cmocka_unit_test(test_print_scv_symbol),
         cmocka_unit_test(test_print_scv_string),
-        cmocka_unit_test(test_add_separator_to_number_positive),
-        cmocka_unit_test(test_add_separator_to_number_negative),
+        cmocka_unit_test(test_add_separator_to_integer_positive),
+        cmocka_unit_test(test_add_separator_to_integer_negative),
+        cmocka_unit_test(test_add_separator_to_float_positive),
+        cmocka_unit_test(test_add_separator_to_float_negative),
         cmocka_unit_test(test_add_decimal_point),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
