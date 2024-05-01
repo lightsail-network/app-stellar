@@ -305,55 +305,23 @@ bool print_claimable_balance_id(const claimable_balance_id_t *claimable_balance_
 }
 
 bool print_uint(uint64_t num, char *out, size_t out_len) {
-    char buffer[AMOUNT_MAX_LENGTH];
-    uint64_t d_val = num;
-    size_t i, j;
-
-    if (num == 0) {
-        if (out_len < 2) {
-            return false;
-        }
-        if (strlcpy(out, "0", out_len) >= out_len) {
-            return false;
-        }
-        return true;
+    // num is be
+    // use print_uint64 to print the number
+    uint8_t data[8] = {0};
+    for (int i = 0; i < 8; i++) {
+        data[i] = num >> (8 * (7 - i));
     }
-
-    memset(buffer, 0, AMOUNT_MAX_LENGTH);
-    for (i = 0; d_val > 0; i++) {
-        if (i >= AMOUNT_MAX_LENGTH) {
-            return false;
-        }
-        buffer[i] = (d_val % 10) + '0';
-        d_val /= 10;
-    }
-    if (out_len <= i) {
-        return false;
-    }
-    // reverse order
-    for (j = 0; j < i; j++) {
-        out[j] = buffer[i - j - 1];
-    }
-    out[i] = '\0';
-    return true;
+    return print_uint64(data, out, out_len, false);
 }
 
 bool print_int(int64_t num, char *out, size_t out_len) {
-    if (out_len == 0) {
-        return false;
+    // num is be
+    // use print_int64 to print the number
+    uint8_t data[8] = {0};
+    for (int i = 0; i < 8; i++) {
+        data[i] = num >> (8 * (7 - i));
     }
-    if (num < 0) {
-        uint64_t n;
-
-        out[0] = '-';
-        if (num == INT64_MIN) {
-            n = (uint64_t) num;
-        } else {
-            n = -num;
-        }
-        return print_uint(n, out + 1, out_len - 1);
-    }
-    return print_uint(num, out, out_len);
+    return print_int64(data, out, out_len, false);
 }
 
 bool print_time(uint64_t seconds, char *out, size_t out_len) {
@@ -637,11 +605,13 @@ static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out
         n[i] = __builtin_bswap16(*p++);
     }
     int pos = out_len;
+    int result_len = 0;
     while (!allzeroes(n, sizeof(n))) {
         if (pos == 0) {
             return false;
         }
         pos -= 1;
+        result_len += 1;
         unsigned int carry = 0;
         for (int i = 0; i < 16; i++) {
             int rem = ((carry << 16) | n[i]) % 10;
@@ -649,6 +619,10 @@ static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out
             carry = rem;
         }
         out[pos] = '0' + carry;
+    }
+    if (out_len < result_len + 1) {
+        // Not enough space to hold the result and \0.
+        return false;
     }
     memmove(out, out + pos, out_len - pos);
     out[out_len - pos] = 0;
@@ -733,6 +707,7 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
         memcpy(n + INT256_LENGTH - value_len, value, value_len);
     }
 
+    int result_len = 0;
     char *p = out + out_len - 1;
     *p = '\0';
     do {
@@ -743,12 +718,27 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
             remainder = temp % 10;
         }
         --p;
+        result_len++;
+        if (p < out) {
+            // Not enough space in the output buffer
+            return false;
+        }
         *p = '0' + remainder;
-    } while (!allzeroes(n, INT256_LENGTH) && p > out);
+    } while (!allzeroes(n, INT256_LENGTH));
 
-    if (is_negative && p > out) {
+    if (is_negative) {
         --p;
+        result_len++;
+        if (p < out) {
+            // Not enough space in the output buffer
+            return false;
+        }
         *p = '-';
+    }
+
+    if (out_len < result_len + 1) {
+        // Not enough space to hold the result and \0.
+        return false;
     }
 
     memmove(out, p, out_len - (p - out));
