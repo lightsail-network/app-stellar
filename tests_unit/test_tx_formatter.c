@@ -11,7 +11,7 @@
 #include "stellar/parser.h"
 
 #define MAX_ENVELOPE_SIZE 1024
-#define MAX_CAPTION_SIZE  20
+#define MAX_CAPTION_SIZE  21
 #define MAX_VALUE_SIZE    105
 
 const char *testcases[] = {
@@ -280,6 +280,10 @@ void test_formatter_forward(void **state) {
     assert_true(get_next_data(&fdata, false, &data_exists, &is_op_header));
     assert_true(data_exists);
     assert_false(is_op_header);
+    assert_string_equal(fdata.caption, "Memo Text");
+    assert_true(get_next_data(&fdata, true, &data_exists, &is_op_header));
+    assert_true(data_exists);
+    assert_false(is_op_header);
     assert_string_equal(fdata.caption, "Max Fee");
     assert_true(get_next_data(&fdata, true, &data_exists, &is_op_header));
     assert_true(data_exists);
@@ -340,10 +344,6 @@ void test_formatter_forward(void **state) {
     assert_false(is_op_header);
     assert_string_equal(fdata.caption, "Home Domain");
 
-    assert_true(get_next_data(&fdata, false, &data_exists, &is_op_header));
-    assert_true(data_exists);
-    assert_false(is_op_header);
-    assert_string_equal(fdata.caption, "Operation Type");
     assert_true(get_next_data(&fdata, false, &data_exists, &is_op_header));
     assert_true(data_exists);
     assert_true(is_op_header);

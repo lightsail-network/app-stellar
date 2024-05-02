@@ -1174,10 +1174,10 @@ static bool parse_invoke_host_function(buffer_t *buffer, invoke_host_function_op
     }
     op->sub_invocations_count = sub_invocations_count;
 
-    PRINTF("sub_invocations_count=%d\n", sub_invocations_count);
-    for (uint8_t i = 0; i < 16; i++) {
-        PRINTF("sub_invocation_positions[%d]=%d\n", i, op->sub_invocation_positions[i]);
-    }
+    // PRINTF("sub_invocations_count=%d\n", sub_invocations_count);
+    // for (uint8_t i = 0; i < 16; i++) {
+    //     PRINTF("sub_invocation_positions[%d]=%d\n", i, op->sub_invocation_positions[i]);
+    // }
     return true;
 }
 
