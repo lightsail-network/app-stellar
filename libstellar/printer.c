@@ -626,65 +626,6 @@ static bool uint256_to_decimal(const uint8_t *value, size_t value_len, char *out
     return true;
 }
 
-bool add_decimal_point(char *out, size_t out_len, uint8_t decimals) {
-    if (out == NULL || out_len == 0) {
-        return false;
-    }
-    if (decimals == 0) {
-        return true;
-    }
-
-    bool is_negative = out[0] == '-';
-    if (is_negative) {
-        if (decimals >= out_len - 2) {
-            // Not enough space to add decimal point and leading zero.
-            return false;
-        }
-    } else {
-        if (decimals >= out_len - 1) {
-            // Not enough space to add decimal point.
-            return false;
-        }
-    }
-
-    char *start = is_negative ? out + 1 : out;
-
-    size_t len = strlen(start);
-    if (len == 0) {
-        return true;
-    }
-
-    if (len <= decimals) {
-        memmove(start + decimals - len + 2, start, len + 1);
-        start[0] = '0';
-        start[1] = '.';
-        for (size_t i = 2; i < decimals - len + 2; ++i) {
-            start[i] = '0';
-        }
-    } else {
-        memmove(start + len - decimals + 1, start + len - decimals, decimals + 1);
-        start[len - decimals] = '.';
-    }
-
-    // Remove trailing zeros after decimal point
-    char *p = start + strlen(start) - 1;
-    while (p > start && *p == '0') {
-        *p-- = '\0';
-    }
-
-    // Remove decimal point if it's the last character
-    if (p > start && *p == '.') {
-        *p = '\0';
-    }
-
-    if (is_negative && out[0] != '-') {
-        memmove(out + 1, out, strlen(out) + 1);
-        out[0] = '-';
-    }
-
-    return true;
-}
-
 /**
  * Convert a 128-bit or 256-bit signed integer to a decimal string.
  */
@@ -742,6 +683,65 @@ static bool int256_to_decimal(const uint8_t *value, size_t value_len, char *out,
     }
 
     memmove(out, p, out_len - (p - out));
+    return true;
+}
+
+bool add_decimal_point(char *out, size_t out_len, uint8_t decimals) {
+    if (out == NULL || out_len == 0) {
+        return false;
+    }
+    if (decimals == 0) {
+        return true;
+    }
+
+    bool is_negative = out[0] == '-';
+    if (is_negative) {
+        if (decimals >= out_len - 2) {
+            // Not enough space to add decimal point and leading zero.
+            return false;
+        }
+    } else {
+        if (decimals >= out_len - 1) {
+            // Not enough space to add decimal point.
+            return false;
+        }
+    }
+
+    char *start = is_negative ? out + 1 : out;
+
+    size_t len = strlen(start);
+    if (len == 0) {
+        return true;
+    }
+
+    if (len <= decimals) {
+        memmove(start + decimals - len + 2, start, len + 1);
+        start[0] = '0';
+        start[1] = '.';
+        for (size_t i = 2; i < decimals - len + 2; ++i) {
+            start[i] = '0';
+        }
+    } else {
+        memmove(start + len - decimals + 1, start + len - decimals, decimals + 1);
+        start[len - decimals] = '.';
+    }
+
+    // Remove trailing zeros after decimal point
+    char *p = start + strlen(start) - 1;
+    while (p > start && *p == '0') {
+        *p-- = '\0';
+    }
+
+    // Remove decimal point if it's the last character
+    if (p > start && *p == '.') {
+        *p = '\0';
+    }
+
+    if (is_negative && out[0] != '-') {
+        memmove(out + 1, out, strlen(out) + 1);
+        out[0] = '-';
+    }
+
     return true;
 }
 
