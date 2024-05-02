@@ -734,6 +734,13 @@ bool add_decimal_point(char *out, size_t out_len, uint8_t decimals) {
     }
 
     bool is_negative = out[0] == '-';
+    char *start = is_negative ? out + 1 : out;
+
+    size_t len = strlen(start);
+    if (len == 0) {
+        return true;
+    }
+
     if (is_negative) {
         if (decimals >= out_len - 2) {
             // Not enough space to add decimal point and leading zero.
@@ -746,21 +753,14 @@ bool add_decimal_point(char *out, size_t out_len, uint8_t decimals) {
         }
     }
 
-    char *start = is_negative ? out + 1 : out;
-
-    size_t len = strlen(start);
-    if (len == 0) {
-        return true;
-    }
-
     if (len <= decimals) {
+        // Shift the number to the right and add leading zeros
         memmove(start + decimals - len + 2, start, len + 1);
         start[0] = '0';
         start[1] = '.';
-        for (size_t i = 2; i < decimals - len + 2; ++i) {
-            start[i] = '0';
-        }
+        memset(start + 2, '0', decimals - len);
     } else {
+        // Insert the decimal point at the appropriate position
         memmove(start + len - decimals + 1, start + len - decimals, decimals + 1);
         start[len - decimals] = '.';
     }
@@ -776,6 +776,7 @@ bool add_decimal_point(char *out, size_t out_len, uint8_t decimals) {
         *p = '\0';
     }
 
+    // Add the negative sign back if necessary
     if (is_negative && out[0] != '-') {
         memmove(out + 1, out, strlen(out) + 1);
         out[0] = '-';
@@ -836,7 +837,11 @@ bool add_separator_to_number(char *out, size_t out_len) {
 
     // If there is a decimal point, append the part after the decimal point
     if (decimal_point) {
-        strlcpy(temp + new_length, decimal_point, NUMBER_WITH_COMMAS_MAX_LENGTH - new_length);
+        // strlcpy(temp + new_length, decimal_point, NUMBER_WITH_COMMAS_MAX_LENGTH - new_length);
+        if (strlcpy(temp + new_length, decimal_point, NUMBER_WITH_COMMAS_MAX_LENGTH - new_length) >=
+            NUMBER_WITH_COMMAS_MAX_LENGTH - new_length) {
+            return false;
+        }
     }
 
     if (strlcpy(out, temp, out_len) >= out_len) {
