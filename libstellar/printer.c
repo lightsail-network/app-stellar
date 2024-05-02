@@ -508,15 +508,6 @@ bool print_amount(uint64_t amount,
         return false;
     }
 
-    uint8_t data[8] = {0};
-    for (int i = 0; i < 8; i++) {
-        data[i] = amount >> (8 * (7 - i));
-    }
-
-    if (!print_uint64(data, 7, out, out_len, true)) {
-        return false;
-    }
-
     char asset_info[23];  // BANANANANANA@GBD..KHK4, 12 + 1 + 3 + 2 + 4 = 22
 
     if (asset) {
