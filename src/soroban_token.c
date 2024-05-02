@@ -5,7 +5,8 @@
 #include "stellar/parser.h"
 #include "stellar/plugin.h"
 
-#define MAX_TOKEN_NAME_LENGTH 13
+#define MAX_TOKEN_NAME_LENGTH  13
+#define CLASSIC_ASSET_DECIMALS 7
 
 typedef struct {
     uint8_t contract_address[RAW_CONTRACT_KEY_SIZE];
@@ -60,10 +61,12 @@ stellar_plugin_result_t token_plugin_query_data_pair_count(const uint8_t *contra
            invoke_contract_args.function.name,
            invoke_contract_args.function.name_size);
     if (strcmp(function_name, "transfer") == 0) {
-        // Amount
-        // From
-        // To
         (*data_pair_count) = 3;
+        return STELLAR_PLUGIN_RESULT_OK;
+    }
+
+    if (strcmp(function_name, "approve") == 0) {
+        (*data_pair_count) = 4;
         return STELLAR_PLUGIN_RESULT_OK;
     }
 
@@ -96,47 +99,127 @@ stellar_plugin_result_t token_plugin_query_data_pair(const uint8_t *contract_add
     if (strcmp(function_name, "transfer") == 0) {
         switch (data_pair_index) {
             case 0: {
-                sc_address_t addr;
-                uint32_t sc_type;
-                buffer_read32(&buffer, &sc_type);
-                parse_sc_address(&buffer, &addr);
-                buffer_read32(&buffer, &sc_type);
-                parse_sc_address(&buffer, &addr);
-                buffer_read32(&buffer, &sc_type);
                 strlcpy(caption, "Transfer", caption_len);
-                uint64_t amount = 0;
-                parse_int64(&buffer, &amount);
-                parse_uint64(&buffer, &amount);
+                if (!read_scval_advance(&buffer) || !read_scval_advance(&buffer)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
 
-                print_amount(amount, NULL, NETWORK_TYPE_PUBLIC, value, value_len);
+                uint32_t sc_type;
+                if (!buffer_read32(&buffer, &sc_type) || sc_type != SCV_I128 ||
+                    !print_int128(buffer.ptr + buffer.offset,
+                                  CLASSIC_ASSET_DECIMALS,
+                                  value,
+                                  value_len,
+                                  true)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
                 strlcat(value, " ", value_len);
                 strlcat(value, token_name, value_len);
-
                 break;
             }
             case 1: {
                 strlcpy(caption, "From", caption_len);
-                sc_address_t addr;
+                sc_address_t from;
                 uint32_t sc_type;
-                buffer_read32(&buffer, &sc_type);
-                parse_sc_address(&buffer, &addr);
-                print_sc_address(&addr, value, value_len, 0, 0);
+
+                if (!buffer_read32(&buffer, &sc_type) || sc_type != SCV_ADDRESS ||
+                    !parse_sc_address(&buffer, &from) ||
+                    !print_sc_address(&from, value, value_len, 0, 0)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+
                 break;
             }
-            /* code */
             case 2:
                 strlcpy(caption, "To", caption_len);
-                sc_address_t addr;
+                if (!read_scval_advance(&buffer)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+
+                sc_address_t to;
                 uint32_t sc_type;
-                buffer_read32(&buffer, &sc_type);
-                parse_sc_address(&buffer, &addr);
-                buffer_read32(&buffer, &sc_type);
-                parse_sc_address(&buffer, &addr);
-                print_sc_address(&addr, value, value_len, 0, 0);
+
+                if (!buffer_read32(&buffer, &sc_type) || sc_type != SCV_ADDRESS ||
+                    !parse_sc_address(&buffer, &to) ||
+                    !print_sc_address(&to, value, value_len, 0, 0)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
                 break;
             default:
                 return STELLAR_PLUGIN_RESULT_ERROR;
         }
     }
+
+    if (strcmp(function_name, "approve") == 0) {
+        switch (data_pair_index) {
+            case 0: {
+                strlcpy(caption, "From", caption_len);
+                sc_address_t from;
+                uint32_t sc_type;
+
+                if (!buffer_read32(&buffer, &sc_type) || sc_type != SCV_ADDRESS ||
+                    !parse_sc_address(&buffer, &from) ||
+                    !print_sc_address(&from, value, value_len, 0, 0)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+                break;
+            }
+            case 1: {
+                strlcpy(caption, "Spender", caption_len);
+                if (!read_scval_advance(&buffer)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+
+                sc_address_t to;
+                uint32_t sc_type;
+
+                if (!buffer_read32(&buffer, &sc_type) || sc_type != SCV_ADDRESS ||
+                    !parse_sc_address(&buffer, &to) ||
+                    !print_sc_address(&to, value, value_len, 0, 0)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+                break;
+            }
+            case 2: {
+                strlcpy(caption, "Amount", caption_len);
+                if (!read_scval_advance(&buffer) || !read_scval_advance(&buffer)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+
+                uint32_t sc_type;
+                if (!buffer_read32(&buffer, &sc_type) || sc_type != SCV_I128 ||
+                    !print_int128(buffer.ptr + buffer.offset,
+                                  CLASSIC_ASSET_DECIMALS,
+                                  value,
+                                  value_len,
+                                  true)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+
+                strlcat(value, " ", value_len);
+                strlcat(value, token_name, value_len);
+                break;
+            }
+            case 3: {
+                strlcpy(caption, "Live Until Ledger", caption_len);
+                if (!read_scval_advance(&buffer) || !read_scval_advance(&buffer) ||
+                    !read_scval_advance(&buffer)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+
+                uint32_t sc_type;
+                if (!buffer_read32(&buffer, &sc_type) || sc_type != SCV_U32 ||
+                    !print_uint32(buffer.ptr + buffer.offset, 0, value, value_len, false)) {
+                    return STELLAR_PLUGIN_RESULT_ERROR;
+                }
+
+                break;
+            }
+            default:
+                return STELLAR_PLUGIN_RESULT_ERROR;
+        }
+        return STELLAR_PLUGIN_RESULT_OK;
+    }
+
     return STELLAR_PLUGIN_RESULT_OK;
 }
