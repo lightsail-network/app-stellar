@@ -494,6 +494,20 @@ bool print_amount(uint64_t amount,
                   uint8_t network_id,
                   char *out,
                   size_t out_len) {
+    char buffer[AMOUNT_WITH_COMMAS_MAX_LENGTH] = {0};
+    uint8_t data[8] = {0};
+    for (int i = 0; i < 8; i++) {
+        data[i] = amount >> (8 * (7 - i));
+    }
+
+    if (!print_uint64(data, 7, buffer, sizeof(buffer), true)) {
+        return false;
+    }
+
+    if (strlcpy(out, buffer, out_len) >= out_len) {
+        return false;
+    }
+
     uint8_t data[8] = {0};
     for (int i = 0; i < 8; i++) {
         data[i] = amount >> (8 * (7 - i));
