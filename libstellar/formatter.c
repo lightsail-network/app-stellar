@@ -1754,16 +1754,16 @@ static bool print_scval(buffer_t buffer, char *value, uint8_t value_len) {
             STRLCPY(value, "[void]", value_len);
             break;  // void
         case SCV_U32:
-            FORMATTER_CHECK(print_uint32(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_uint32(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_I32:
-            FORMATTER_CHECK(print_int32(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_int32(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_U64:
-            FORMATTER_CHECK(print_uint64(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_uint64(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_I64:
-            FORMATTER_CHECK(print_int64(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_int64(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_TIMEPOINT: {
             uint64_t timepoint;
@@ -1772,19 +1772,19 @@ static bool print_scval(buffer_t buffer, char *value, uint8_t value_len) {
             break;
         }
         case SCV_DURATION:
-            FORMATTER_CHECK(print_int64(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_int64(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_U128:
-            FORMATTER_CHECK(print_uint128(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_uint128(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_I128:
-            FORMATTER_CHECK(print_int128(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_int128(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_U256:
-            FORMATTER_CHECK(print_uint256(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_uint256(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_I256:
-            FORMATTER_CHECK(print_int256(buffer.ptr + buffer.offset, value, value_len, true));
+            FORMATTER_CHECK(print_int256(buffer.ptr + buffer.offset, 0, value, value_len, true));
             break;
         case SCV_BYTES:
             STRLCPY(value, "[Bytes Data]", value_len);
@@ -1904,15 +1904,15 @@ static bool format_confirm_sub_invocation_invoke_host_function_args(formatter_da
     size_t length;
     STRLCPY(op_caption, "Arg ", OPERATION_CAPTION_MAX_LENGTH);
     length = strlen(op_caption);
-    FORMATTER_CHECK(print_uint(parameters_index + 1,
-                               op_caption + length,
-                               OPERATION_CAPTION_MAX_LENGTH - length))
+    FORMATTER_CHECK(print_uint64_num(parameters_index + 1,
+                                     op_caption + length,
+                                     OPERATION_CAPTION_MAX_LENGTH - length))
 
     STRLCAT(op_caption, " of ", sizeof(op_caption));
     length = strlen(op_caption);
-    FORMATTER_CHECK(print_uint(invoke_contract_args.parameters_length,
-                               op_caption + length,
-                               OPERATION_CAPTION_MAX_LENGTH - length))
+    FORMATTER_CHECK(print_uint64_num(invoke_contract_args.parameters_length,
+                                     op_caption + length,
+                                     OPERATION_CAPTION_MAX_LENGTH - length))
     STRLCPY(fdata->caption, op_caption, fdata->caption_len);
 
     buffer_t buffer = {.ptr = fdata->raw_data,
@@ -2060,14 +2060,14 @@ static bool format_confirm_sub_invocation(formatter_data_t *fdata) {
     size_t length;
     STRLCPY(op_caption, "Sub-Auth ", OPERATION_CAPTION_MAX_LENGTH);
     length = strlen(op_caption);
-    FORMATTER_CHECK(print_uint(sub_invocation_index + 1,
-                               op_caption + length,
-                               OPERATION_CAPTION_MAX_LENGTH - length))
+    FORMATTER_CHECK(print_uint64_num(sub_invocation_index + 1,
+                                     op_caption + length,
+                                     OPERATION_CAPTION_MAX_LENGTH - length))
     STRLCAT(op_caption, " of ", sizeof(op_caption));
     length = strlen(op_caption);
-    FORMATTER_CHECK(print_uint(sub_invocations_count,
-                               op_caption + length,
-                               OPERATION_CAPTION_MAX_LENGTH - length))
+    FORMATTER_CHECK(print_uint64_num(sub_invocations_count,
+                                     op_caption + length,
+                                     OPERATION_CAPTION_MAX_LENGTH - length))
     STRLCPY(fdata->caption, op_caption, fdata->caption_len);
     buffer_t buffer = {
         .ptr = fdata->raw_data,
@@ -2114,15 +2114,15 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
     size_t length;
     STRLCPY(op_caption, "Arg ", OPERATION_CAPTION_MAX_LENGTH);
     length = strlen(op_caption);
-    FORMATTER_CHECK(print_uint(parameters_index + 1,
-                               op_caption + length,
-                               OPERATION_CAPTION_MAX_LENGTH - length))
+    FORMATTER_CHECK(print_uint64_num(parameters_index + 1,
+                                     op_caption + length,
+                                     OPERATION_CAPTION_MAX_LENGTH - length))
 
     STRLCAT(op_caption, " of ", sizeof(op_caption));
     length = strlen(op_caption);
-    FORMATTER_CHECK(print_uint(invoke_contract_args.parameters_length,
-                               op_caption + length,
-                               OPERATION_CAPTION_MAX_LENGTH - length))
+    FORMATTER_CHECK(print_uint64_num(invoke_contract_args.parameters_length,
+                                     op_caption + length,
+                                     OPERATION_CAPTION_MAX_LENGTH - length))
     STRLCPY(fdata->caption, op_caption, fdata->caption_len);
 
     buffer_t buffer = {.ptr = fdata->raw_data,
