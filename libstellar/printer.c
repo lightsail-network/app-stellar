@@ -495,48 +495,15 @@ bool print_amount(uint64_t amount,
                   char *out,
                   size_t out_len) {
     char buffer[AMOUNT_WITH_COMMAS_MAX_LENGTH] = {0};
-    uint64_t d_val = amount;
-    int i;
-
-    for (i = 0; d_val > 0 || i < 9; i++) {
-        // len('100.0000001') == 11
-        if (i >= 11 && i < AMOUNT_WITH_COMMAS_MAX_LENGTH && (i - 11) % 4 == 0) {
-            buffer[i] = ',';
-            i += 1;
-        }
-        if (i >= AMOUNT_WITH_COMMAS_MAX_LENGTH) {
-            return false;
-        }
-        if (d_val > 0) {
-            buffer[i] = (d_val % 10) + '0';
-            d_val /= 10;
-        } else {
-            buffer[i] = '0';
-        }
-        if (i == 6) {  // stroops to xlm: 1 xlm = 10000000 stroops
-            i += 1;
-            buffer[i] = '.';
-        }
-        if (i >= AMOUNT_WITH_COMMAS_MAX_LENGTH) {
-            return false;
-        }
+    uint8_t data[8] = {0};
+    for (int i = 0; i < 8; i++) {
+        data[i] = amount >> (8 * (7 - i));
     }
 
-    // reverse order
-    for (int j = 0; j < i / 2; j++) {
-        char c = buffer[j];
-        buffer[j] = buffer[i - j - 1];
-        buffer[i - j - 1] = c;
+    if (!print_uint64(data, 7, buffer, sizeof(buffer), true)) {
+        return false;
     }
 
-    // strip trailing 0s
-    i -= 1;
-    while (buffer[i] == '0') {
-        buffer[i] = 0;
-        i -= 1;
-    }
-    // strip trailing .
-    if (buffer[i] == '.') buffer[i] = 0;
     if (strlcpy(out, buffer, out_len) >= out_len) {
         return false;
     }
