@@ -960,8 +960,8 @@ bool print_scv_string(const scv_string_t *scv_string, char *out, size_t out_len)
 
     size_t copy_len = scv_string->size;
 
-    // If the output buffer is large enough to hold the entire scv_string, copy it directly and
-    // append a null terminator.
+    // If the output buffer is large enough to hold the entire scv_string,
+    // copy it directly and append a null terminator.
     if (out_len > copy_len) {
         memcpy(out, scv_string->string, copy_len);
         out[copy_len] = '\0';  // Ensure the string is null-terminated.
@@ -969,11 +969,13 @@ bool print_scv_string(const scv_string_t *scv_string, char *out, size_t out_len)
         if (out_len < 3) {
             return false;
         }
+
         // Calculate the lengths of the beginning and end parts that can be displayed.
-        size_t dots_len = 2;                 // The length of two dots.
-        size_t available_len = out_len - 1;  // Subtract 1 to reserve space for the null terminator.
-        size_t start_copy_len = available_len / 2;
-        size_t end_copy_len = available_len - start_copy_len - dots_len;
+        const size_t dots_len = 2;  // The length of two dots.
+        const size_t available_len =
+            out_len - 1;  // Subtract 1 to reserve space for the null terminator.
+        const size_t start_copy_len = available_len / 2;
+        const size_t end_copy_len = available_len - start_copy_len - dots_len;
 
         // Copy the beginning part of the string.
         memcpy(out, scv_string->string, start_copy_len);
@@ -987,8 +989,7 @@ bool print_scv_string(const scv_string_t *scv_string, char *out, size_t out_len)
                    end_copy_len);
         }
 
-        // Ensure the output string is null-terminated by placing a null character at the end of the
-        // buffer.
+        // Ensure the output string is null-terminated.
         out[out_len - 1] = '\0';
     }
 
