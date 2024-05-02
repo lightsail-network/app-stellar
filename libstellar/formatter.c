@@ -2057,18 +2057,15 @@ static bool format_confirm_sub_invocation(formatter_data_t *fdata) {
     //        sub_invocation_index,
     //        sub_invocations_count);
     char op_caption[OPERATION_CAPTION_MAX_LENGTH] = {0};
-    size_t length;
-    STRLCPY(op_caption, "Sub-Auth ", OPERATION_CAPTION_MAX_LENGTH);
-    length = strlen(op_caption);
-    FORMATTER_CHECK(print_uint64_num(sub_invocation_index + 1,
-                                     op_caption + length,
-                                     OPERATION_CAPTION_MAX_LENGTH - length))
+    STRLCPY(fdata->caption, "Nested AuthZ", fdata->caption_len);
+
+    FORMATTER_CHECK(
+        print_uint64_num(sub_invocation_index + 1, op_value, OPERATION_CAPTION_MAX_LENGTH - length))
     STRLCAT(op_caption, " of ", sizeof(op_caption));
-    length = strlen(op_caption);
     FORMATTER_CHECK(print_uint64_num(sub_invocations_count,
                                      op_caption + length,
                                      OPERATION_CAPTION_MAX_LENGTH - length))
-    STRLCPY(fdata->caption, op_caption, fdata->caption_len);
+
     buffer_t buffer = {
         .ptr = fdata->raw_data,
         .size = fdata->raw_data_len,
