@@ -494,25 +494,25 @@ bool print_amount(uint64_t amount,
                   uint8_t network_id,
                   char *out,
                   size_t out_len) {
-    uint8_t data[8] = {0};
-    for (int i = 0; i < 8; i++) {
-        data[i] = amount >> (8 * (7 - i));
-    }
+    // uint8_t data[8] = {0};
+    // for (int i = 0; i < 8; i++) {
+    //     data[i] = amount >> (8 * (7 - i));
+    // }
 
-    if (!print_uint64(data, 7, out, out_len, true)) {
-        return false;
-    }
+    // if (!print_uint64(data, 7, out, out_len, true)) {
+    //     return false;
+    // }
 
-    char asset_info[23];  // BANANANANANA@GBD..KHK4, 12 + 1 + 3 + 2 + 4 = 22
+    // char asset_info[23];  // BANANANANANA@GBD..KHK4, 12 + 1 + 3 + 2 + 4 = 22
 
-    if (asset) {
-        // qualify amount
-        if (!print_asset(asset, network_id, asset_info, 23)) {
-            return false;
-        };
-        strlcat(out, " ", out_len);
-        strlcat(out, asset_info, out_len);
-    }
+    // if (asset) {
+    //     // qualify amount
+    //     if (!print_asset(asset, network_id, asset_info, 23)) {
+    //         return false;
+    //     };
+    //     strlcat(out, " ", out_len);
+    //     strlcat(out, asset_info, out_len);
+    // }
     return true;
 }
 
