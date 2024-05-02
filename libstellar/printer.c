@@ -306,19 +306,55 @@ bool print_claimable_balance_id(const claimable_balance_id_t *claimable_balance_
 }
 
 bool print_uint64_num(uint64_t num, char *out, size_t out_len) {
-    uint8_t data[8] = {0};
-    for (int i = 0; i < 8; i++) {
-        data[i] = num >> (8 * (7 - i));
+    char buffer[AMOUNT_MAX_LENGTH];
+    uint64_t d_val = num;
+    size_t i, j;
+
+    if (num == 0) {
+        if (out_len < 2) {
+            return false;
+        }
+        if (strlcpy(out, "0", out_len) >= out_len) {
+            return false;
+        }
+        return true;
     }
-    return print_uint64(data, 0, out, out_len, false);
+
+    memset(buffer, 0, AMOUNT_MAX_LENGTH);
+    for (i = 0; d_val > 0; i++) {
+        if (i >= AMOUNT_MAX_LENGTH) {
+            return false;
+        }
+        buffer[i] = (d_val % 10) + '0';
+        d_val /= 10;
+    }
+    if (out_len <= i) {
+        return false;
+    }
+    // reverse order
+    for (j = 0; j < i; j++) {
+        out[j] = buffer[i - j - 1];
+    }
+    out[i] = '\0';
+    return true;
 }
 
 bool print_int64_num(int64_t num, char *out, size_t out_len) {
-    uint8_t data[8] = {0};
-    for (int i = 0; i < 8; i++) {
-        data[i] = num >> (8 * (7 - i));
+    if (out_len == 0) {
+        return false;
     }
-    return print_int64(data, 0, out, out_len, false);
+    if (num < 0) {
+        uint64_t n;
+
+        out[0] = '-';
+        if (num == INT64_MIN) {
+            n = (uint64_t) num;
+        } else {
+            n = -num;
+        }
+        return print_uint64_num(n, out + 1, out_len - 1);
+    }
+    return print_uint64_num(num, out, out_len);
 }
 
 bool print_time(uint64_t seconds, char *out, size_t out_len) {
@@ -494,12 +530,50 @@ bool print_amount(uint64_t amount,
                   uint8_t network_id,
                   char *out,
                   size_t out_len) {
-    uint8_t data[8] = {0};
-    for (int i = 0; i < 8; i++) {
-        data[i] = amount >> (8 * (7 - i));
+    char buffer[AMOUNT_WITH_COMMAS_MAX_LENGTH] = {0};
+    uint64_t d_val = amount;
+    int i;
+
+    for (i = 0; d_val > 0 || i < 9; i++) {
+        // len('100.0000001') == 11
+        if (i >= 11 && i < AMOUNT_WITH_COMMAS_MAX_LENGTH && (i - 11) % 4 == 0) {
+            buffer[i] = ',';
+            i += 1;
+        }
+        if (i >= AMOUNT_WITH_COMMAS_MAX_LENGTH) {
+            return false;
+        }
+        if (d_val > 0) {
+            buffer[i] = (d_val % 10) + '0';
+            d_val /= 10;
+        } else {
+            buffer[i] = '0';
+        }
+        if (i == 6) {  // stroops to xlm: 1 xlm = 10000000 stroops
+            i += 1;
+            buffer[i] = '.';
+        }
+        if (i >= AMOUNT_WITH_COMMAS_MAX_LENGTH) {
+            return false;
+        }
     }
 
-    if (!print_uint64(data, 7, out, out_len, true)) {
+    // reverse order
+    for (int j = 0; j < i / 2; j++) {
+        char c = buffer[j];
+        buffer[j] = buffer[i - j - 1];
+        buffer[i - j - 1] = c;
+    }
+
+    // strip trailing 0s
+    i -= 1;
+    while (buffer[i] == '0') {
+        buffer[i] = 0;
+        i -= 1;
+    }
+    // strip trailing .
+    if (buffer[i] == '.') buffer[i] = 0;
+    if (strlcpy(out, buffer, out_len) >= out_len) {
         return false;
     }
 
