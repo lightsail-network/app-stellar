@@ -193,7 +193,7 @@ void test_format_envelope(void **state) {
     char output[1024] = {0};
     bool data_exists = true;
     bool is_op_header = false;
-    reset_formatter();
+    assert_true(reset_formatter(&fdata));
     while (true) {
         assert_true(get_next_data(&fdata, true, &data_exists, &is_op_header));
         if (!data_exists) {
@@ -252,7 +252,7 @@ void test_formatter_forward(void **state) {
 
     bool data_exists = false;
     bool is_op_header = false;
-    reset_formatter();
+    assert_true(reset_formatter(&fdata));
 
     // Flow:
     // Memo Text; hello world

@@ -2471,10 +2471,16 @@ static uint8_t get_data_count(formatter_data_t *fdata) {
     return op_cnt + 1;
 }
 
-void reset_formatter() {
+bool reset_formatter(formatter_data_t *fdata) {
     explicit_bzero(formatter_stack, sizeof(formatter_stack));
     formatter_index = 0;
     current_data_index = 0;
+    if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
+        return parse_soroban_authorization_envelope(fdata->raw_data,
+                                                    fdata->raw_data_len,
+                                                    fdata->envelope);
+    }
+    return true;
 }
 
 bool get_next_data(formatter_data_t *fdata, bool forward, bool *data_exists, bool *is_op_header) {
