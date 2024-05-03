@@ -17,6 +17,7 @@ const char *testcases[] = {
     "../testcases/sorobanAuthPublic.raw",
     "../testcases/sorobanAuthTestnet.raw",
     "../testcases/sorobanAuthUnknownNetwork.raw",
+    "../testcases/sorobanAuthInvokeContractWithComplexSubInvocation.raw",
 };
 
 void test_parse_data(void **state) {

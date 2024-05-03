@@ -20,6 +20,7 @@ const char *testcases[] = {
     "../testcases/sorobanAuthPublic.raw",
     "../testcases/sorobanAuthTestnet.raw",
     "../testcases/sorobanAuthUnknownNetwork.raw",
+    "../testcases/sorobanAuthInvokeContractWithComplexSubInvocation.raw",
 };
 
 static bool is_string_empty(const char *str) {
@@ -36,7 +37,7 @@ static void get_result_filename(const char *filename, char *path, size_t size) {
 
 void test_format_envelope(void **state) {
     const char *filename = (char *) *state;
-    char result_filename[1024] = {0};
+    char result_filename[4096] = {0};
     get_result_filename(filename, result_filename, sizeof(result_filename));
 
     FILE *file = fopen(filename, "rb");
@@ -66,7 +67,7 @@ void test_format_envelope(void **state) {
                               .caption_len = MAX_CAPTION_SIZE,
                               .display_sequence = true};
 
-    char output[1024] = {0};
+    char output[4096] = {0};
     bool data_exists = true;
     bool is_op_header = false;
     assert_true(reset_formatter(&fdata));
@@ -84,10 +85,10 @@ void test_format_envelope(void **state) {
         strcat(output, temp);
     }
 
-    char expected_result[1024] = {0};
+    char expected_result[4096] = {0};
     FILE *result_file = fopen(result_filename, "r");
     assert_non_null(result_file);
-    fread(expected_result, sizeof(char), 1024, result_file);
+    fread(expected_result, sizeof(char), 4096, result_file);
     assert_string_equal(output, expected_result);
 
     fclose(file);

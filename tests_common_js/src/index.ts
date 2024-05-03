@@ -3522,3 +3522,219 @@ export function sorobanAuthInvokeContractTestPlugin() {
   const raw = "AAAACXrDOZdUTjF10ma9AiQ5sizbFlCMARY/JuXLKj4QRal5AAAAAEl1bUUCEMifAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAh0ZXN0ZnVuYwAAAAMAAAASAAAAAAAAAACs0K3HeCOAAL22utIukZkjiX96h+MQzvFQXmwLC3FUJQAAABIAAAAAAAAAAHmloTuvVXFjeiFXxq/7dJHXxEVO7NKwt+QOZwI/CW+sAAAACgAAAAAAAAAAAAAAAmlEBQAAAAACAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAh0cmFuc2ZlcgAAAAMAAAASAAAAAAAAAACs0K3HeCOAAL22utIukZkjiX96h+MQzvFQXmwLC3FUJQAAABIAAAAAAAAAAHmloTuvVXFjeiFXxq/7dJHXxEVO7NKwt+QOZwI/CW+sAAAACgAAAAAAAAAAAAAAAmlEBQAAAAAAAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAh0cmFuc2ZlcgAAAAMAAAASAAAAAAAAAACs0K3HeCOAAL22utIukZkjiX96h+MQzvFQXmwLC3FUJQAAABIAAAAAAAAAAHmloTuvVXFjeiFXxq/7dJHXxEVO7NKwt+QOZwI/CW+sAAAACgAAAAAAAAAAAAAAAmlEBQAAAAAA";
   return xdr.HashIdPreimage.fromXDR(raw, "base64");
 }
+
+export function sorobanAuthInvokeContractWithComplexSubInvocation() {
+  // from stellar_sdk import *
+  // from stellar_sdk import xdr
+
+  // data = xdr.HashIDPreimage(
+  //     xdr.EnvelopeType.ENVELOPE_TYPE_SOROBAN_AUTHORIZATION,
+  //     soroban_authorization=xdr.HashIDPreimageSorobanAuthorization(
+  //         network_id=xdr.Hash(Network(Network.PUBLIC_NETWORK_PASSPHRASE).network_id()),
+  //         nonce=xdr.Int64(1232432453),
+  //         signature_expiration_ledger=xdr.Uint32(34654367),
+  //         invocation=xdr.SorobanAuthorizedInvocation(
+  //             function=xdr.SorobanAuthorizedFunction(
+  //                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                 contract_fn=xdr.InvokeContractArgs(
+  //                     contract_address=Address(
+  //                         "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                     ).to_xdr_sc_address(),
+  //                     function_name=scval.to_symbol("func0").sym,
+  //                     args=[
+  //                         scval.to_int128(103560 * 10**5),
+  //                     ],
+  //                 ),
+  //             ),
+  //             sub_invocations=[
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("func1").sym,
+  //                             args=[
+  //                                 scval.to_int128(103560 * 10**5),
+  //                             ],
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[],
+  //                 ),
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("func2").sym,
+  //                             args=[
+  //                                 scval.to_int128(103560 * 10**5),
+  //                             ],
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("func3").sym,
+  //                                     args=[
+  //                                         scval.to_int128(103560 * 10**5),
+  //                                     ],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[
+  //                                 xdr.SorobanAuthorizedInvocation(
+  //                                     function=xdr.SorobanAuthorizedFunction(
+  //                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                         contract_fn=xdr.InvokeContractArgs(
+  //                                             contract_address=Address(
+  //                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                             ).to_xdr_sc_address(),
+  //                                             function_name=scval.to_symbol("func4").sym,
+  //                                             args=[
+  //                                                 scval.to_int128(103560 * 10**5),
+  //                                             ],
+  //                                         ),
+  //                                     ),
+  //                                     sub_invocations=[],
+  //                                 ),
+  //                                 xdr.SorobanAuthorizedInvocation(
+  //                                     function=xdr.SorobanAuthorizedFunction(
+  //                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                         contract_fn=xdr.InvokeContractArgs(
+  //                                             contract_address=Address(
+  //                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                             ).to_xdr_sc_address(),
+  //                                             function_name=scval.to_symbol("func5").sym,
+  //                                             args=[
+  //                                                 scval.to_int128(103560 * 10**5),
+  //                                             ],
+  //                                         ),
+  //                                     ),
+  //                                     sub_invocations=[
+  //                                         xdr.SorobanAuthorizedInvocation(
+  //                                             function=xdr.SorobanAuthorizedFunction(
+  //                                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                                 contract_fn=xdr.InvokeContractArgs(
+  //                                                     contract_address=Address(
+  //                                                         "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                                     ).to_xdr_sc_address(),
+  //                                                     function_name=scval.to_symbol(
+  //                                                         "func6"
+  //                                                     ).sym,
+  //                                                     args=[
+  //                                                         scval.to_int128(103560 * 10**5),
+  //                                                     ],
+  //                                                 ),
+  //                                             ),
+  //                                             sub_invocations=[
+  //                                                 xdr.SorobanAuthorizedInvocation(
+  //                                                     function=xdr.SorobanAuthorizedFunction(
+  //                                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                                         contract_fn=xdr.InvokeContractArgs(
+  //                                                             contract_address=Address(
+  //                                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                                             ).to_xdr_sc_address(),
+  //                                                             function_name=scval.to_symbol(
+  //                                                                 "func7"
+  //                                                             ).sym,
+  //                                                             args=[
+  //                                                                 scval.to_int128(
+  //                                                                     103560 * 10**5
+  //                                                                 ),
+  //                                                             ],
+  //                                                         ),
+  //                                                     ),
+  //                                                     sub_invocations=[],
+  //                                                 ),
+  //                                                 xdr.SorobanAuthorizedInvocation(
+  //                                                     function=xdr.SorobanAuthorizedFunction(
+  //                                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                                         contract_fn=xdr.InvokeContractArgs(
+  //                                                             contract_address=Address(
+  //                                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                                             ).to_xdr_sc_address(),
+  //                                                             function_name=scval.to_symbol(
+  //                                                                 "func8"
+  //                                                             ).sym,
+  //                                                             args=[
+  //                                                                 scval.to_int128(
+  //                                                                     103560 * 10**5
+  //                                                                 ),
+  //                                                             ],
+  //                                                         ),
+  //                                                     ),
+  //                                                     sub_invocations=[],
+  //                                                 ),
+  //                                             ],
+  //                                         )
+  //                                     ],
+  //                                 ),
+  //                             ],
+  //                         ),
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("func9").sym,
+  //                                     args=[
+  //                                         scval.to_int128(103560 * 10**5),
+  //                                     ],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[
+  //                                 xdr.SorobanAuthorizedInvocation(
+  //                                     function=xdr.SorobanAuthorizedFunction(
+  //                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                         contract_fn=xdr.InvokeContractArgs(
+  //                                             contract_address=Address(
+  //                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                             ).to_xdr_sc_address(),
+  //                                             function_name=scval.to_symbol("func10").sym,
+  //                                             args=[
+  //                                                 scval.to_int128(103560 * 10**5),
+  //                                             ],
+  //                                         ),
+  //                                     ),
+  //                                     sub_invocations=[],
+  //                                 ),
+  //                                 xdr.SorobanAuthorizedInvocation(
+  //                                     function=xdr.SorobanAuthorizedFunction(
+  //                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                         contract_fn=xdr.InvokeContractArgs(
+  //                                             contract_address=Address(
+  //                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                             ).to_xdr_sc_address(),
+  //                                             function_name=scval.to_symbol("func11").sym,
+  //                                             args=[
+  //                                                 scval.to_int128(103560 * 10**5),
+  //                                             ],
+  //                                         ),
+  //                                     ),
+  //                                     sub_invocations=[],
+  //                                 ),
+  //                             ],
+  //                         ),
+  //                     ],
+  //                 ),
+  //             ],
+  //         ),
+  //     ),
+  // )
+
+  // print(data.to_xdr())
+
+
+  const raw = "AAAACXrDOZdUTjF10ma9AiQ5sizbFlCMARY/JuXLKj4QRal5AAAAAEl1bUUCEMifAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jMAAAAAAAAAEAAAAKAAAAAAAAAAAAAAACaUQFAAAAAAIAAAAAAAAAAdeSi3LCcDzP6vfrn/TvTVBKVai5efybRQ6iyEK00c5hAAAABWZ1bmMxAAAAAAAAAQAAAAoAAAAAAAAAAAAAAAJpRAUAAAAAAAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAFZnVuYzIAAAAAAAABAAAACgAAAAAAAAAAAAAAAmlEBQAAAAACAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jMwAAAAAAAAEAAAAKAAAAAAAAAAAAAAACaUQFAAAAAAIAAAAAAAAAAdeSi3LCcDzP6vfrn/TvTVBKVai5efybRQ6iyEK00c5hAAAABWZ1bmM0AAAAAAAAAQAAAAoAAAAAAAAAAAAAAAJpRAUAAAAAAAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAFZnVuYzUAAAAAAAABAAAACgAAAAAAAAAAAAAAAmlEBQAAAAABAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jNgAAAAAAAAEAAAAKAAAAAAAAAAAAAAACaUQFAAAAAAIAAAAAAAAAAdeSi3LCcDzP6vfrn/TvTVBKVai5efybRQ6iyEK00c5hAAAABWZ1bmM3AAAAAAAAAQAAAAoAAAAAAAAAAAAAAAJpRAUAAAAAAAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAFZnVuYzgAAAAAAAABAAAACgAAAAAAAAAAAAAAAmlEBQAAAAAAAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jOQAAAAAAAAEAAAAKAAAAAAAAAAAAAAACaUQFAAAAAAIAAAAAAAAAAdeSi3LCcDzP6vfrn/TvTVBKVai5efybRQ6iyEK00c5hAAAABmZ1bmMxMAAAAAAAAQAAAAoAAAAAAAAAAAAAAAJpRAUAAAAAAAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAGZnVuYzExAAAAAAABAAAACgAAAAAAAAAAAAAAAmlEBQAAAAAA"
+  return xdr.HashIdPreimage.fromXDR(raw, "base64");
+}
