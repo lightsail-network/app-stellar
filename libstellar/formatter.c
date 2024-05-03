@@ -2228,6 +2228,16 @@ static bool format_invoke_host_function_contract_id(formatter_data_t *fdata) {
 }
 
 static bool format_invoke_host_function(formatter_data_t *fdata) {
+    if (fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.sub_invocations_count &&
+        fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.sub_invocation_index !=
+            0) {
+        if (!parse_transaction_operation(fdata->raw_data,
+                                         fdata->raw_data_len,
+                                         fdata->envelope,
+                                         fdata->envelope->tx_details.tx.operation_index)) {
+            return false;
+        };
+    }
     switch (fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.host_function_type) {
         case HOST_FUNCTION_TYPE_INVOKE_CONTRACT:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
@@ -2392,6 +2402,13 @@ static bool get_tx_details_formatter(formatter_data_t *fdata) {
 }
 
 static bool format_soroban_authorization_sig_exp(formatter_data_t *fdata) {
+    if (fdata->envelope->soroban_authorization.sub_invocation_index != 0) {
+        if (!parse_soroban_authorization_envelope(fdata->raw_data,
+                                                  fdata->raw_data_len,
+                                                  fdata->envelope)) {
+            return false;
+        };
+    }
     STRLCPY(fdata->caption, "Sig Exp Ledger", fdata->caption_len);
     FORMATTER_CHECK(
         print_uint64_num(fdata->envelope->soroban_authorization.signature_expiration_ledger,
@@ -2474,12 +2491,6 @@ bool reset_formatter(formatter_data_t *fdata) {
     explicit_bzero(formatter_stack, sizeof(formatter_stack));
     formatter_index = 0;
     current_data_index = 0;
-    // hack for Stax
-    if (fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
-        return parse_soroban_authorization_envelope(fdata->raw_data,
-                                                    fdata->raw_data_len,
-                                                    fdata->envelope);
-    }
     return true;
 }
 
