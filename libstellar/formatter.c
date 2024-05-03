@@ -2194,7 +2194,7 @@ static bool format_invoke_host_function_func_name(formatter_data_t *fdata) {
     if (data_count == 0) {
         // we should not move control to plugin
         if (invoke_contract_args.parameters_length == 0) {
-            return format_operation_source_prepare(fdata);
+            return format_operation_source_prepare_for_soroban(fdata);
         } else {
             parameters_index = 0;
             FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args))
