@@ -2023,7 +2023,11 @@ static bool format_confirm_sub_invocation_invoke_host_function_contract_id(
 
 static bool format_confirm_sub_invocation_auth_function(formatter_data_t *fdata) {
     // PRINTF("function_type: %d\n", fdata->envelope->soroban_authorization.auth_function_type);
-    switch (fdata->envelope->soroban_authorization.auth_function_type) {
+    soroban_authorization_function_type_t auth_function_type =
+        fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION
+            ? fdata->envelope->soroban_authorization.auth_function_type
+            : fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.auth_function_type;
+    switch (auth_function_type) {
         case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
             STRLCPY(fdata->value, "Invoke Smart Contract", fdata->value_len);
