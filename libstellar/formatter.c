@@ -331,7 +331,6 @@ static bool format_operation_source(formatter_data_t *fdata) {
     return true;
 }
 
-// TODO: rename: prepare_format_operation_source
 static bool format_operation_source_prepare(formatter_data_t *fdata) {
     if (fdata->envelope->tx_details.tx.op_details.source_account_present) {
         // If the source exists, when the user clicks the next button,
@@ -2195,7 +2194,6 @@ static bool format_invoke_host_function_func_name(formatter_data_t *fdata) {
            invoke_contract_args.function.name,
            invoke_contract_args.function.name_size);
     fdata->value[invoke_contract_args.function.name_size] = '\0';
-    // TODO: review mark
     uint8_t data_count = should_move_control_to_plugin(fdata);
     if (data_count == 0) {
         // we should not move control to plugin
