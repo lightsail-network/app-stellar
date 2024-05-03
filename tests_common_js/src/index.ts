@@ -1606,6 +1606,389 @@ export function opInvokeHostFunctionTransferUSDC() {
   return TransactionBuilder.fromXDR(raw, Networks.PUBLIC);
 }
 
+export function opInvokeHostFunctionWithAuth() {
+  // from stellar_sdk import *
+  // from stellar_sdk import xdr
+
+  // kp0 = Keypair.from_secret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK")
+  // source = Account(kp0.public_key, 1234567890)
+  // scvals = [
+  //     scval.to_uint128(1),
+  //     scval.to_int128(2),
+  //     scval.to_uint256(3),
+  // ]
+
+  // tx = (
+  //     TransactionBuilder(source, Network.PUBLIC_NETWORK_PASSPHRASE, 500)
+  //     .append_invoke_contract_function_op(
+  //         contract_id="CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND",
+  //         function_name="testfunc",
+  //         parameters=scvals,
+  //         source=kp0.public_key,
+  //         auth=[
+  //             xdr.SorobanAuthorizationEntry(
+  //                 xdr.SorobanCredentials(
+  //                     xdr.SorobanCredentialsType.SOROBAN_CREDENTIALS_ADDRESS,
+  //                     xdr.SorobanAddressCredentials(
+  //                         Address(
+  //                             "GDUTHCF37UX32EMANXIL2WOOVEDZ47GHBTT3DYKU6EKM37SOIZXM2FN7"
+  //                         ).to_xdr_sc_address(),
+  //                         xdr.Int64(111324345),
+  //                         xdr.Uint32(34543543),
+  //                         scval.to_void(),
+  //                     ),
+  //                 ),
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("transfer").sym,
+  //                             args=[
+  //                                 scval.to_address(
+  //                                     "GCWNBLOHPARYAAF5W25NELURTERYS732Q7RRBTXRKBPGYCYLOFKCLKKA"
+  //                                 ),  # from
+  //                                 scval.to_address(
+  //                                     "GB42LIJ3V5KXCY32EFL4NL73OSI5PRCFJ3WNFMFX4QHGOAR7BFX2YC34"
+  //                                 ),  # to
+  //                                 scval.to_int128(399 * 10**5),
+  //                             ],
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[],
+  //                 ),
+  //             ),
+  //             xdr.SorobanAuthorizationEntry(
+  //                 xdr.SorobanCredentials(
+  //                     xdr.SorobanCredentialsType.SOROBAN_CREDENTIALS_SOURCE_ACCOUNT
+  //                 ),
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("testfunc").sym,
+  //                             args=scvals,
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("transfer").sym,
+  //                                     args=[
+  //                                         scval.to_address(
+  //                                             "GCWNBLOHPARYAAF5W25NELURTERYS732Q7RRBTXRKBPGYCYLOFKCLKKA"
+  //                                         ),  # from
+  //                                         scval.to_address(
+  //                                             "GB42LIJ3V5KXCY32EFL4NL73OSI5PRCFJ3WNFMFX4QHGOAR7BFX2YC34"
+  //                                         ),  # to
+  //                                         scval.to_int128(456 * 10**5),  # amount
+  //                                     ],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[],
+  //                         ),
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("approve").sym,
+  //                                     args=[
+  //                                         scval.to_address(
+  //                                             "GCWNBLOHPARYAAF5W25NELURTERYS732Q7RRBTXRKBPGYCYLOFKCLKKA"
+  //                                         ),  # from
+  //                                         scval.to_address(
+  //                                             "GB42LIJ3V5KXCY32EFL4NL73OSI5PRCFJ3WNFMFX4QHGOAR7BFX2YC34"
+  //                                         ),  # to
+  //                                         scval.to_int128(123 * 10**5),  # amount
+  //                                         scval.to_uint32(234524532),
+  //                                     ],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[],
+  //                         ),
+  //                     ],
+  //                 ),
+  //             ),
+  //         ],
+  //     )
+  //     .add_time_bounds(0, 0)
+  //     .build()
+  // )
+  // print(tx.to_xdr())
+
+  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAOkziLv9L70RgG3QvVnOqQeefMcM57HhVPEUzf5ORm7NAAAAGAAAAAAAAAABNh70VKwE/guWubBuo0QfwYJ4BWpDrsi3vWxiVftdKzYAAAAIdGVzdGZ1bmMAAAADAAAACQAAAAAAAAAAAAAAAAAAAAEAAAAKAAAAAAAAAAAAAAAAAAAAAgAAAAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAIAAAABAAAAAAAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAAAGoqy5Ag8XtwAAAAEAAAAAAAAAAa3vzlmu5Slo92Bh1JTCUlt1ZZ+kKWpl9JnvKeVkd+SWAAAACHRyYW5zZmVyAAAAAwAAABIAAAAAAAAAAKzQrcd4I4AAvba60i6RmSOJf3qH4xDO8VBebAsLcVQlAAAAEgAAAAAAAAAAeaWhO69VcWN6IVfGr/t0kdfERU7s0rC35A5nAj8Jb6wAAAAKAAAAAAAAAAAAAAAAAmDTYAAAAAAAAAAAAAAAAAAAAAE2HvRUrAT+C5a5sG6jRB/BgngFakOuyLe9bGJV+10rNgAAAAh0ZXN0ZnVuYwAAAAMAAAAJAAAAAAAAAAAAAAAAAAAAAQAAAAoAAAAAAAAAAAAAAAAAAAACAAAACwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAgAAAAAAAAABre/OWa7lKWj3YGHUlMJSW3Vln6QpamX0me8p5WR35JYAAAAIdHJhbnNmZXIAAAADAAAAEgAAAAAAAAAArNCtx3gjgAC9trrSLpGZI4l/eofjEM7xUF5sCwtxVCUAAAASAAAAAAAAAAB5paE7r1VxY3ohV8av+3SR18RFTuzSsLfkDmcCPwlvrAAAAAoAAAAAAAAAAAAAAAACt80AAAAAAAAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAHYXBwcm92ZQAAAAAEAAAAEgAAAAAAAAAArNCtx3gjgAC9trrSLpGZI4l/eofjEM7xUF5sCwtxVCUAAAASAAAAAAAAAAB5paE7r1VxY3ohV8av+3SR18RFTuzSsLfkDmcCPwlvrAAAAAoAAAAAAAAAAAAAAAAAu67gAAAAAw36j3QAAAAAAAAAAAAAAAA=";
+  return TransactionBuilder.fromXDR(raw, Networks.PUBLIC);
+}
+
+export function opInvokeHostFunctionWithAuthAndNoArgsAndNoSource() {
+  // from stellar_sdk import *
+  // from stellar_sdk import xdr
+
+  // kp0 = Keypair.from_secret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK")
+  // source = Account(kp0.public_key, 1234567890)
+  // scvals = []
+
+  // tx = (
+  //     TransactionBuilder(source, Network.PUBLIC_NETWORK_PASSPHRASE, 500)
+  //     .append_invoke_contract_function_op(
+  //         contract_id="CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND",
+  //         function_name="testfunc",
+  //         parameters=scvals,
+  //         auth=[
+  //             xdr.SorobanAuthorizationEntry(
+  //                 xdr.SorobanCredentials(
+  //                     xdr.SorobanCredentialsType.SOROBAN_CREDENTIALS_ADDRESS,
+  //                     xdr.SorobanAddressCredentials(
+  //                         Address(
+  //                             "GDUTHCF37UX32EMANXIL2WOOVEDZ47GHBTT3DYKU6EKM37SOIZXM2FN7"
+  //                         ).to_xdr_sc_address(),
+  //                         xdr.Int64(111324345),
+  //                         xdr.Uint32(34543543),
+  //                         scval.to_void(),
+  //                     ),
+  //                 ),
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("transfer").sym,
+  //                             args=[
+  //                                 scval.to_address(
+  //                                     "GCWNBLOHPARYAAF5W25NELURTERYS732Q7RRBTXRKBPGYCYLOFKCLKKA"
+  //                                 ),  # from
+  //                                 scval.to_address(
+  //                                     "GB42LIJ3V5KXCY32EFL4NL73OSI5PRCFJ3WNFMFX4QHGOAR7BFX2YC34"
+  //                                 ),  # to
+  //                                 scval.to_int128(399 * 10**5),
+  //                             ],
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[],
+  //                 ),
+  //             ),
+  //             xdr.SorobanAuthorizationEntry(
+  //                 xdr.SorobanCredentials(
+  //                     xdr.SorobanCredentialsType.SOROBAN_CREDENTIALS_SOURCE_ACCOUNT
+  //                 ),
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("testfunc").sym,
+  //                             args=scvals,
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("test").sym,
+  //                                     args=[],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[],
+  //                         ),
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("approve").sym,
+  //                                     args=[
+  //                                         scval.to_address(
+  //                                             "GCWNBLOHPARYAAF5W25NELURTERYS732Q7RRBTXRKBPGYCYLOFKCLKKA"
+  //                                         ),  # from
+  //                                         scval.to_address(
+  //                                             "GB42LIJ3V5KXCY32EFL4NL73OSI5PRCFJ3WNFMFX4QHGOAR7BFX2YC34"
+  //                                         ),  # to
+  //                                         scval.to_int128(123 * 10**5),  # amount
+  //                                         scval.to_uint32(234524532),
+  //                                     ],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[],
+  //                         ),
+  //                     ],
+  //                 ),
+  //             ),
+  //         ],
+  //     )
+  //     .add_time_bounds(0, 0)
+  //     .build()
+  // )
+  // print(tx.to_xdr())
+
+
+  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAABNh70VKwE/guWubBuo0QfwYJ4BWpDrsi3vWxiVftdKzYAAAAIdGVzdGZ1bmMAAAAAAAAAAgAAAAEAAAAAAAAAAOkziLv9L70RgG3QvVnOqQeefMcM57HhVPEUzf5ORm7NAAAAAAairLkCDxe3AAAAAQAAAAAAAAABre/OWa7lKWj3YGHUlMJSW3Vln6QpamX0me8p5WR35JYAAAAIdHJhbnNmZXIAAAADAAAAEgAAAAAAAAAArNCtx3gjgAC9trrSLpGZI4l/eofjEM7xUF5sCwtxVCUAAAASAAAAAAAAAAB5paE7r1VxY3ohV8av+3SR18RFTuzSsLfkDmcCPwlvrAAAAAoAAAAAAAAAAAAAAAACYNNgAAAAAAAAAAAAAAAAAAAAATYe9FSsBP4LlrmwbqNEH8GCeAVqQ67It71sYlX7XSs2AAAACHRlc3RmdW5jAAAAAAAAAAIAAAAAAAAAAa3vzlmu5Slo92Bh1JTCUlt1ZZ+kKWpl9JnvKeVkd+SWAAAABHRlc3QAAAAAAAAAAAAAAAAAAAABJbT82FmuwvpjSEOMSJs8PBDJi20hvk/TyzDLaJU++XcAAAAHYXBwcm92ZQAAAAAEAAAAEgAAAAAAAAAArNCtx3gjgAC9trrSLpGZI4l/eofjEM7xUF5sCwtxVCUAAAASAAAAAAAAAAB5paE7r1VxY3ohV8av+3SR18RFTuzSsLfkDmcCPwlvrAAAAAoAAAAAAAAAAAAAAAAAu67gAAAAAw36j3QAAAAAAAAAAAAAAAA=";
+  return TransactionBuilder.fromXDR(raw, Networks.PUBLIC);
+}
+
+
+export function opInvokeHostFunctionWithAuthAndNoArgs() {
+  // from stellar_sdk import *
+  // from stellar_sdk import xdr
+
+  // kp0 = Keypair.from_secret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK")
+  // source = Account(kp0.public_key, 1234567890)
+  // scvals = []
+
+  // tx = (
+  //     TransactionBuilder(source, Network.PUBLIC_NETWORK_PASSPHRASE, 500)
+  //     .append_invoke_contract_function_op(
+  //         contract_id="CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND",
+  //         function_name="testfunc",
+  //         parameters=scvals,
+  //         source=kp0.public_key,
+  //         auth=[
+  //             xdr.SorobanAuthorizationEntry(
+  //                 xdr.SorobanCredentials(
+  //                     xdr.SorobanCredentialsType.SOROBAN_CREDENTIALS_ADDRESS,
+  //                     xdr.SorobanAddressCredentials(
+  //                         Address(
+  //                             "GDUTHCF37UX32EMANXIL2WOOVEDZ47GHBTT3DYKU6EKM37SOIZXM2FN7"
+  //                         ).to_xdr_sc_address(),
+  //                         xdr.Int64(111324345),
+  //                         xdr.Uint32(34543543),
+  //                         scval.to_void(),
+  //                     ),
+  //                 ),
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("transfer").sym,
+  //                             args=[
+  //                                 scval.to_address(
+  //                                     "GCWNBLOHPARYAAF5W25NELURTERYS732Q7RRBTXRKBPGYCYLOFKCLKKA"
+  //                                 ),  # from
+  //                                 scval.to_address(
+  //                                     "GB42LIJ3V5KXCY32EFL4NL73OSI5PRCFJ3WNFMFX4QHGOAR7BFX2YC34"
+  //                                 ),  # to
+  //                                 scval.to_int128(399 * 10**5),
+  //                             ],
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[],
+  //                 ),
+  //             ),
+  //             xdr.SorobanAuthorizationEntry(
+  //                 xdr.SorobanCredentials(
+  //                     xdr.SorobanCredentialsType.SOROBAN_CREDENTIALS_SOURCE_ACCOUNT
+  //                 ),
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("testfunc").sym,
+  //                             args=scvals,
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("test").sym,
+  //                                     args=[],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[],
+  //                         ),
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("approve").sym,
+  //                                     args=[
+  //                                         scval.to_address(
+  //                                             "GCWNBLOHPARYAAF5W25NELURTERYS732Q7RRBTXRKBPGYCYLOFKCLKKA"
+  //                                         ),  # from
+  //                                         scval.to_address(
+  //                                             "GB42LIJ3V5KXCY32EFL4NL73OSI5PRCFJ3WNFMFX4QHGOAR7BFX2YC34"
+  //                                         ),  # to
+  //                                         scval.to_int128(123 * 10**5),  # amount
+  //                                         scval.to_uint32(234524532),
+  //                                     ],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[],
+  //                         ),
+  //                     ],
+  //                 ),
+  //             ),
+  //         ],
+  //     )
+  //     .add_time_bounds(0, 0)
+  //     .build()
+  // )
+  // print(tx.to_xdr())
+
+
+
+  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAABNh70VKwE/guWubBuo0QfwYJ4BWpDrsi3vWxiVftdKzYAAAAIdGVzdGZ1bmMAAAAAAAAAAgAAAAEAAAAAAAAAAOkziLv9L70RgG3QvVnOqQeefMcM57HhVPEUzf5ORm7NAAAAAAairLkCDxe3AAAAAQAAAAAAAAABre/OWa7lKWj3YGHUlMJSW3Vln6QpamX0me8p5WR35JYAAAAIdHJhbnNmZXIAAAADAAAAEgAAAAAAAAAArNCtx3gjgAC9trrSLpGZI4l/eofjEM7xUF5sCwtxVCUAAAASAAAAAAAAAAB5paE7r1VxY3ohV8av+3SR18RFTuzSsLfkDmcCPwlvrAAAAAoAAAAAAAAAAAAAAAACYNNgAAAAAAAAAAAAAAAAAAAAATYe9FSsBP4LlrmwbqNEH8GCeAVqQ67It71sYlX7XSs2AAAACHRlc3RmdW5jAAAAAAAAAAIAAAAAAAAAAa3vzlmu5Slo92Bh1JTCUlt1ZZ+kKWpl9JnvKeVkd+SWAAAABHRlc3QAAAAAAAAAAAAAAAAAAAABJbT82FmuwvpjSEOMSJs8PBDJi20hvk/TyzDLaJU++XcAAAAHYXBwcm92ZQAAAAAEAAAAEgAAAAAAAAAArNCtx3gjgAC9trrSLpGZI4l/eofjEM7xUF5sCwtxVCUAAAASAAAAAAAAAAB5paE7r1VxY3ohV8av+3SR18RFTuzSsLfkDmcCPwlvrAAAAAoAAAAAAAAAAAAAAAAAu67gAAAAAw36j3QAAAAAAAAAAAAAAAA=";
+  return TransactionBuilder.fromXDR(raw, Networks.PUBLIC);
+}
+
+export function opInvokeHostFunctionWithoutAuthAndNoSource() {
+  // from stellar_sdk import *
+  // from stellar_sdk import xdr
+
+  // kp0 = Keypair.from_secret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK")
+  // source = Account(kp0.public_key, 1234567890)
+  // scvals = []
+
+  // tx = (
+  //     TransactionBuilder(source, Network.PUBLIC_NETWORK_PASSPHRASE, 500)
+  //     .append_invoke_contract_function_op(
+  //         contract_id="CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND",
+  //         function_name="testfunc",
+  //         parameters=scvals,
+  //     )
+  //     .add_time_bounds(0, 0)
+  //     .build()
+  // )
+  // print(tx.to_xdr())
+
+  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAABNh70VKwE/guWubBuo0QfwYJ4BWpDrsi3vWxiVftdKzYAAAAIdGVzdGZ1bmMAAAAAAAAAAAAAAAAAAAAA";
+  return TransactionBuilder.fromXDR(raw, Networks.PUBLIC);
+}
 
 export function opInvokeHostFunctionApproveUSDC() {
   // import time
