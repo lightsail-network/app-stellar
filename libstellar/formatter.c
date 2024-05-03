@@ -2470,6 +2470,7 @@ static uint8_t get_data_count(formatter_data_t *fdata) {
 }
 
 bool reset_formatter(formatter_data_t *fdata) {
+    // TODO: fix back button?
     explicit_bzero(formatter_stack, sizeof(formatter_stack));
     formatter_index = 0;
     current_data_index = 0;
