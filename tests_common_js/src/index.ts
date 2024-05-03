@@ -1518,7 +1518,7 @@ export function opInvokeHostFunctionAssetApprove() {
   return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
 }
 
-export function opInvokeHostFunctionTransferXLM() {
+export function opInvokeHostFunctionTransferXlm() {
   // import time
 
   // from stellar_sdk import Keypair, Network, SorobanServer, TransactionBuilder, scval
@@ -1562,7 +1562,7 @@ export function opInvokeHostFunctionTransferXLM() {
   return TransactionBuilder.fromXDR(raw, Networks.PUBLIC);
 }
 
-export function opInvokeHostFunctionTransferUSDC() {
+export function opInvokeHostFunctionTransferUsdc() {
   // import time
 
   // from stellar_sdk import Keypair, Network, SorobanServer, TransactionBuilder, scval
@@ -1988,7 +1988,7 @@ export function opInvokeHostFunctionWithoutAuthAndNoSource() {
   return TransactionBuilder.fromXDR(raw, Networks.PUBLIC);
 }
 
-export function opInvokeHostFunctionApproveUSDC() {
+export function opInvokeHostFunctionApproveUsdc() {
   // import time
 
   // from stellar_sdk import Keypair, Network, SorobanServer, TransactionBuilder, scval
