@@ -2228,6 +2228,7 @@ static bool format_invoke_host_function_contract_id(formatter_data_t *fdata) {
 }
 
 static bool format_invoke_host_function(formatter_data_t *fdata) {
+    // avoid the host function op be overwritten by the sub-invocation
     if (fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.sub_invocations_count) {
         if (!parse_transaction_operation(fdata->raw_data,
                                          fdata->raw_data_len,
@@ -2400,11 +2401,6 @@ static bool get_tx_details_formatter(formatter_data_t *fdata) {
 }
 
 static bool format_soroban_authorization_sig_exp(formatter_data_t *fdata) {
-    if (!parse_soroban_authorization_envelope(fdata->raw_data,
-                                              fdata->raw_data_len,
-                                              fdata->envelope)) {
-        return false;
-    };
     STRLCPY(fdata->caption, "Sig Exp Ledger", fdata->caption_len);
     FORMATTER_CHECK(
         print_uint64_num(fdata->envelope->soroban_authorization.signature_expiration_ledger,
@@ -2415,6 +2411,12 @@ static bool format_soroban_authorization_sig_exp(formatter_data_t *fdata) {
 }
 
 static bool format_soroban_authorization_nonce(formatter_data_t *fdata) {
+    // avoid the root invoke_contract_args be overwritten by the sub-invocation
+    if (!parse_soroban_authorization_envelope(fdata->raw_data,
+                                              fdata->raw_data_len,
+                                              fdata->envelope)) {
+        return false;
+    };
     STRLCPY(fdata->caption, "Nonce", fdata->caption_len);
     FORMATTER_CHECK(print_uint64_num(fdata->envelope->soroban_authorization.nonce,
                                      fdata->value,
