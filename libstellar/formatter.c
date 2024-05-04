@@ -2228,9 +2228,7 @@ static bool format_invoke_host_function_contract_id(formatter_data_t *fdata) {
 }
 
 static bool format_invoke_host_function(formatter_data_t *fdata) {
-    if (fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.sub_invocations_count &&
-        fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.sub_invocation_index !=
-            0) {
+    if (fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.sub_invocations_count) {
         if (!parse_transaction_operation(fdata->raw_data,
                                          fdata->raw_data_len,
                                          fdata->envelope,
@@ -2402,13 +2400,11 @@ static bool get_tx_details_formatter(formatter_data_t *fdata) {
 }
 
 static bool format_soroban_authorization_sig_exp(formatter_data_t *fdata) {
-    if (fdata->envelope->soroban_authorization.sub_invocation_index != 0) {
-        if (!parse_soroban_authorization_envelope(fdata->raw_data,
-                                                  fdata->raw_data_len,
-                                                  fdata->envelope)) {
-            return false;
-        };
-    }
+    if (!parse_soroban_authorization_envelope(fdata->raw_data,
+                                              fdata->raw_data_len,
+                                              fdata->envelope)) {
+        return false;
+    };
     STRLCPY(fdata->caption, "Sig Exp Ledger", fdata->caption_len);
     FORMATTER_CHECK(
         print_uint64_num(fdata->envelope->soroban_authorization.signature_expiration_ledger,
@@ -2488,6 +2484,7 @@ static uint8_t get_data_count(formatter_data_t *fdata) {
 
 bool reset_formatter(formatter_data_t *fdata) {
     // TODO: fix back button?
+    (void) fdata;
     explicit_bzero(formatter_stack, sizeof(formatter_stack));
     formatter_index = 0;
     current_data_index = 0;
