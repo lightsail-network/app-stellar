@@ -2246,6 +2246,7 @@ static bool format_invoke_host_function(formatter_data_t *fdata) {
         case HOST_FUNCTION_TYPE_CREATE_CONTRACT:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
             STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
+            // we dont need to care the sub-invocation here
             return format_operation_source_prepare(fdata);
             break;
         case HOST_FUNCTION_TYPE_UPLOAD_CONTRACT_WASM:
@@ -2269,6 +2270,7 @@ static bool format_auth_function(formatter_data_t *fdata) {
         case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
             STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
+            // we dont need to care the sub-invocation here
             FORMATTER_CHECK(push_to_formatter_stack(NULL))
             break;
         default:
