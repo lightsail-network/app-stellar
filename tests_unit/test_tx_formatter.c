@@ -10,7 +10,7 @@
 #include "stellar/formatter.h"
 #include "stellar/parser.h"
 
-#define MAX_ENVELOPE_SIZE 1024
+#define MAX_ENVELOPE_SIZE 2048
 #define MAX_CAPTION_SIZE  21
 #define MAX_VALUE_SIZE    105
 
@@ -65,6 +65,7 @@ const char *testcases[] = {
     "../testcases/opInvokeHostFunctionTransferXlm.raw",
     "../testcases/opInvokeHostFunctionTransferUsdc.raw",
     "../testcases/opInvokeHostFunctionApproveUsdc.raw",
+    "../testcases/opInvokeHostFunctionWithComplexSubInvocation.raw",
     "../testcases/opManageDataAdd.raw",
     "../testcases/opManageDataAddWithUnprintableData.raw",
     "../testcases/opManageDataRemove.raw",
@@ -190,7 +191,7 @@ void test_format_envelope(void **state) {
                               .caption_len = MAX_CAPTION_SIZE,
                               .display_sequence = true};
 
-    char output[1024] = {0};
+    char output[4096] = {0};
     bool data_exists = true;
     bool is_op_header = false;
     assert_true(reset_formatter(&fdata));
@@ -208,10 +209,10 @@ void test_format_envelope(void **state) {
         strcat(output, temp);
     }
 
-    char expected_result[1024] = {0};
+    char expected_result[4096] = {0};
     FILE *result_file = fopen(result_filename, "r");
     assert_non_null(result_file);
-    fread(expected_result, sizeof(char), 1024, result_file);
+    fread(expected_result, sizeof(char), 4096, result_file);
     assert_string_equal(output, expected_result);
 
     fclose(file);

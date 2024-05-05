@@ -8,7 +8,7 @@
 #include <cmocka.h>
 #include "stellar/parser.h"
 
-#define MAX_ENVELOPE_SIZE 1024
+#define MAX_ENVELOPE_SIZE 2048
 
 const char *testcases[] = {
     "../testcases/opCreateAccount.raw",
@@ -61,6 +61,7 @@ const char *testcases[] = {
     "../testcases/opInvokeHostFunctionTransferXlm.raw",
     "../testcases/opInvokeHostFunctionTransferUsdc.raw",
     "../testcases/opInvokeHostFunctionApproveUsdc.raw",
+    "../testcases/opInvokeHostFunctionWithComplexSubInvocation.raw",
     "../testcases/opManageDataAdd.raw",
     "../testcases/opManageDataAddWithUnprintableData.raw",
     "../testcases/opManageDataRemove.raw",

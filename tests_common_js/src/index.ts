@@ -1362,6 +1362,207 @@ export function opInvokeHostFunctionTestPlugin() {
   return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
 }
 
+export function opInvokeHostFunctionWithComplexSubInvocation() {
+  // from stellar_sdk import *
+  // from stellar_sdk import xdr
+
+  // kp0 = Keypair.from_secret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK")
+  // source = Account(kp0.public_key, 1234567890)
+  // scvals = [
+  //     scval.to_uint128(1),
+  //     scval.to_int128(2),
+  //     scval.to_uint256(3),
+  // ]
+
+  // tx = (
+  //     TransactionBuilder(source, Network.PUBLIC_NETWORK_PASSPHRASE, 500)
+  //     .append_invoke_contract_function_op(
+  //         contract_id="CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND",
+  //         function_name="rootfunc",
+  //         parameters=scvals,
+  //         source=kp0.public_key,
+  //         auth=[
+  //             xdr.SorobanAuthorizationEntry(
+  //                 xdr.SorobanCredentials(
+  //                     xdr.SorobanCredentialsType.SOROBAN_CREDENTIALS_SOURCE_ACCOUNT
+  //                 ),
+  //                 xdr.SorobanAuthorizedInvocation(
+  //                     function=xdr.SorobanAuthorizedFunction(
+  //                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                         contract_fn=xdr.InvokeContractArgs(
+  //                             contract_address=Address(
+  //                                 "CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND"
+  //                             ).to_xdr_sc_address(),
+  //                             function_name=scval.to_symbol("rootfunc").sym,
+  //                             args=scvals,
+  //                         ),
+  //                     ),
+  //                     sub_invocations=[
+  //                         xdr.SorobanAuthorizedInvocation(
+  //                             function=xdr.SorobanAuthorizedFunction(
+  //                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                 contract_fn=xdr.InvokeContractArgs(
+  //                                     contract_address=Address(
+  //                                         "CA3B55CUVQCP4C4WXGYG5I2ED7AYE6AFNJB25SFXXVWGEVP3LUVTN7ND"
+  //                                     ).to_xdr_sc_address(),
+  //                                     function_name=scval.to_symbol("func0").sym,
+  //                                     args=[
+  //                                         scval.to_int128(103560 * 10**5),
+  //                                     ],
+  //                                 ),
+  //                             ),
+  //                             sub_invocations=[
+  //                                 xdr.SorobanAuthorizedInvocation(
+  //                                     function=xdr.SorobanAuthorizedFunction(
+  //                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                         contract_fn=xdr.InvokeContractArgs(
+  //                                             contract_address=Address(
+  //                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                             ).to_xdr_sc_address(),
+  //                                             function_name=scval.to_symbol("func1").sym,
+  //                                             args=[],
+  //                                         ),
+  //                                     ),
+  //                                     sub_invocations=[],
+  //                                 ),
+  //                                 xdr.SorobanAuthorizedInvocation(
+  //                                     function=xdr.SorobanAuthorizedFunction(
+  //                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                         contract_fn=xdr.InvokeContractArgs(
+  //                                             contract_address=Address(
+  //                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                             ).to_xdr_sc_address(),
+  //                                             function_name=scval.to_symbol("func2").sym,
+  //                                             args=[],
+  //                                         ),
+  //                                     ),
+  //                                     sub_invocations=[
+  //                                         xdr.SorobanAuthorizedInvocation(
+  //                                             function=xdr.SorobanAuthorizedFunction(
+  //                                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN,
+  //                                                 create_contract_host_fn=xdr.CreateContractArgs(
+  //                                                     contract_id_preimage=xdr.ContractIDPreimage(
+  //                                                         xdr.ContractIDPreimageType.CONTRACT_ID_PREIMAGE_FROM_ADDRESS,
+  //                                                         from_address=xdr.ContractIDPreimageFromAddress(
+  //                                                             address=Address(
+  //                                                                 "GB42LIJ3V5KXCY32EFL4NL73OSI5PRCFJ3WNFMFX4QHGOAR7BFX2YC34"
+  //                                                             ).to_xdr_sc_address(),
+  //                                                             salt=xdr.Uint256(
+  //                                                                 b"\xd9\x9f\x1f\xee4N\xeb\xd80}\xeb\x9f\xf4$W\xd8\xdb\x12\xeeS')\x18\xfe48\x02q\xc1\xd4\x10\n"
+  //                                                             ),
+  //                                                         ),
+  //                                                     ),
+  //                                                     executable=xdr.ContractExecutable(
+  //                                                         xdr.ContractExecutableType.CONTRACT_EXECUTABLE_WASM,
+  //                                                         xdr.Hash(
+  //                                                             b"\xd9\x9f\x1f\xee4N\xeb\xd80}\xeb\x9f\xf4$W\xd8\xdb\x12\xeeS')\x18\xfe48\x02q\xc1\xd4\x10\n"
+  //                                                         ),
+  //                                                     ),
+  //                                                 ),
+  //                                             ),
+  //                                             sub_invocations=[
+  //                                                 xdr.SorobanAuthorizedInvocation(
+  //                                                     function=xdr.SorobanAuthorizedFunction(
+  //                                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                                         contract_fn=xdr.InvokeContractArgs(
+  //                                                             contract_address=Address(
+  //                                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                                             ).to_xdr_sc_address(),
+  //                                                             function_name=scval.to_symbol(
+  //                                                                 "func4"
+  //                                                             ).sym,
+  //                                                             args=[],
+  //                                                         ),
+  //                                                     ),
+  //                                                     sub_invocations=[],
+  //                                                 ),
+  //                                                 xdr.SorobanAuthorizedInvocation(
+  //                                                     function=xdr.SorobanAuthorizedFunction(
+  //                                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                                         contract_fn=xdr.InvokeContractArgs(
+  //                                                             contract_address=Address(
+  //                                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                                             ).to_xdr_sc_address(),
+  //                                                             function_name=scval.to_symbol(
+  //                                                                 "func5"
+  //                                                             ).sym,
+  //                                                             args=[scval.to_void()],
+  //                                                         ),
+  //                                                     ),
+  //                                                     sub_invocations=[
+  //                                                         xdr.SorobanAuthorizedInvocation(
+  //                                                             function=xdr.SorobanAuthorizedFunction(
+  //                                                                 xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                                                 contract_fn=xdr.InvokeContractArgs(
+  //                                                                     contract_address=Address(
+  //                                                                         "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                                                     ).to_xdr_sc_address(),
+  //                                                                     function_name=scval.to_symbol(
+  //                                                                         "func6"
+  //                                                                     ).sym,
+  //                                                                     args=[
+  //                                                                         scval.to_void()
+  //                                                                     ],
+  //                                                                 ),
+  //                                                             ),
+  //                                                             sub_invocations=[
+  //                                                                 xdr.SorobanAuthorizedInvocation(
+  //                                                                     function=xdr.SorobanAuthorizedFunction(
+  //                                                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                                                         contract_fn=xdr.InvokeContractArgs(
+  //                                                                             contract_address=Address(
+  //                                                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                                                             ).to_xdr_sc_address(),
+  //                                                                             function_name=scval.to_symbol(
+  //                                                                                 "func7"
+  //                                                                             ).sym,
+  //                                                                             args=[
+  //                                                                                 scval.to_void()
+  //                                                                             ],
+  //                                                                         ),
+  //                                                                     ),
+  //                                                                     sub_invocations=[],
+  //                                                                 ),
+  //                                                                 xdr.SorobanAuthorizedInvocation(
+  //                                                                     function=xdr.SorobanAuthorizedFunction(
+  //                                                                         xdr.SorobanAuthorizedFunctionType.SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN,
+  //                                                                         contract_fn=xdr.InvokeContractArgs(
+  //                                                                             contract_address=Address(
+  //                                                                                 "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
+  //                                                                             ).to_xdr_sc_address(),
+  //                                                                             function_name=scval.to_symbol(
+  //                                                                                 "func8"
+  //                                                                             ).sym,
+  //                                                                             args=[
+  //                                                                                 scval.to_void()
+  //                                                                             ],
+  //                                                                         ),
+  //                                                                     ),
+  //                                                                     sub_invocations=[],
+  //                                                                 ),
+  //                                                             ],
+  //                                                         )
+  //                                                     ],
+  //                                                 ),
+  //                                             ],
+  //                                         ),
+  //                                     ],
+  //                                 ),
+  //                             ],
+  //                         )
+  //                     ],
+  //                 ),
+  //             ),
+  //         ],
+  //     )
+  //     .add_time_bounds(0, 0)
+  //     .build()
+  // )
+  // print(tx.to_xdr())
+  const raw = "AAAAAgAAAADpM4i7/S+9EYBt0L1ZzqkHnnzHDOex4VTxFM3+TkZuzQAAAfQAAAAASZYC0wAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAOkziLv9L70RgG3QvVnOqQeefMcM57HhVPEUzf5ORm7NAAAAGAAAAAAAAAABNh70VKwE/guWubBuo0QfwYJ4BWpDrsi3vWxiVftdKzYAAAAIcm9vdGZ1bmMAAAADAAAACQAAAAAAAAAAAAAAAAAAAAEAAAAKAAAAAAAAAAAAAAAAAAAAAgAAAAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAEAAAAAAAAAAAAAAAE2HvRUrAT+C5a5sG6jRB/BgngFakOuyLe9bGJV+10rNgAAAAhyb290ZnVuYwAAAAMAAAAJAAAAAAAAAAAAAAAAAAAAAQAAAAoAAAAAAAAAAAAAAAAAAAACAAAACwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAQAAAAAAAAABNh70VKwE/guWubBuo0QfwYJ4BWpDrsi3vWxiVftdKzYAAAAFZnVuYzAAAAAAAAABAAAACgAAAAAAAAAAAAAAAmlEBQAAAAACAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jMQAAAAAAAAAAAAAAAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jMgAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAHmloTuvVXFjeiFXxq/7dJHXxEVO7NKwt+QOZwI/CW+s2Z8f7jRO69gwfeuf9CRX2NsS7lMnKRj+NDgCccHUEAoAAAAA2Z8f7jRO69gwfeuf9CRX2NsS7lMnKRj+NDgCccHUEAoAAAACAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jNAAAAAAAAAAAAAAAAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jNQAAAAAAAAEAAAABAAAAAQAAAAAAAAAB15KLcsJwPM/q9+uf9O9NUEpVqLl5/JtFDqLIQrTRzmEAAAAFZnVuYzYAAAAAAAABAAAAAQAAAAIAAAAAAAAAAdeSi3LCcDzP6vfrn/TvTVBKVai5efybRQ6iyEK00c5hAAAABWZ1bmM3AAAAAAAAAQAAAAEAAAAAAAAAAAAAAAHXkotywnA8z+r365/0701QSlWouXn8m0UOoshCtNHOYQAAAAVmdW5jOAAAAAAAAAEAAAABAAAAAAAAAAAAAAAA"
+  return TransactionBuilder.fromXDR(raw, Networks.TESTNET);
+}
+
 export function opInvokeHostFunctionAssetTransfer() {
   // import time
 
