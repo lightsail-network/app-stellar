@@ -24,7 +24,6 @@ Contract ID; CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 Function; func2
 Nested Authorization; 4 of 9
 Soroban; Create Smart Contract
-;
 Nested Authorization; 5 of 9
 Soroban; Invoke Smart Contract
 Contract ID; CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC

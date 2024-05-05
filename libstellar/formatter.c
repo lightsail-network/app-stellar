@@ -1988,7 +1988,7 @@ static bool format_sub_invocation_auth_function(formatter_data_t *fdata) {
         case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
             STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
-            FORMATTER_CHECK(push_to_formatter_stack(&format_next_sub_invocation));
+            FORMATTER_CHECK(format_next_sub_invocation(fdata));
             break;
         default:
             return false;
