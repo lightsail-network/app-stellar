@@ -67,7 +67,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (!parse_soroban_authorization_envelope(auth_fdata, size, &envelope)) {
         return 0;
     }
-    reset_formatter();
+    if (!reset_formatter(&fdata)) {
+        return 0;
+    }
 
     while (true) {
         if (!get_next_data(&tx_fdata, true, &data_exists, &is_op_header)) {
