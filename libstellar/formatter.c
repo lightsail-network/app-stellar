@@ -13,6 +13,12 @@
 #include "stellar/printer.h"
 #include "stellar/plugin.h"
 
+#if defined(TARGET_NANOS)
+#define INVOKE_SMART_CONTRACT "Invoke Contract"
+#else
+#define INVOKE_SMART_CONTRACT "Invoke Smart Contract"
+#endif
+
 /*
  * the formatter prints the details and defines the order of the details
  * by setting the next formatter to be called
@@ -1981,7 +1987,7 @@ static bool format_sub_invocation_auth_function(formatter_data_t *fdata) {
     switch (auth_function_type) {
         case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
-            STRLCPY(fdata->value, "Invoke Smart Contract", fdata->value_len);
+            STRLCPY(fdata->value, INVOKE_SMART_CONTRACT, fdata->value_len);
             FORMATTER_CHECK(
                 push_to_formatter_stack(&format_sub_invocation_invoke_host_function_contract_id));
             break;
@@ -2240,7 +2246,7 @@ static bool format_invoke_host_function(formatter_data_t *fdata) {
     switch (fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.host_function_type) {
         case HOST_FUNCTION_TYPE_INVOKE_CONTRACT:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
-            STRLCPY(fdata->value, "Invoke Smart Contract", fdata->value_len);
+            STRLCPY(fdata->value, INVOKE_SMART_CONTRACT, fdata->value_len);
             FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_contract_id));
             break;
         case HOST_FUNCTION_TYPE_CREATE_CONTRACT:
@@ -2264,7 +2270,7 @@ static bool format_auth_function(formatter_data_t *fdata) {
     switch (fdata->envelope->soroban_authorization.auth_function_type) {
         case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
-            STRLCPY(fdata->value, "Invoke Smart Contract", fdata->value_len);
+            STRLCPY(fdata->value, INVOKE_SMART_CONTRACT, fdata->value_len);
             FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_contract_id));
             break;
         case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_HOST_FN:
