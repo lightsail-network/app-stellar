@@ -18,8 +18,8 @@
 				"ms-vscode.cpptools-extension-pack"
 			],
 			"settings": {
+				"terminal.integrated.defaultProfile.linux": "fish",
 				"terminal.integrated.shell.linux": {
-					"terminal.integrated.defaultProfile.linux": "fish",
 					"fish": {
 						"path": "/usr/bin/fish"
 					}
