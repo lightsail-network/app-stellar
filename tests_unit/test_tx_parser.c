@@ -62,6 +62,7 @@ const char *testcases[] = {
     "../testcases/opInvokeHostFunctionTransferUsdc.raw",
     "../testcases/opInvokeHostFunctionApproveUsdc.raw",
     "../testcases/opInvokeHostFunctionWithComplexSubInvocation.raw",
+    "../testcases/opInvokeHostFunctionTestPlugin.raw",
     "../testcases/opManageDataAdd.raw",
     "../testcases/opManageDataAddWithUnprintableData.raw",
     "../testcases/opManageDataRemove.raw",

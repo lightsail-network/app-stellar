@@ -21,6 +21,7 @@ const char *testcases[] = {
     "../testcases/sorobanAuthTestnet.raw",
     "../testcases/sorobanAuthUnknownNetwork.raw",
     "../testcases/sorobanAuthInvokeContractWithComplexSubInvocation.raw",
+    "../testcases/sorobanAuthInvokeContractTestPlugin.raw",
 };
 
 static bool is_string_empty(const char *str) {
