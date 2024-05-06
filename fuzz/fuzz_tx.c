@@ -38,7 +38,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         .display_sequence = true,
     };
 
-    if (!reset_formatter(&fdata)) {
+    if (!reset_formatter(&tx_fdata)) {
         return 0;
     }
 
@@ -67,7 +67,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (!parse_soroban_authorization_envelope(auth_fdata, size, &envelope)) {
         return 0;
     }
-    if (!reset_formatter(&fdata)) {
+    if (!reset_formatter(&tx_fdata)) {
         return 0;
     }
 
