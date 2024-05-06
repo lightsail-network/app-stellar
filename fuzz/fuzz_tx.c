@@ -52,7 +52,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         }
     }
 
-    formatter_data_t = {
+    formatter_data_t auth_fdata = {
         .raw_data = data,
         .raw_data_len = size,
         .envelope = &envelope,
@@ -64,15 +64,15 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         .display_sequence = true,
     };
     memset(&envelope, 0, sizeof(envelope_t));
-    if (!parse_soroban_authorization_envelope(auth_fdata, size, &envelope)) {
+    if (!parse_soroban_authorization_envelope(data, size, &envelope)) {
         return 0;
     }
-    if (!reset_formatter(&tx_fdata)) {
+    if (!reset_formatter(&auth_fdata)) {
         return 0;
     }
 
     while (true) {
-        if (!get_next_data(&tx_fdata, true, &data_exists, &is_op_header)) {
+        if (!get_next_data(&auth_fdata, true, &data_exists, &is_op_header)) {
             return 0;
         }
 
