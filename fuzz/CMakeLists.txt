@@ -27,7 +27,6 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -pedantic -g -O0")
 
-
 # guard against in-source builds
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
@@ -37,8 +36,10 @@ add_compile_definitions(TEST)
 add_definitions("-DIO_SEPROXYHAL_BUFFER_SIZE_B=128") # cmake -DIO_SEPROXYHAL_BUFFER_SIZE_B=128
 add_definitions("-DTARGET_NANOS=1")
 
-add_library(bsd STATIC IMPORTED)
-set_property(TARGET bsd PROPERTY IMPORTED_LOCATION /lib/x86_64-linux-gnu/libbsd.a)
+find_library(BSD_LIBRARY NAMES bsd)
+if (NOT BSD_LIBRARY)
+    message(FATAL_ERROR "Could not find libbsd library")
+endif()
 
 include_directories(../libstellar/include)
 include_directories(${BOLOS_SDK}/lib_standard_app)
@@ -70,4 +71,4 @@ message(${COMPILATION_FLAGS})
 add_executable(fuzz_tx fuzz_tx.c)
 target_compile_options(fuzz_tx PRIVATE ${COMPILATION_FLAGS})
 target_link_options(fuzz_tx PRIVATE ${COMPILATION_FLAGS})
-target_link_libraries(fuzz_tx PRIVATE formatter parser printer format base64 base32 buffer bip32 varint write read bsd)
+target_link_libraries(fuzz_tx PRIVATE formatter parser printer format base64 base32 buffer bip32 varint write read ${BSD_LIBRARY})
