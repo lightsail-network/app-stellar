@@ -11,6 +11,9 @@
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     envelope_t envelope;
+    bool data_exists = true;
+    bool is_op_header = false;
+
     memset(&envelope, 0, sizeof(envelope_t));
     if (!parse_transaction_envelope(data, size, &envelope)) {
         return 0;
@@ -23,7 +26,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
                              0xbd, 0x59, 0xce, 0xa9, 0x7,  0x9e, 0x7c, 0xc7, 0xc,  0xe7, 0xb1,
                              0xe1, 0x54, 0xf1, 0x14, 0xcd, 0xfe, 0x4e, 0x46, 0x6e, 0xcd};
 
-    formatter_data_t fdata = {
+    formatter_data_t tx_fdata = {
         .raw_data = data,
         .raw_data_len = size,
         .envelope = &envelope,
@@ -37,11 +40,35 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     reset_formatter();
 
-    bool data_exists = true;
-    bool is_op_header = false;
+    while (true) {
+        if (!get_next_data(&tx_fdata, true, &data_exists, &is_op_header)) {
+            return 0;
+        }
+
+        if (!data_exists) {
+            break;
+        }
+    }
+
+    formatter_data_t = {
+        .raw_data = data,
+        .raw_data_len = size,
+        .envelope = &envelope,
+        .caption = detail_caption,
+        .value = detail_value,
+        .signing_key = signing_key,
+        .caption_len = DETAIL_CAPTION_MAX_LENGTH,
+        .value_len = DETAIL_VALUE_MAX_LENGTH,
+        .display_sequence = true,
+    };
+    memset(&envelope, 0, sizeof(envelope_t));
+    if (!parse_soroban_authorization_envelope(auth_fdata, size, &envelope)) {
+        return 0;
+    }
+    reset_formatter();
 
     while (true) {
-        if (!get_next_data(&fdata, true, &data_exists, &is_op_header)) {
+        if (!get_next_data(&tx_fdata, true, &data_exists, &is_op_header)) {
             return 0;
         }
 
