@@ -6,7 +6,7 @@
 #include "stellar/parser.h"
 #include "stellar/formatter.h"
 
-#define DETAIL_CAPTION_MAX_LENGTH 20
+#define DETAIL_CAPTION_MAX_LENGTH 21
 #define DETAIL_VALUE_MAX_LENGTH   105
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
