@@ -38,7 +38,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         .display_sequence = true,
     };
 
-    reset_formatter();
+    if (!reset_formatter(&fdata)) {
+        return 0;
+    }
 
     while (true) {
         if (!get_next_data(&tx_fdata, true, &data_exists, &is_op_header)) {
