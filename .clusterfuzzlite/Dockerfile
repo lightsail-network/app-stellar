@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y libbsd-dev
 
 # Add libbsd to ld path
 ENV LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV LIBRARY_PATH=/lib/x86_64-linux-gnu:$LIBRARY_PATH
 RUN ldconfig
 
 # Copy the project's source code.
