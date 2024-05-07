@@ -36,7 +36,8 @@ add_compile_definitions(TEST)
 add_definitions("-DIO_SEPROXYHAL_BUFFER_SIZE_B=128") # cmake -DIO_SEPROXYHAL_BUFFER_SIZE_B=128
 add_definitions("-DTARGET_NANOS=1")
 
-find_library(BSD_LIBRARY NAMES bsd)
+set(BSD_LIBRARY_PATHS /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+find_library(BSD_LIBRARY NAMES bsd PATHS ${BSD_LIBRARY_PATHS})
 if (NOT BSD_LIBRARY)
     message(FATAL_ERROR "Could not find libbsd library")
 endif()
