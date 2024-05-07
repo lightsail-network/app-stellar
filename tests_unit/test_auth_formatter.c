@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
+#include <bsd/string.h>
 #include <cmocka.h>
 #include "stellar/parser.h"
 #include "stellar/formatter.h"

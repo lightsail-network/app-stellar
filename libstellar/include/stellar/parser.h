@@ -1,7 +1,12 @@
 #pragma once
 
 #include <stdint.h>
+
+#ifdef TEST
+#include <bsd/string.h>
+#else
 #include <string.h>
+#endif
 
 #include "buffer.h"
 #include "types.h"

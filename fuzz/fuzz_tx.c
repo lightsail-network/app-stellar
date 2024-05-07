@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
+#include <bsd/string.h>
 #include <sys/types.h>
 
 #include "stellar/parser.h"

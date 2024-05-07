@@ -1,8 +1,13 @@
 #include <stdio.h>
-#include <string.h>
 #include <time.h>
 #include "base32.h"
 #include "format.h"
+
+#ifdef TEST
+#include <bsd/string.h>
+#else
+#include <string.h>
+#endif
 
 #include "stellar/printer.h"
 

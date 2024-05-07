@@ -3,7 +3,7 @@
 #include <setjmp.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>
+#include <bsd/string.h>
 #include <cmocka.h>
 
 #include "stellar/printer.h"

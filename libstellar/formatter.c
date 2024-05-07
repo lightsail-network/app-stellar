@@ -1,11 +1,4 @@
-#include <string.h>
 #include <stdbool.h>  // bool
-
-#ifdef TEST
-#define PIC(x) x
-#else
-#include "os.h"
-#endif
 
 #include "base64.h"
 #include "stellar/formatter.h"
@@ -13,7 +6,15 @@
 #include "stellar/printer.h"
 #include "stellar/plugin.h"
 
-#if defined(TARGET_NANOS)
+#ifdef TEST
+#include <bsd/string.h>
+#define PIC(x) x
+#else
+#include <string.h>
+#include "os.h"
+#endif
+
+#ifdef TARGET_NANOS
 #define INVOKE_SMART_CONTRACT "Invoke Contract"
 #else
 #define INVOKE_SMART_CONTRACT "Invoke Smart Contract"
@@ -2492,7 +2493,7 @@ static uint8_t get_data_count(formatter_data_t *fdata) {
     return op_cnt + 1;
 }
 
-void reset_formatter() {
+void reset_formatter(void) {
     explicit_bzero(formatter_stack, sizeof(formatter_stack));
     formatter_index = 0;
     current_data_index = 0;

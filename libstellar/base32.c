@@ -15,7 +15,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifdef TEST
+#include <bsd/string.h>
+#else
 #include <string.h>
+#endif
 
 #include "base32.h"
 
