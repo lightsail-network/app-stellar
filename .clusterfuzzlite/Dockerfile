@@ -6,7 +6,7 @@ FROM gcr.io/oss-fuzz-base/base-builder:v1
 RUN apt-get update && apt-get install -y libbsd-dev
 
 # Add libbsd to ld path
-export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 # Copy the project's source code.
 COPY . $SRC/app-stellar
