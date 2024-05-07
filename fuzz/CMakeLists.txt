@@ -37,9 +37,6 @@ add_compile_definitions(TEST)
 add_definitions("-DIO_SEPROXYHAL_BUFFER_SIZE_B=128") # cmake -DIO_SEPROXYHAL_BUFFER_SIZE_B=128
 add_definitions("-DTARGET_NANOS=1")
 
-add_library(bsd STATIC IMPORTED)
-set_property(TARGET bsd PROPERTY IMPORTED_LOCATION /lib/x86_64-linux-gnu/libbsd.a)
-
 include_directories(../libstellar/include)
 include_directories(${BOLOS_SDK}/lib_standard_app)
 
