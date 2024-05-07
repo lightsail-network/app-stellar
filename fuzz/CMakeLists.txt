@@ -37,6 +37,15 @@ add_compile_definitions(TEST)
 add_definitions("-DIO_SEPROXYHAL_BUFFER_SIZE_B=128") # cmake -DIO_SEPROXYHAL_BUFFER_SIZE_B=128
 add_definitions("-DTARGET_NANOS=1")
 
+add_library(bsd STATIC IMPORTED)
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+    set_property(TARGET bsd PROPERTY IMPORTED_LOCATION /lib/x86_64-linux-gnu/libbsd.a)
+elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+    set_property(TARGET bsd PROPERTY IMPORTED_LOCATION /lib/aarch64-linux-gnu/libbsd.a)
+else()
+    message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
 include_directories(../libstellar/include)
 include_directories(${BOLOS_SDK}/lib_standard_app)
 
