@@ -21,6 +21,10 @@
  */
 #define SW_HASH_SIGNING_MODE_NOT_ENABLED 0x6C66
 /**
+ * Status word for data too large.
+ */
+#define SW_REQUEST_DATA_TOO_LARGE 0x6C67
+/**
  * Status word for unknown command with this INS.
  */
 #define SW_INS_NOT_SUPPORTED 0x6D00
@@ -47,7 +51,7 @@
 /**
  * Status word for wrong transaction length.
  */
-#define SW_WRONG_TX_LENGTH 0xB004
+#define SW_REQUEST_DATA_TOO_LARGE 0xB004
 /**
  * Status word for fail of transaction parsing.
  */

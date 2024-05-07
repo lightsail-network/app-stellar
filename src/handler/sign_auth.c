@@ -40,7 +40,7 @@ int handler_sign_auth(buffer_t *cdata, bool is_first_chunk, bool more) {
     }
 
     if (G_context.raw_size + cdata->size > RAW_TX_MAX_SIZE) {
-        return io_send_sw(SW_WRONG_TX_LENGTH);
+        return io_send_sw(SW_REQUEST_DATA_TOO_LARGE);
     }
 
     if (is_first_chunk) {
