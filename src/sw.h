@@ -51,7 +51,7 @@
 /**
  * Status word for wrong transaction length.
  */
-#define SW_REQUEST_DATA_TOO_LARGE 0xB004
+#define SW_WRONG_TX_LENGTH 0xB004
 /**
  * Status word for fail of transaction parsing.
  */
