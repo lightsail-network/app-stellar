@@ -1,10 +1,13 @@
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "stellar/parser.h"
 #include "stellar/types.h"
 #include "stellar/network.h"
+
+#ifdef TEST
+#include <stdio.h>
+#endif
 
 #define PARSER_CHECK(x)         \
     {                           \

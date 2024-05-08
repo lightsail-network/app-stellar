@@ -1,10 +1,13 @@
-#include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include "base32.h"
 #include "format.h"
 
 #include "stellar/printer.h"
+
+#ifdef TEST
+#include <stdio.h>
+#endif
 
 #define INT256_LENGTH                     32
 #define MUXED_ACCOUNT_MED_25519_SIZE      43
@@ -235,7 +238,6 @@ bool print_ed25519_signed_payload(const ed25519_signed_payload_t *signed_payload
                                   size_t out_len,
                                   uint8_t num_chars_l,
                                   uint8_t num_chars_r) {
-    // TODO: calculate the exact length
     char tmp[ED25519_SIGNED_PAYLOAD_MAX_LENGTH];
     if (!encode_ed25519_signed_payload(signed_payload, tmp, sizeof(tmp))) {
         return false;

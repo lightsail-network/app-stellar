@@ -1,8 +1,8 @@
-#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>  // bool
 
 #ifdef TEST
+#include <stdio.h>
 #define PIC(x) x
 #else
 #include "os.h"
