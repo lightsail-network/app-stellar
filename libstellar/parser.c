@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "stellar/parser.h"
 #include "stellar/types.h"
@@ -1049,10 +1050,10 @@ static bool parse_invoke_contract_args(buffer_t *buffer, invoke_contract_args_t 
     args->parameters_length = args_len;
     args->parameters_position = buffer->offset;
 
-    // if (args_len > 10) {
-    //     // TODO: We dont support more than 10 arguments
-    //     return false;
-    // }
+    if (args_len > HOST_FUNCTION_ARGS_MAX_LENGTH) {
+        // We dont support more than 10 arguments
+        return false;
+    }
 
     // PRINTF("function_name.text_size=%d, function_name.text=%s, args->parameters_length=%d\n",
     //        args->function.name_size,
@@ -1188,7 +1189,7 @@ static bool parse_extend_footprint_ttl(buffer_t *buffer, extend_footprint_ttl_op
 }
 
 static bool parse_operation(buffer_t *buffer, operation_t *operation) {
-    PRINTF("parse_operation: offset=%d\n", buffer->offset);
+    PRINTF("parse_operation: offset=%ld\n", buffer->offset);
     explicit_bzero(operation, sizeof(operation_t));
     uint32_t op_type;
 
@@ -1319,7 +1320,7 @@ static bool parse_transaction_operation_len(buffer_t *buffer, uint8_t *operation
 }
 
 static bool check_operations(buffer_t *buffer, uint8_t op_count) {
-    PRINTF("check_operations: op_count=%d, offset=%d\n", op_count, buffer->offset);
+    PRINTF("check_operations: op_count=%d, offset=%ld\n", op_count, buffer->offset);
     operation_t op;
     for (uint8_t i = 0; i < op_count; i++) {
         PARSER_CHECK(parse_operation(buffer, &op))

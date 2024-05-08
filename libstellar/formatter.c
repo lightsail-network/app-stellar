@@ -785,7 +785,6 @@ static bool format_change_trust_limit(formatter_data_t *fdata) {
 static bool format_change_trust_detail_liquidity_pool_fee(formatter_data_t *fdata) {
     STRLCPY(fdata->caption, "Pool Fee Rate", fdata->caption_len);
 
-    // TODO: add a function to print a uint32_t
     uint8_t fee[4] = {0};
     for (int i = 0; i < 4; i++) {
         fee[i] = fdata->envelope->tx_details.tx.op_details.change_trust_op.line.liquidity_pool
