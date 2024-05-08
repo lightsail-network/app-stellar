@@ -1318,16 +1318,14 @@ static bool parse_transaction_operation_len(buffer_t *buffer, uint8_t *operation
     return true;
 }
 
-// static bool check_operations(buffer_t *buffer, uint8_t op_count)
-// {
-//     // PRINTF("check_operations: offset=%d\n", buffer->offset);
-//     operation_t op;
-//     for (uint8_t i = 0; i < op_count; i++)
-//     {
-//         PARSER_CHECK(parse_operation(buffer, &op))
-//     }
-//     return true;
-// }
+static bool check_operations(buffer_t *buffer, uint8_t op_count) {
+    // PRINTF("check_operations: offset=%d\n", buffer->offset);
+    operation_t op;
+    for (uint8_t i = 0; i < op_count; i++) {
+        PARSER_CHECK(parse_operation(buffer, &op))
+    }
+    return true;
+}
 
 static bool parse_transaction_details(buffer_t *buffer, transaction_details_t *transaction) {
     // account used to run the (inner)transaction
@@ -1425,6 +1423,9 @@ bool parse_transaction_envelope(const uint8_t *data, size_t data_len, envelope_t
     }
 
     envelope->tx_details.tx.operation_position = buffer.offset;
+
+    // check all operations are valid
+    PARSER_CHECK(check_operations(&buffer, envelope->tx_details.tx.operations_count));
     return true;
 }
 
