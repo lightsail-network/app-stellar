@@ -1,13 +1,10 @@
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include "base32.h"
 #include "format.h"
 
 #include "stellar/printer.h"
-
-#ifdef TEST
-#include <stdio.h>
-#endif
 
 #define INT256_LENGTH                     32
 #define MUXED_ACCOUNT_MED_25519_SIZE      43
