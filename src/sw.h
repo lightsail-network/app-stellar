@@ -4,6 +4,12 @@
  * Status word for fail of transaction formatting.
  */
 #define SW_FORMATTING_FAIL 0x6125
+
+/**
+ * Status word for too many pages to display. (40 pages max on Stax)
+ */
+#define SW_TOO_MANY_PAGES 0x6126
+
 /**
  * Status word for denied by user.
  */
