@@ -34,14 +34,7 @@
  * Status word for instruction class is different than CLA.
  */
 #define SW_CLA_NOT_SUPPORTED 0x6E00
-/**
- * Status word for wrong response length (buffer too small or too big).
- */
-#define SW_WRONG_RESPONSE_LENGTH 0xB000
-/**
- * Status word for fail to display BIP32 path.
- */
-#define SW_DISPLAY_BIP32_PATH_FAIL 0xB001
+
 /**
  * Status word for fail to display address.
  */
@@ -52,6 +45,7 @@
 #define SW_DISPLAY_TRANSACTION_HASH_FAIL 0xB003
 /**
  * Status word for wrong transaction length.
+ * When the data requested by the user is too large, this exception will be thrown.
  */
 #define SW_WRONG_TX_LENGTH 0xB004
 /**
