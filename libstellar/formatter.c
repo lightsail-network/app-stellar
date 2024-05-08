@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>  // bool
 
@@ -61,7 +62,7 @@ static uint8_t plugin_data_pair_count;
 static bool format_sub_invocation_start(formatter_data_t *fdata);
 static bool push_to_formatter_stack(format_function_t formatter) {
     if (formatter_index >= MAX_FORMATTERS_PER_OPERATION) {
-        // PRINTF("Formatter stack overflow\n");
+        PRINTF("Formatter stack overflow\n");
         return false;
     }
 
@@ -1952,7 +1953,7 @@ static bool format_sub_invocation_invoke_host_function_func_name(formatter_data_
                 push_to_formatter_stack(&format_sub_invocation_invoke_host_function_args))
         }
     } else {
-        // PRINTF("we should move control to plugin\n");
+        PRINTF("we should move control to plugin\n");
         parameters_index = 0;
         FORMATTER_CHECK(
             push_to_formatter_stack(&format_sub_invocation_invoke_host_function_args_with_plugin))
@@ -1979,11 +1980,11 @@ static bool format_sub_invocation_invoke_host_function_contract_id(formatter_dat
 }
 
 static bool format_sub_invocation_auth_function(formatter_data_t *fdata) {
-    // PRINTF("function_type: %d\n", fdata->envelope->soroban_authorization.auth_function_type);
     soroban_authorization_function_type_t auth_function_type =
         fdata->envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION
             ? fdata->envelope->soroban_authorization.auth_function_type
             : fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.auth_function_type;
+    PRINTF("auth_function_type: %d\n", auth_function_type);
     switch (auth_function_type) {
         case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN:
             STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
@@ -2211,7 +2212,7 @@ static bool format_invoke_host_function_func_name(formatter_data_t *fdata) {
             FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args))
         }
     } else {
-        // PRINTF("we should move control to plugin\n");
+        PRINTF("we should move control to plugin\n");
         parameters_index = 0;
         FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args_with_plugin))
     }
