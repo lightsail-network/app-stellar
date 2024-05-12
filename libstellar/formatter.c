@@ -255,11 +255,11 @@ static bool format_memo(formatter_data_t *fdata) {
                                              memo->text.text,
                                              memo->text.text_size))
             } else {
-                char tmp[41];  // (28 / 3) * 4 = 37.33， 4 is for padding
-                FORMATTER_CHECK(
-                    base64_encode(memo->text.text, memo->text.text_size, tmp, fdata->value_len))
                 STRLCPY(fdata->value, "Base64: ", fdata->value_len)
-                STRLCAT(fdata->value, tmp, fdata->value_len)
+                FORMATTER_CHECK(base64_encode(memo->text.text,
+                                              memo->text.text_size,
+                                              fdata->value + strlen(fdata->value),
+                                              fdata->value_len - strlen(fdata->value)))
             }
             break;
         }
@@ -407,14 +407,12 @@ static bool format_manage_data_value(formatter_data_t *fdata) {
                          fdata->envelope->tx_details.tx.op_details.manage_data_op.data_value,
                          fdata->envelope->tx_details.tx.op_details.manage_data_op.data_value_size))
     } else {
-        char tmp[89];  // (64 / 3) * 4 = 85.33, 4 is for padding
+        STRLCPY(fdata->value, "Base64: ", fdata->value_len)
         FORMATTER_CHECK(
             base64_encode(fdata->envelope->tx_details.tx.op_details.manage_data_op.data_value,
                           fdata->envelope->tx_details.tx.op_details.manage_data_op.data_value_size,
-                          tmp,
-                          sizeof(tmp)))
-        STRLCPY(fdata->value, "Base64: ", fdata->value_len)
-        STRLCAT(fdata->value, tmp, fdata->value_len)
+                          fdata->value + strlen(fdata->value),
+                          fdata->value_len - strlen(fdata->value)))
     }
     return format_operation_source_prepare(fdata);
 }
