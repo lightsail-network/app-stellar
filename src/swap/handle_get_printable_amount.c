@@ -13,6 +13,7 @@
 void swap_handle_get_printable_amount(get_printable_amount_parameters_t* params) {
     uint64_t amount;
     asset_t asset = {.type = ASSET_TYPE_NATIVE};
+
     params->printable_amount[0] = '\0';
 
     if (!swap_str_to_u64(params->amount, params->amount_length, &amount)) {
@@ -20,11 +21,11 @@ void swap_handle_get_printable_amount(get_printable_amount_parameters_t* params)
         goto error;
     }
 
-    char out[MAX_PRINTABLE_AMOUNT_SIZE] = {0};
-    if (!print_amount(amount, &asset, NETWORK_TYPE_PUBLIC, out, MAX_PRINTABLE_AMOUNT_SIZE)) {
-        goto error;
-    }
-    if (!strlcpy(params->printable_amount, out, MAX_PRINTABLE_AMOUNT_SIZE)) {
+    if (!print_amount(amount,
+                      &asset,
+                      NETWORK_TYPE_PUBLIC,
+                      params->printable_amount,
+                      sizeof(params->printable_amount))) {
         goto error;
     }
     return;

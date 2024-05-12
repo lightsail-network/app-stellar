@@ -491,23 +491,32 @@ bool print_amount(uint64_t amount,
                   uint8_t network_id,
                   char *out,
                   size_t out_len) {
+    char buffer[AMOUNT_WITH_COMMAS_MAX_LENGTH] = {0};
     uint8_t data[8] = {0};
     for (int i = 0; i < 8; i++) {
         data[i] = amount >> (8 * (7 - i));
     }
 
-    if (!print_uint64(data, 7, out, out_len, true)) {
+    if (!print_uint64(data, 7, buffer, sizeof(buffer), true)) {
         return false;
     }
 
+    if (strlcpy(out, buffer, out_len) >= out_len) {
+        return false;
+    }
+
+    char asset_info[23];  // BANANANANANA@GBD..KHK4, 12 + 1 + 3 + 2 + 4 = 22
+
     if (asset) {
+        if (!print_asset(asset, network_id, asset_info, 23)) {
+            return false;
+        };
         if (strlcat(out, " ", out_len) >= out_len) {
             return false;
         }
-        size_t length = strlen(out);
-        if (!print_asset(asset, network_id, out + length, out_len - length)) {
+        if (strlcat(out, asset_info, out_len) >= out_len) {
             return false;
-        };
+        }
     }
     return true;
 }
