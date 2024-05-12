@@ -1805,7 +1805,7 @@ static bool format_sub_invocation_invoke_host_function_args(formatter_data_t *fd
                                      fdata->caption + length,
                                      fdata->caption_len - length))
 
-    STRLCAT(fdata->caption, " of ", fdata->caption);
+    STRLCAT(fdata->caption, " of ", fdata->caption_len);
     length = strlen(fdata->caption);
     FORMATTER_CHECK(print_uint64_num(invoke_contract_args.parameters_length,
                                      fdata->caption + length,
@@ -2061,7 +2061,7 @@ static bool format_invoke_host_function_args(formatter_data_t *fdata) {
                                      fdata->caption + length,
                                      fdata->caption_len - length))
 
-    STRLCAT(fdata->caption, " of ", fdata->caption);
+    STRLCAT(fdata->caption, " of ", fdata->caption_len);
     length = strlen(fdata->caption);
     FORMATTER_CHECK(print_uint64_num(invoke_contract_args.parameters_length,
                                      fdata->caption + length,
@@ -2267,7 +2267,7 @@ static bool format_confirm_operation(formatter_data_t *fdata) {
         FORMATTER_CHECK(print_uint64_num(fdata->envelope->tx_details.tx.operation_index + 1,
                                          fdata->caption + length,
                                          fdata->caption_len - length))
-        STRLCAT(fdata->caption, " of ", fdata->caption);
+        STRLCAT(fdata->caption, " of ", fdata->caption_len);
         length = strlen(fdata->caption);
         FORMATTER_CHECK(print_uint64_num(fdata->envelope->tx_details.tx.operations_count,
                                          fdata->caption + length,
