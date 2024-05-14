@@ -89,6 +89,7 @@ script = template.format(
     install_params_size=install_params_size,
     app_hex=app_hex,
     model=model,
+    extra_params=extra_params,
 )
 
 filename = f"installer/installer_{model}.sh"
