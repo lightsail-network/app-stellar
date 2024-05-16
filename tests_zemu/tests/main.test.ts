@@ -212,9 +212,10 @@ describe("transactions", () => {
         const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
-        let textToFind = "Sign";
+        // TODO: If set to Sign, it will not pass the test. Is this a bug in Zemu?
+        let textToFind = /\bSign\b/;
         if (dev.name == "stax") {
-          textToFind = "Hold to";
+          textToFind = /\bHold to\b/;
         }
         await sim.navigateAndCompareUntilText(
           ".",
@@ -339,9 +340,9 @@ describe("transactions", () => {
       const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
-      let textToFind = "Sign";
+      let textToFind = /\bSign\b/;
       if (dev.name == "stax") {
-        textToFind = "Hold to";
+        textToFind = /\bHold to\b/;
       }
       await sim.navigateAndCompareUntilText(
         ".",
@@ -370,9 +371,9 @@ describe("transactions", () => {
       const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
-      let textToFind = "Sign";
+      let textToFind = /\bSign\b/;
       if (dev.name == "stax") {
-        textToFind = "Hold to";
+        textToFind = /\bHold to\b/;
       }
       await sim.navigateAndCompareUntilText(
         ".",
@@ -404,9 +405,9 @@ describe("soroban auth", () => {
         const result = str.signSorobanAuthoration("44'/148'/0'", hashIdPreimage.toXDR("raw"));
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
-        let textToFind = "Sign";
+        let textToFind = /\bSign\b/;
         if (dev.name == "stax") {
-          textToFind = "Hold to";
+          textToFind = /\bHold to\b/;
         }
         await sim.navigateAndCompareUntilText(
           ".",
@@ -487,9 +488,9 @@ describe("plugin", () => {
       const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
-      let textToFind = "Sign";
+      let textToFind = /\bSign\b/;
       if (dev.name == "stax") {
-        textToFind = "Hold to";
+        textToFind = /\bHold to\b/;
       }
       await sim.navigateAndCompareUntilText(
         ".",
@@ -569,9 +570,9 @@ describe("plugin", () => {
       const result = str.signSorobanAuthoration("44'/148'/0'", hashIdPreimage.toXDR("raw"));
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
-      let textToFind = "Sign";
+      let textToFind = /\bSign\b/;
       if (dev.name == "stax") {
-        textToFind = "Hold to";
+        textToFind = /\bHold to\b/;
       }
       await sim.navigateAndCompareUntilText(
         ".",
