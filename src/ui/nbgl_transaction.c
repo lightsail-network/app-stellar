@@ -1,6 +1,7 @@
 /*****************************************************************************
  *   Ledger Stellar App.
  *   (c) 2024 Ledger SAS.
+ *   (c) 2024 overcat.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -300,7 +301,7 @@ static void review_auth_start(void) {
                             reject_auth_choice);
 }
 
-void prepare_display() {
+static void prepare_display() {
     formatter_data_t fdata = {
         .raw_data = G_context.raw,
         .raw_data_len = G_context.raw_size,
