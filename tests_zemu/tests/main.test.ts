@@ -41,8 +41,7 @@ describe("get public key", () => {
       const kp = Keypair.fromSecret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK");
 
       expect(result).toStrictEqual({
-        publicKey: kp.publicKey(),
-        raw: kp.rawPublicKey(),
+        rawPublicKey: kp.rawPublicKey(),
       });
     } finally {
       await sim.close();
@@ -66,8 +65,7 @@ describe("get public key", () => {
       await sim.waitForScreenChanges(events);
       await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-public-key-approve`, confirmText, true);
       expect(result).resolves.toStrictEqual({
-        publicKey: kp.publicKey(),
-        raw: kp.rawPublicKey(),
+        rawPublicKey: kp.rawPublicKey(),
       });
     } finally {
       await sim.close();
