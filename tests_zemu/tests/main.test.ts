@@ -55,13 +55,13 @@ describe("get public key", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.ApproveTapButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
-      const { rawPublicKey } = await str.getPublicKey("44'/148'/0'", false);
-      const result = StrKey.encodeEd25519PublicKey(rawPublicKey);
+      const result = str.getPublicKey("44'/148'/0'", true);
       const kp = Keypair.fromSecret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK");
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
       await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-public-key-approve`, confirmText, true);
-      expect(result).toEqual(kp.publicKey());
+      const pk = StrKey.encodeEd25519PublicKey((await result).rawPublicKey);
+      expect(pk).toEqual(kp.publicKey());
     } finally {
       await sim.close();
     }
