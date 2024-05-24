@@ -39,10 +39,7 @@ describe("get public key", () => {
       const { rawPublicKey } = await str.getPublicKey("44'/148'/0'", false);
       const result = StrKey.encodeEd25519PublicKey(rawPublicKey);
       const kp = Keypair.fromSecret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK");
-
-      expect(result).toStrictEqual({
-        rawPublicKey: kp.rawPublicKey(),
-      });
+      expect(result).toEqual(kp.publicKey());
     } finally {
       await sim.close();
     }
@@ -64,9 +61,7 @@ describe("get public key", () => {
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
       await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-public-key-approve`, confirmText, true);
-      expect(result).resolves.toStrictEqual({
-        rawPublicKey: kp.rawPublicKey(),
-      });
+      expect(result).toEqual(kp.publicKey());
     } finally {
       await sim.close();
     }
