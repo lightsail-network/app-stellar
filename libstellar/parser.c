@@ -42,7 +42,7 @@ static int32_t read_i32_be(const uint8_t *ptr, size_t offset) {
     for (int i = 0; i < 4; i++) {
         result = (result << 8) | ptr[offset + i];
     }
-    return (int32_t) result;
+    return (int32_t) result;  //
 }
 
 bool parse_bool(buffer_t *buffer, bool *b) {
