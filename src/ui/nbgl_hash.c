@@ -140,7 +140,6 @@ int ui_display_hash() {
     }
 
     prepare_page();
-    // review_start();
 
     nbgl_useCaseChoice(&C_Warning_64px,
                        "Security risk detected",
