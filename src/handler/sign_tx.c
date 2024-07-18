@@ -29,6 +29,7 @@
 #include "sw.h"
 #include "globals.h"
 #include "plugin.h"
+#include "settings.h"
 #include "ui/display.h"
 #include "crypto.h"
 #include "helper/send_response.h"
@@ -127,8 +128,48 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
             HASH_SIZE) {
             return io_send_sw(SW_DATA_HASH_FAIL);
         }
-        G_context.is_custom_contract = is_invoke_custom_contract();
-        PRINTF("is_custom_contract: %d\n", G_context.is_custom_contract);
+
+        // check if the transaction contains a unverified contract
+        bool is_unverified_contract = false;
+        for (uint8_t i = 0; i < G_context.envelope.tx_details.tx.operations_count; i++) {
+            if (!parse_transaction_operation(G_context.raw,
+                                             G_context.raw_size,
+                                             &G_context.envelope,
+                                             i)) {
+                // should not happen
+                return io_send_sw(SW_DATA_PARSING_FAIL);
+            }
+            if (G_context.envelope.tx_details.tx.op_details.type ==
+                    OPERATION_INVOKE_HOST_FUNCTION &&
+                G_context.envelope.tx_details.tx.op_details.invoke_host_function_op
+                        .host_function_type == HOST_FUNCTION_TYPE_INVOKE_CONTRACT) {
+                const uint8_t *contract_address =
+                    G_context.envelope.tx_details.tx.op_details.invoke_host_function_op
+                        .invoke_contract_args.address.address;
+                if (!plugin_check_presence(contract_address)) {
+                    is_unverified_contract = true;
+                    break;
+                }
+
+                if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
+                    is_unverified_contract = true;
+                    break;
+                }
+
+                uint8_t data_pair_count_tmp = 0;
+                if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
+                    STELLAR_PLUGIN_RESULT_OK) {
+                    is_unverified_contract = true;
+                    break;
+                }
+            }
+        }
+        PRINTF("is_unverified_contract: %d\n", is_unverified_contract);
+
+        if (is_unverified_contract && HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
+            return io_send_sw(SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED);
+        }
+
         return ui_display_transaction();
     }
 };
