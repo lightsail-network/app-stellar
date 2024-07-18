@@ -95,29 +95,25 @@ int handler_sign_auth(buffer_t *cdata, bool is_first_chunk, bool more) {
     }
 
     // Check if the contract is a unverified contract
-    bool is_unverified_contract = false;
-    if (G_context.envelope.soroban_authorization.auth_function_type ==
-        SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN) {
-        const uint8_t *contract_address =
-            G_context.envelope.soroban_authorization.invoke_contract_args.address.address;
-        if (!plugin_check_presence(contract_address)) {
-            is_unverified_contract = true;
-        }
-
-        if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
-            is_unverified_contract = true;
-        }
-
-        uint8_t data_pair_count_tmp = 0;
-        if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
-            STELLAR_PLUGIN_RESULT_OK) {
-            is_unverified_contract = true;
-        }
+    const uint8_t *contract_address =
+        G_context.envelope.soroban_authorization.invoke_contract_args.address.address;
+    if (!plugin_check_presence(contract_address)) {
+        G_context.unverified_contracts = true;
     }
 
-    PRINTF("is_unverified_contract: %d\n", is_unverified_contract);
+    if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
+        G_context.unverified_contracts = true;
+    }
 
-    if (is_unverified_contract && HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
+    uint8_t data_pair_count_tmp = 0;
+    if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
+        STELLAR_PLUGIN_RESULT_OK) {
+        G_context.unverified_contracts = true;
+    }
+
+    PRINTF("G_context.unverified_contracts: %d\n", G_context.unverified_contracts);
+
+    if (G_context.unverified_contracts && HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
         return io_send_sw(SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED);
     }
 

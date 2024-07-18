@@ -130,7 +130,6 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
         }
 
         // check if the transaction contains a unverified contract
-        bool is_unverified_contract = false;
         for (uint8_t i = 0; i < G_context.envelope.tx_details.tx.operations_count; i++) {
             if (!parse_transaction_operation(G_context.raw,
                                              G_context.raw_size,
@@ -147,26 +146,26 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
                     G_context.envelope.tx_details.tx.op_details.invoke_host_function_op
                         .invoke_contract_args.address.address;
                 if (!plugin_check_presence(contract_address)) {
-                    is_unverified_contract = true;
+                    G_context.unverified_contracts = true;
                     break;
                 }
 
                 if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
-                    is_unverified_contract = true;
+                    G_context.unverified_contracts = true;
                     break;
                 }
 
                 uint8_t data_pair_count_tmp = 0;
                 if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
                     STELLAR_PLUGIN_RESULT_OK) {
-                    is_unverified_contract = true;
+                    G_context.unverified_contracts = true;
                     break;
                 }
             }
         }
-        PRINTF("is_unverified_contract: %d\n", is_unverified_contract);
+        PRINTF("G_context.unverified_contracts: %d\n", G_context.unverified_contracts);
 
-        if (is_unverified_contract && HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
+        if (G_context.unverified_contracts && HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
             return io_send_sw(SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED);
         }
 
