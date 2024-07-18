@@ -28,6 +28,7 @@
 #include "sign_tx.h"
 #include "sw.h"
 #include "globals.h"
+#include "plugin.h"
 #include "ui/display.h"
 #include "crypto.h"
 #include "helper/send_response.h"
@@ -126,6 +127,8 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
             HASH_SIZE) {
             return io_send_sw(SW_DATA_HASH_FAIL);
         }
+        G_context.is_custom_contract = is_invoke_custom_contract();
+        PRINTF("is_custom_contract: %d\n", G_context.is_custom_contract);
         return ui_display_transaction();
     }
 };

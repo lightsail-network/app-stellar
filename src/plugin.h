@@ -47,3 +47,4 @@ stellar_plugin_result_t plugin_query_data_pair(const uint8_t *contract_address,
                                                uint8_t caption_len,
                                                char *value,
                                                uint8_t value_len);
+bool is_invoke_custom_contract(void);
