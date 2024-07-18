@@ -686,5 +686,4 @@ typedef struct {
     };
     uint32_t type;  // envelope_type_t
     uint8_t network;
-    bool unverified_contracts;
 } envelope_t;

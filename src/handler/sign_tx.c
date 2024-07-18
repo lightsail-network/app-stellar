@@ -165,7 +165,7 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
         }
         PRINTF("G_context.unverified_contracts: %d\n", G_context.unverified_contracts);
 
-        if (G_context.unverified_contracts && HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
+        if (G_context.unverified_contracts && !HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
             return io_send_sw(SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED);
         }
 
