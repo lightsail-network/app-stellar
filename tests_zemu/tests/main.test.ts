@@ -520,20 +520,6 @@ describe("plugin", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
       const str = new Str(transport);
-      if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([
-          ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton3,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-plugin-invoke-host-function`, settingNav.schedule, true, true);
-      } else {
-        await sim.clickRight();
-        await sim.clickBoth(undefined, false);
-        await sim.clickRight();
-        await sim.clickRight();
-        await sim.clickRight();
-        await sim.clickBoth(undefined, false);
-      }
       const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
@@ -567,25 +553,8 @@ describe("plugin", () => {
       const transport = await sim.getTransport();
       const str = new Str(transport);
       let textToFind = "Reject";
-      // display sequence
-      if (dev.name == "stax") {
-        textToFind = "Hold to";
-        const settingNav = new TouchNavigation([
-          ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton3,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-plugin-invoke-host-function-reject`, settingNav.schedule, true, false);
-      } else {
-        await sim.clickRight();
-        await sim.clickBoth(undefined, false);
-        await sim.clickRight();
-        await sim.clickRight();
-        await sim.clickRight();
-        await sim.clickBoth(undefined, false);
-      }
 
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
-
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
       await sim.navigateAndCompareUntilText(
