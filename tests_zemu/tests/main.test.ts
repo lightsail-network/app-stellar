@@ -206,6 +206,7 @@ describe("transactions", () => {
           const settingNav = new TouchNavigation([
             ButtonKind.InfoButton,
             ButtonKind.ToggleSettingButton1,
+            ButtonKind.ConfirmYesButton,
             ButtonKind.ToggleSettingButton3,
           ]);
           await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav.schedule, true, true);
@@ -256,6 +257,7 @@ describe("transactions", () => {
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
           ButtonKind.ToggleSettingButton1,
+          ButtonKind.ConfirmYesButton,
           ButtonKind.ToggleSettingButton3,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav.schedule, true, false);
@@ -304,6 +306,7 @@ describe("transactions", () => {
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
           ButtonKind.ToggleSettingButton1,
+          ButtonKind.ConfirmYesButton,
           ButtonKind.ToggleSettingButton3,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav.schedule, true, false);
@@ -415,6 +418,7 @@ describe("soroban auth", () => {
           const settingNav = new TouchNavigation([
             ButtonKind.InfoButton,
             ButtonKind.ToggleSettingButton1,
+            ButtonKind.ConfirmYesButton,
           ]);
           await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav.schedule, true, false);
         } else {
@@ -466,6 +470,7 @@ describe("soroban auth", () => {
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
           ButtonKind.ToggleSettingButton1,
+          ButtonKind.ConfirmYesButton,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav.schedule, true, false);
       } else {
