@@ -8,7 +8,7 @@ import Zemu from "@zondax/zemu";
 import { sha256 } from 'sha.js'
 import { ActionKind, IButton } from "@zondax/zemu/dist/types";
 
-const navToggleOption1: INavElement = {
+const settingToggleCustomContracts: INavElement = {
   type: ActionKind.Touch,
   button: {
     x: 350,
@@ -17,7 +17,7 @@ const navToggleOption1: INavElement = {
   }
 }
 
-const navToggleOption2: INavElement = {
+const settingToggleHashSigning: INavElement = {
   type: ActionKind.Touch,
   button: {
     x: 350,
@@ -26,7 +26,7 @@ const navToggleOption2: INavElement = {
   }
 }
 
-const navToggleOption3: INavElement = {
+const settingToggleSequence: INavElement = {
   type: ActionKind.Touch,
   button: {
     x: 350,
@@ -141,9 +141,12 @@ describe("hash signing", () => {
 
       // enable hash signing
       if (dev.name == "stax") {
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, new TouchNavigation([ButtonKind.InfoButton]).schedule, true, false);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, [navToggleOption2], true, false);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule, true, false);
+        const settingNav = [
+          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          settingToggleHashSigning,
+          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule
+        ]
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, settingNav, true, false);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
@@ -226,13 +229,13 @@ describe("transactions", () => {
         const transport = await sim.getTransport();
         const str = new Str(transport);
         if (dev.name == "stax") {
-          const settingNav = new TouchNavigation([
-            ButtonKind.InfoButton,
-            ButtonKind.ToggleSettingButton1,
-            ButtonKind.ConfirmYesButton,
-            ButtonKind.ToggleSettingButton3,
-          ]);
-          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav.schedule, true, true);
+          const settingNav = [
+            ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+            settingToggleCustomContracts,
+            ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
+            settingToggleSequence,
+          ];
+          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav, true, true);
         } else {
           await sim.clickRight();
           await sim.clickBoth(undefined, false);
@@ -250,8 +253,8 @@ describe("transactions", () => {
           textToFind = /\bHold to\b/;
 
           if (c.caseName.includes("InvokeHostFunction")
-            && !c.caseName.includes("create")
-            && !c.caseName.includes("upload")
+            && !c.caseName.includes("Create")
+            && !c.caseName.includes("Upload")
             && !c.caseName.includes("Xlm")
             && !c.caseName.includes("Usdc")
           ) {
@@ -290,13 +293,13 @@ describe("transactions", () => {
       // display sequence
       if (dev.name == "stax") {
         textToFind = "Hold to";
-        const settingNav = new TouchNavigation([
-          ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton1,
-          ButtonKind.ConfirmYesButton,
-          ButtonKind.ToggleSettingButton3,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav.schedule, true, false);
+        const settingNav = [
+          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          settingToggleCustomContracts,
+          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
+          settingToggleSequence,
+        ];
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav, true, false);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
@@ -339,13 +342,13 @@ describe("transactions", () => {
       // display sequence
       if (dev.name == "stax") {
         textToFind = "Hold to";
-        const settingNav = new TouchNavigation([
-          ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton1,
-          ButtonKind.ConfirmYesButton,
-          ButtonKind.ToggleSettingButton3,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav.schedule, true, false);
+        const settingNav = [
+          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          settingToggleCustomContracts,
+          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
+          settingToggleSequence,
+        ];
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav, true, false);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
@@ -451,12 +454,12 @@ describe("soroban auth", () => {
         const str = new Str(transport);
 
         if (dev.name == "stax") {
-          const settingNav = new TouchNavigation([
-            ButtonKind.InfoButton,
-            ButtonKind.ToggleSettingButton1,
-            ButtonKind.ConfirmYesButton,
-          ]);
-          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav.schedule, true, false);
+          const settingNav = [
+            ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+            settingToggleCustomContracts,
+            ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule
+          ];
+          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav, true, false);
         } else {
           await sim.clickRight();
           await sim.clickBoth(undefined, false);
@@ -467,7 +470,7 @@ describe("soroban auth", () => {
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
         let textToFind = /\bSign\b/;
-        if (dev.name == "stax") {
+        if (dev.name == "stax" && !c.caseName.includes("Create")) {
           textToFind = /\bHold to\b/;
 
           const acceptRisk = new TouchNavigation([
@@ -503,12 +506,12 @@ describe("soroban auth", () => {
       const str = new Str(transport);
 
       if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([
-          ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton1,
-          ButtonKind.ConfirmYesButton,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav.schedule, true, false);
+        const settingNav = [
+          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          settingToggleCustomContracts,
+          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule
+        ];
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav, true, false);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
