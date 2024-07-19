@@ -531,6 +531,7 @@ describe("plugin", () => {
         await sim.clickBoth(undefined, false);
         await sim.clickRight();
         await sim.clickRight();
+        await sim.clickRight();
         await sim.clickBoth(undefined, false);
       }
       const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
@@ -577,6 +578,7 @@ describe("plugin", () => {
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
+        await sim.clickRight();
         await sim.clickRight();
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
