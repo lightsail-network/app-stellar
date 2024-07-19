@@ -205,11 +205,13 @@ describe("transactions", () => {
         if (dev.name == "stax") {
           const settingNav = new TouchNavigation([
             ButtonKind.InfoButton,
+            ButtonKind.ToggleSettingButton1,
             ButtonKind.ToggleSettingButton3,
           ]);
           await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav.schedule, true, true);
         } else {
           await sim.clickRight();
+          await sim.clickBoth(undefined, false);
           await sim.clickBoth(undefined, false);
           await sim.clickRight();
           await sim.clickRight();
@@ -253,11 +255,13 @@ describe("transactions", () => {
         textToFind = "Hold to";
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
+          ButtonKind.ToggleSettingButton1,
           ButtonKind.ToggleSettingButton3,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav.schedule, true, false);
       } else {
         await sim.clickRight();
+        await sim.clickBoth(undefined, false);
         await sim.clickBoth(undefined, false);
         await sim.clickRight();
         await sim.clickRight();
@@ -299,11 +303,13 @@ describe("transactions", () => {
         textToFind = "Hold to";
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
+          ButtonKind.ToggleSettingButton1,
           ButtonKind.ToggleSettingButton3,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav.schedule, true, false);
       } else {
         await sim.clickRight();
+        await sim.clickBoth(undefined, false);
         await sim.clickBoth(undefined, false);
         await sim.clickRight();
         await sim.clickRight();
@@ -404,6 +410,19 @@ describe("soroban auth", () => {
         await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
         const transport = await sim.getTransport();
         const str = new Str(transport);
+
+        if (dev.name == "stax") {
+          const settingNav = new TouchNavigation([
+            ButtonKind.InfoButton,
+            ButtonKind.ToggleSettingButton1,
+          ]);
+          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav.schedule, true, false);
+        } else {
+          await sim.clickRight();
+          await sim.clickBoth(undefined, false);
+          await sim.clickBoth(undefined, false);
+        }
+
         const result = str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"));
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
@@ -435,6 +454,19 @@ describe("soroban auth", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
+
+      if (dev.name == "stax") {
+        const settingNav = new TouchNavigation([
+          ButtonKind.InfoButton,
+          ButtonKind.ToggleSettingButton1,
+        ]);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav.schedule, true, false);
+      } else {
+        await sim.clickRight();
+        await sim.clickBoth(undefined, false);
+        await sim.clickBoth(undefined, false);
+      }
+
       expect(() => str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"))).rejects.toThrow(StellarUserRefusedError);
 
       let textToFind = "Reject";
