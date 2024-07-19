@@ -93,29 +93,31 @@ int handler_sign_auth(buffer_t *cdata, bool is_first_chunk, bool more) {
     if (cx_hash_sha256(G_context.raw, G_context.raw_size, G_context.hash, HASH_SIZE) != HASH_SIZE) {
         return io_send_sw(SW_DATA_HASH_FAIL);
     }
-    G_context.unverified_contracts = true;
-    // // Check if the contract is a unverified contract
-    // const uint8_t *contract_address =
-    //     G_context.envelope.soroban_authorization.invoke_contract_args.address.address;
-    // if (!plugin_check_presence(contract_address)) {
-    //     G_context.unverified_contracts = true;
-    // }
 
-    // if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
-    //     G_context.unverified_contracts = true;
-    // }
+    // Check if the contract is a unverified contract
+    G_context.unverified_contracts = false;
+    if (G_context.envelope.soroban_authorization.auth_function_type ==
+        SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN) {
+        const uint8_t *contract_address =
+            G_context.envelope.soroban_authorization.invoke_contract_args.address.address;
+        if (!plugin_check_presence(contract_address)) {
+            G_context.unverified_contracts = true;
+        }
 
-    // uint8_t data_pair_count_tmp = 0;
-    // if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
-    //     STELLAR_PLUGIN_RESULT_OK) {
-    //     G_context.unverified_contracts = true;
-    // }
+        if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
+            G_context.unverified_contracts = true;
+        }
 
-    // PRINTF("G_context.unverified_contracts: %d\n", G_context.unverified_contracts);
-
-    // if (G_context.unverified_contracts && !HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
-    //     return io_send_sw(SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED);
-    // }
+        uint8_t data_pair_count_tmp = 0;
+        if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
+            STELLAR_PLUGIN_RESULT_OK) {
+            G_context.unverified_contracts = true;
+        }
+    }
+    PRINTF("G_context.unverified_contracts: %d\n", G_context.unverified_contracts);
+    if (G_context.unverified_contracts && !HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
+        return io_send_sw(SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED);
+    }
 
     return ui_display_auth();
 };

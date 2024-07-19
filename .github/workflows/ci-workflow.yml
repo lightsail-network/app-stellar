@@ -3,9 +3,6 @@ name: Compilation & tests
 on:
   workflow_dispatch:
   push:
-    branches:
-      - master
-      - develop
   pull_request:
 
 jobs:

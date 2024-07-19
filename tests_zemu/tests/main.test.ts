@@ -114,7 +114,7 @@ describe("hash signing", () => {
       if (dev.name == "stax") {
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton1,
+          ButtonKind.ToggleSettingButton2,
           ButtonKind.ConfirmYesButton,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, settingNav.schedule, true, true);
@@ -157,7 +157,7 @@ describe("hash signing", () => {
         textToFind = "Hold to";
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton1,
+          ButtonKind.ToggleSettingButton2,
           ButtonKind.ConfirmYesButton,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, settingNav.schedule, true, false);
@@ -203,7 +203,7 @@ describe("transactions", () => {
         if (dev.name == "stax") {
           const settingNav = new TouchNavigation([
             ButtonKind.InfoButton,
-            ButtonKind.ToggleSettingButton2,
+            ButtonKind.ToggleSettingButton3,
           ]);
           await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav.schedule, true, true);
         } else {
@@ -250,7 +250,7 @@ describe("transactions", () => {
         textToFind = "Hold to";
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton2,
+          ButtonKind.ToggleSettingButton3,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav.schedule, true, false);
       } else {
@@ -295,7 +295,7 @@ describe("transactions", () => {
         textToFind = "Hold to";
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton2,
+          ButtonKind.ToggleSettingButton3,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav.schedule, true, false);
       } else {
@@ -470,7 +470,7 @@ describe("plugin", () => {
       if (dev.name == "stax") {
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton2,
+          ButtonKind.ToggleSettingButton3,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-plugin-invoke-host-function`, settingNav.schedule, true, true);
       } else {
@@ -517,7 +517,7 @@ describe("plugin", () => {
         textToFind = "Hold to";
         const settingNav = new TouchNavigation([
           ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton2,
+          ButtonKind.ToggleSettingButton3,
         ]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-plugin-invoke-host-function-reject`, settingNav.schedule, true, false);
       } else {
