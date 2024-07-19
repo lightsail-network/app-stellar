@@ -185,9 +185,12 @@ describe("hash signing", () => {
       // enable hash signing
       if (dev.name == "stax") {
         textToFind = "Hold to";
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, new TouchNavigation([ButtonKind.InfoButton]).schedule, true, false);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, [navToggleOption2], true, false);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule, true, false);
+        const settingNav = [
+          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          settingToggleHashSigning,
+          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule
+        ]
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, settingNav, true, false);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
