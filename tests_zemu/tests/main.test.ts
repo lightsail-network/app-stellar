@@ -452,7 +452,8 @@ describe("transactions", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
       const str = new Str(transport);
-      expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow("Ledger device: Condition of use not satisfied (denied by the user?) (0x6985)");
+      // TODO: Waiting for SDK update.
+      expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow();
     } finally {
       await sim.close();
     }
@@ -568,6 +569,19 @@ describe("soroban auth", () => {
     }
   });
 
+  test.each(models)("custom contracts mode is not enabled ($dev.name)", async ({ dev, startText }) => {
+    const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContract();
+    const sim = new Zemu(dev.path);
+    try {
+      await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
+      const transport = await sim.getTransport();
+      const str = new Str(transport);
+      // TODO: Waiting for SDK update.
+      expect(() => str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"))).rejects.toThrow();
+    } finally {
+      await sim.close();
+    }
+  });
 });
 
 describe("plugin", () => {

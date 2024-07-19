@@ -21,7 +21,6 @@
 #include "plugin.h"
 #include "globals.h"
 #include "soroban_token.h"
-#include "stellar/parser.h"
 
 #define MAX_APP_NAME_LENGTH 20
 
