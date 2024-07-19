@@ -6,7 +6,7 @@ import Str from "@ledgerhq/hw-app-str";
 import { StellarUserRefusedError, StellarHashSigningNotEnabledError } from "@ledgerhq/hw-app-str";
 import Zemu from "@zondax/zemu";
 import { sha256 } from 'sha.js'
-import { ActionKind, IButton } from "@zondax/zemu/dist/types";
+import { ActionKind } from "@zondax/zemu/dist/types";
 
 const settingToggleCustomContracts: INavElement = {
   type: ActionKind.Touch,
@@ -440,6 +440,19 @@ describe("transactions", () => {
       const kp = Keypair.fromSecret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK");
       tx.sign(kp);
       expect((await result).signature).toStrictEqual(tx.signatures[0].signature());
+    } finally {
+      await sim.close();
+    }
+  });
+
+  test.each(models)("custom contracts mode is not enabled ($dev.name)", async ({ dev, startText }) => {
+    const tx = testCasesFunction.opInvokeHostFunctionScvalsCase0();
+    const sim = new Zemu(dev.path);
+    try {
+      await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
+      const transport = await sim.getTransport();
+      const str = new Str(transport);
+      expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow("Ledger device: Condition of use not satisfied (denied by the user?) (0x6985)");
     } finally {
       await sim.close();
     }

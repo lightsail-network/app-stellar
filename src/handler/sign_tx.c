@@ -37,6 +37,8 @@
 #include "stellar/parser.h"
 #include "stellar/formatter.h"
 
+static bool check_include_custom_contract();
+
 int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
     if (is_first_chunk) {
         explicit_bzero(&G_context, sizeof(G_context));
@@ -129,42 +131,8 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
             return io_send_sw(SW_DATA_HASH_FAIL);
         }
 
-        // check if the transaction contains a unverified contract
-        for (uint8_t i = 0; i < G_context.envelope.tx_details.tx.operations_count; i++) {
-            if (!parse_transaction_operation(G_context.raw,
-                                             G_context.raw_size,
-                                             &G_context.envelope,
-                                             i)) {
-                // should not happen
-                return io_send_sw(SW_DATA_PARSING_FAIL);
-            }
-            if (G_context.envelope.tx_details.tx.op_details.type ==
-                    OPERATION_INVOKE_HOST_FUNCTION &&
-                G_context.envelope.tx_details.tx.op_details.invoke_host_function_op
-                        .host_function_type == HOST_FUNCTION_TYPE_INVOKE_CONTRACT) {
-                const uint8_t *contract_address =
-                    G_context.envelope.tx_details.tx.op_details.invoke_host_function_op
-                        .invoke_contract_args.address.address;
-                if (!plugin_check_presence(contract_address)) {
-                    G_context.unverified_contracts = true;
-                    break;
-                }
-
-                if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
-                    G_context.unverified_contracts = true;
-                    break;
-                }
-
-                uint8_t data_pair_count_tmp = 0;
-                if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
-                    STELLAR_PLUGIN_RESULT_OK) {
-                    G_context.unverified_contracts = true;
-                    break;
-                }
-            }
-        }
+        G_context.unverified_contracts = check_include_custom_contract();
         PRINTF("G_context.unverified_contracts: %d\n", G_context.unverified_contracts);
-
         if (G_context.unverified_contracts && !HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
             return io_send_sw(SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED);
         }
@@ -172,3 +140,37 @@ int handler_sign_tx(buffer_t *cdata, bool is_first_chunk, bool more) {
         return ui_display_transaction();
     }
 };
+
+static bool check_include_custom_contract() {
+    // check if the transaction contains a unverified contract
+    for (uint8_t i = 0; i < G_context.envelope.tx_details.tx.operations_count; i++) {
+        if (!parse_transaction_operation(G_context.raw,
+                                         G_context.raw_size,
+                                         &G_context.envelope,
+                                         i)) {
+            // should not happen
+            return io_send_sw(SW_DATA_PARSING_FAIL);
+        }
+        if (G_context.envelope.tx_details.tx.op_details.type == OPERATION_INVOKE_HOST_FUNCTION &&
+            G_context.envelope.tx_details.tx.op_details.invoke_host_function_op
+                    .host_function_type == HOST_FUNCTION_TYPE_INVOKE_CONTRACT) {
+            const uint8_t *contract_address =
+                G_context.envelope.tx_details.tx.op_details.invoke_host_function_op
+                    .invoke_contract_args.address.address;
+            if (!plugin_check_presence(contract_address)) {
+                return true;
+            }
+
+            if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
+                return true;
+            }
+
+            uint8_t data_pair_count_tmp = 0;
+            if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
+                STELLAR_PLUGIN_RESULT_OK) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
