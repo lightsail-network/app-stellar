@@ -225,6 +225,19 @@ describe("transactions", () => {
         let textToFind = /\bSign\b/;
         if (dev.name == "stax") {
           textToFind = /\bHold to\b/;
+
+          if (c.caseName.includes("InvokeHostFunction")
+            && !c.caseName.includes("create")
+            && !c.caseName.includes("upload")
+            && !c.caseName.includes("Xlm")
+            && !c.caseName.includes("Usdc")
+          ) {
+            const acceptRisk = new TouchNavigation([
+              ButtonKind.ConfirmNoButton,
+              ButtonKind.ConfirmYesButton,
+            ]);
+            await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, acceptRisk.schedule, true, true);
+          }
         }
         await sim.navigateAndCompareUntilText(
           ".",
