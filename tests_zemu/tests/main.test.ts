@@ -1,4 +1,4 @@
-import { DEFAULT_START_OPTIONS, ButtonKind, TouchNavigation } from "@zondax/zemu";
+import { DEFAULT_START_OPTIONS, ButtonKind, TouchNavigation, INavElement } from "@zondax/zemu";
 import { APP_SEED, models } from "./common";
 import * as testCasesFunction from "tests-common";
 import { Keypair, StrKey } from "@stellar/stellar-base";
@@ -6,6 +6,35 @@ import Str from "@ledgerhq/hw-app-str";
 import { StellarUserRefusedError, StellarHashSigningNotEnabledError } from "@ledgerhq/hw-app-str";
 import Zemu from "@zondax/zemu";
 import { sha256 } from 'sha.js'
+import { ActionKind, IButton } from "@zondax/zemu/dist/types";
+
+const navToggleOption1: INavElement = {
+  type: ActionKind.Touch,
+  button: {
+    x: 350,
+    y: 115,
+    delay: 0.25,
+  }
+}
+
+const navToggleOption2: INavElement = {
+  type: ActionKind.Touch,
+  button: {
+    x: 350,
+    y: 238,
+    delay: 0.25,
+  }
+}
+
+const navToggleOption3: INavElement = {
+  type: ActionKind.Touch,
+  button: {
+    x: 350,
+    y: 362,
+    delay: 0.25,
+  }
+}
+
 
 beforeAll(async () => {
   await Zemu.checkAndPullImage();
@@ -112,12 +141,9 @@ describe("hash signing", () => {
 
       // enable hash signing
       if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([
-          ButtonKind.InfoButton,
-          ButtonKind.ToggleSettingButton2,
-          ButtonKind.ConfirmYesButton,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, settingNav.schedule, true, true);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, new TouchNavigation([ButtonKind.InfoButton]).schedule, true, false);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, new TouchNavigation([]).schedule, true, false);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, [navToggleOption2], true, false);
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
@@ -134,7 +160,7 @@ describe("hash signing", () => {
           ButtonKind.ConfirmNoButton,
           ButtonKind.ConfirmYesButton,
         ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, acceptRisk.schedule, true, true);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, acceptRisk.schedule, true, false);
         textToFind = "Hold to";
       }
       await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, textToFind, true);
