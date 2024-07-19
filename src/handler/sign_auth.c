@@ -37,6 +37,8 @@
 #include "stellar/parser.h"
 #include "stellar/formatter.h"
 
+static bool check_include_custom_contract();
+
 int handler_sign_auth(buffer_t *cdata, bool is_first_chunk, bool more) {
     if (is_first_chunk) {
         explicit_bzero(&G_context, sizeof(G_context));
@@ -94,26 +96,7 @@ int handler_sign_auth(buffer_t *cdata, bool is_first_chunk, bool more) {
         return io_send_sw(SW_DATA_HASH_FAIL);
     }
 
-    // Check if the contract is a unverified contract
-    G_context.unverified_contracts = false;
-    if (G_context.envelope.soroban_authorization.auth_function_type ==
-        SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN) {
-        const uint8_t *contract_address =
-            G_context.envelope.soroban_authorization.invoke_contract_args.address.address;
-        if (!plugin_check_presence(contract_address)) {
-            G_context.unverified_contracts = true;
-        }
-
-        if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
-            G_context.unverified_contracts = true;
-        }
-
-        uint8_t data_pair_count_tmp = 0;
-        if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
-            STELLAR_PLUGIN_RESULT_OK) {
-            G_context.unverified_contracts = true;
-        }
-    }
+    G_context.unverified_contracts = check_include_custom_contract();
     PRINTF("G_context.unverified_contracts: %d\n", G_context.unverified_contracts);
     if (G_context.unverified_contracts && !HAS_SETTING(S_UNVERIFIED_CONTRACTS_ENABLED)) {
         return io_send_sw(SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED);
@@ -121,3 +104,26 @@ int handler_sign_auth(buffer_t *cdata, bool is_first_chunk, bool more) {
 
     return ui_display_auth();
 };
+
+static bool check_include_custom_contract() {
+    // Check if the contract is a unverified contract
+    if (G_context.envelope.soroban_authorization.auth_function_type ==
+        SOROBAN_AUTHORIZED_FUNCTION_TYPE_CONTRACT_FN) {
+        const uint8_t *contract_address =
+            G_context.envelope.soroban_authorization.invoke_contract_args.address.address;
+        if (!plugin_check_presence(contract_address)) {
+            return true;
+        }
+
+        if (plugin_init_contract(contract_address) != STELLAR_PLUGIN_RESULT_OK) {
+            return true;
+        }
+
+        uint8_t data_pair_count_tmp = 0;
+        if (plugin_query_data_pair_count(contract_address, &data_pair_count_tmp) !=
+            STELLAR_PLUGIN_RESULT_OK) {
+            return true;
+        }
+    }
+    return false;
+}

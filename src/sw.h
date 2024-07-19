@@ -27,7 +27,7 @@
 /**
  * Status word for unverified contracts model not enabled.
  */
-#define SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED 0x6C67
+#define SW_UNVERIFIED_CONTRACTS_MODE_NOT_ENABLED 0x6C77
 /**
  * Status word for unknown command with this INS.
  */
