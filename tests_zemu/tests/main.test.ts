@@ -121,6 +121,7 @@ describe("hash signing", () => {
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
+        await sim.clickRight();
         await sim.clickBoth(undefined, false);
       }
       const hash = Buffer.from("3389e9f0f1a65f19736cacf544c2e825313e8447f569233bb8db39aa607c8889", "hex");
@@ -164,6 +165,7 @@ describe("hash signing", () => {
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
+        await sim.clickRight();
         await sim.clickBoth(undefined, false);
       }
 
@@ -209,6 +211,7 @@ describe("transactions", () => {
         } else {
           await sim.clickRight();
           await sim.clickBoth(undefined, false);
+          await sim.clickRight();
           await sim.clickRight();
           await sim.clickBoth(undefined, false);
         }
@@ -257,6 +260,7 @@ describe("transactions", () => {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
         await sim.clickRight();
+        await sim.clickRight();
         await sim.clickBoth(undefined, false);
       }
 
@@ -301,6 +305,7 @@ describe("transactions", () => {
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
+        await sim.clickRight();
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
       }
@@ -477,6 +482,7 @@ describe("plugin", () => {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
         await sim.clickRight();
+        await sim.clickRight();
         await sim.clickBoth(undefined, false);
       }
       const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
@@ -523,6 +529,7 @@ describe("plugin", () => {
       } else {
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
+        await sim.clickRight();
         await sim.clickRight();
         await sim.clickBoth(undefined, false);
       }

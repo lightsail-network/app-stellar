@@ -24,7 +24,7 @@ static void ui_idle(void);
 static void display_settings(const ux_flow_step_t* const start_step);
 static void switch_settings_hash_signing();
 static void switch_settings_sequence_number();
-static void switch_settings_UNVERIFIED_CONTRACTS();
+static void switch_settings_unverified_contracts();
 
 // FLOW for the settings menu:
 // #1 screen: enable hash signing
@@ -33,7 +33,7 @@ static void switch_settings_UNVERIFIED_CONTRACTS();
 
 UX_STEP_CB(ux_settings_unverified_contracts_step,
            bnnn_paging,
-           switch_settings_UNVERIFIED_CONTRACTS(),
+           switch_settings_unverified_contracts(),
            {
                .title = "Custom Contracts",
                .text = G.ui.detail_value,
@@ -55,7 +55,7 @@ UX_STEP_CB(ux_settings_sequence_number_step,
 #else
 UX_STEP_CB(ux_settings_unverified_contracts_step,
            bnnn,
-           switch_settings_UNVERIFIED_CONTRACTS(),
+           switch_settings_unverified_contracts(),
            {
                "Custom contracts",
                "Allow unverified",
@@ -90,9 +90,9 @@ UX_STEP_CB(ux_settings_exit_step,
                "Back",
            });
 UX_FLOW(ux_settings_flow,
+        &ux_settings_unverified_contracts_step,
         &ux_settings_hash_signing_step,
         &ux_settings_sequence_number_step,
-        &ux_settings_unverified_contracts_step,
         &ux_settings_exit_step);
 
 // We have a screen with the icon and "Stellar is ready"
@@ -151,7 +151,7 @@ static void switch_settings_sequence_number() {
     display_settings(&ux_settings_sequence_number_step);
 }
 
-static void switch_settings_UNVERIFIED_CONTRACTS() {
+static void switch_settings_unverified_contracts() {
     SETTING_TOGGLE(S_UNVERIFIED_CONTRACTS_ENABLED);
     display_settings(&ux_settings_unverified_contracts_step);
 }
