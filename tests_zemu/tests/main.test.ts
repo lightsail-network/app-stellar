@@ -429,7 +429,14 @@ describe("soroban auth", () => {
         let textToFind = /\bSign\b/;
         if (dev.name == "stax") {
           textToFind = /\bHold to\b/;
+
+          const acceptRisk = new TouchNavigation([
+            ButtonKind.ConfirmNoButton,
+            ButtonKind.ConfirmYesButton,
+          ]);
+          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, acceptRisk.schedule, true, true);
         }
+
         await sim.navigateAndCompareUntilText(
           ".",
           `${dev.prefix.toLowerCase()}-${c.filePath}`,
@@ -475,6 +482,15 @@ describe("soroban auth", () => {
       }
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
+
+      if (dev.name == "stax") {
+        const acceptRisk = new TouchNavigation([
+          ButtonKind.ConfirmNoButton,
+          ButtonKind.ConfirmYesButton,
+        ]);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, acceptRisk.schedule, true, true);
+      }
+
       await sim.navigateAndCompareUntilText(
         ".",
         `${dev.prefix.toLowerCase()}-soroban-auth-reject`,
