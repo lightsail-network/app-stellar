@@ -236,7 +236,7 @@ describe("transactions", () => {
             ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
             settingToggleCustomContracts,
             ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
-            settingToggleSequence,
+            // settingToggleSequence,
           ];
           await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav, true, true);
         } else {
@@ -300,7 +300,7 @@ describe("transactions", () => {
           ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
           settingToggleCustomContracts,
           ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
-          settingToggleSequence,
+          // settingToggleSequence,
         ];
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav, true, false);
       } else {
@@ -349,7 +349,7 @@ describe("transactions", () => {
           ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
           settingToggleCustomContracts,
           ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
-          settingToggleSequence,
+          // settingToggleSequence,
         ];
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav, true, false);
       } else {
