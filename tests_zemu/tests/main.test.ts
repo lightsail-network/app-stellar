@@ -52,7 +52,7 @@ let defaultOptions = {
   X11: false,
 };
 
-test.each(models)("can start and stop container ($dev.name)", async ({ dev, startText }) => {
+test.concurrent.each(models)("can start and stop container ($dev.name)", async ({ dev, startText }) => {
   const sim = new Zemu(dev.path);
   try {
     await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
@@ -62,7 +62,7 @@ test.each(models)("can start and stop container ($dev.name)", async ({ dev, star
 });
 
 describe("get public key", () => {
-  test.each(models)("get public key without confirmation ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("get public key without confirmation ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
@@ -77,7 +77,7 @@ describe("get public key", () => {
     }
   });
 
-  test.each(models)("get public key with confirmation - approve ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("get public key with confirmation - approve ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
     try {
       let confirmText = "Approve";
@@ -99,7 +99,7 @@ describe("get public key", () => {
     }
   });
 
-  test.each(models)("get public key with confirmation - reject ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("get public key with confirmation - reject ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
     try {
       let confirmText = "Reject";
@@ -122,7 +122,7 @@ describe("get public key", () => {
 });
 
 describe("hash signing", () => {
-  test.each(models)("hash signing mode is not enabled ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("hash signing mode is not enabled ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
@@ -135,7 +135,7 @@ describe("hash signing", () => {
     }
   });
 
-  test.each(models)("approve ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("approve ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
@@ -177,7 +177,7 @@ describe("hash signing", () => {
     }
   });
 
-  test.each(models)("reject ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("reject ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
@@ -227,7 +227,7 @@ describe("hash signing", () => {
 
 describe("transactions", () => {
   describe.each(getTxTestCases())("$caseName", (c) => {
-    test.each(models)("device ($dev.name)", async ({ dev, startText }) => {
+    test.concurrent.each(models)("device ($dev.name)", async ({ dev, startText }) => {
       const tx = c.txFunction();
       const sim = new Zemu(dev.path);
       try {
@@ -288,7 +288,7 @@ describe("transactions", () => {
     });
   });
 
-  test.each(models)("reject tx ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("reject tx ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.txNetworkPublic();
     const sim = new Zemu(dev.path);
     try {
@@ -336,7 +336,7 @@ describe("transactions", () => {
     }
   });
 
-  test.each(models)("reject fee bump tx ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("reject fee bump tx ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.feeBumpTx();
     const sim = new Zemu(dev.path);
     try {
@@ -385,7 +385,7 @@ describe("transactions", () => {
     }
   });
 
-  test.each(models)("hide sequence tx ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("hide sequence tx ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.txNetworkPublic();
     const sim = new Zemu(dev.path);
     try {
@@ -416,7 +416,7 @@ describe("transactions", () => {
     }
   });
 
-  test.each(models)("hide sequence fee bump tx ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("hide sequence fee bump tx ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.feeBumpTx();
     const sim = new Zemu(dev.path);
     try {
@@ -448,7 +448,7 @@ describe("transactions", () => {
     }
   });
 
-  test.each(models)("custom contracts mode is not enabled ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("custom contracts mode is not enabled ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.opInvokeHostFunctionScvalsCase0();
     const sim = new Zemu(dev.path);
     try {
@@ -465,7 +465,7 @@ describe("transactions", () => {
 
 describe("soroban auth", () => {
   describe.each(getAuthTestCases())("$caseName", (c) => {
-    test.each(models)("device ($dev.name)", async ({ dev, startText }) => {
+    test.concurrent.each(models)("device ($dev.name)", async ({ dev, startText }) => {
       const hashIdPreimage = c.txFunction();
       const sim = new Zemu(dev.path);
       try {
@@ -519,7 +519,7 @@ describe("soroban auth", () => {
     });
   });
 
-  test.each(models)("reject soroban auth ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("reject soroban auth ($dev.name)", async ({ dev, startText }) => {
     const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContract();
     const sim = new Zemu(dev.path);
     try {
@@ -574,7 +574,7 @@ describe("soroban auth", () => {
     }
   });
 
-  test.each(models)("custom contracts mode is not enabled ($dev.name)", async ({ dev, startText }) => {
+  test.concurrent.each(models)("custom contracts mode is not enabled ($dev.name)", async ({ dev, startText }) => {
     const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContract();
     const sim = new Zemu(dev.path);
     try {
@@ -590,7 +590,7 @@ describe("soroban auth", () => {
 });
 
 describe("plugin", () => {
-  test.each(models)("invoke host function ($dev.name)", async ({ dev, startText, plugin_path }) => {
+  test.concurrent.each(models)("invoke host function ($dev.name)", async ({ dev, startText, plugin_path }) => {
     const tx = testCasesFunction.opInvokeHostFunctionTestPlugin();
     const sim = new Zemu(dev.path, {
       "StellarTest": plugin_path
@@ -622,7 +622,7 @@ describe("plugin", () => {
     }
   });
 
-  test.each(models)("reject tx ($dev.name)", async ({ dev, startText, plugin_path }) => {
+  test.concurrent.each(models)("reject tx ($dev.name)", async ({ dev, startText, plugin_path }) => {
     const tx = testCasesFunction.opInvokeHostFunctionTestPlugin();
     const sim = new Zemu(dev.path, {
       "StellarTest": plugin_path
@@ -654,7 +654,7 @@ describe("plugin", () => {
   });
 
 
-  test.each(models)("soroban auth ($dev.name)", async ({ dev, startText, plugin_path }) => {
+  test.concurrent.each(models)("soroban auth ($dev.name)", async ({ dev, startText, plugin_path }) => {
     const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContractTestPlugin();
     const sim = new Zemu(dev.path, {
       "StellarTest": plugin_path
@@ -687,7 +687,7 @@ describe("plugin", () => {
   });
 
 
-  test.each(models)("reject soroban auth ($dev.name)", async ({ dev, startText, plugin_path }) => {
+  test.concurrent.each(models)("reject soroban auth ($dev.name)", async ({ dev, startText, plugin_path }) => {
     const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContractTestPlugin();
     const sim = new Zemu(dev.path, {
       "StellarTest": plugin_path
