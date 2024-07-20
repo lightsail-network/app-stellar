@@ -129,12 +129,14 @@ static void controls_callback(int token, uint8_t index, int page) {
             SETTING_TOGGLE(S_HASH_SIGNING_ENABLED);
         } else {
             // Display the warning message and ask the user to confirm
-            nbgl_useCaseChoice(&C_Warning_64px,
-                               "Enable Hash Signing",
-                               "Are you sure to\nallow hash signing?",
-                               "I understand, confirm",
-                               "Cancel",
-                               review_warning_choice_hash_signing);
+            nbgl_useCaseChoice(
+                &C_Warning_64px,
+                "Enable Hash Signing",
+                "Signing hashes is a dangerous operation that can put your wallet at serious risk. "
+                "Only enable this feature if you are sure you know what you are doing.",
+                "I understand, confirm",
+                "Cancel",
+                review_warning_choice_hash_signing);
         }
     } else if (token == SWITCH_SEQUENCE_SET_TOKEN) {
         // toggle the switch value
@@ -148,14 +150,14 @@ static void controls_callback(int token, uint8_t index, int page) {
             SETTING_TOGGLE(S_UNVERIFIED_CONTRACTS_ENABLED);
         } else {
             // Display the warning message and ask the user to confirm
-            nbgl_useCaseChoice(&C_Warning_64px,
-                               "Allow unverified contracts",
-                               "The invocation of unverified contracts may not be displayed in a "
-                               "readable form "
-                               "on this device, you need to examine them very carefully.",
-                               "I understand, confirm",
-                               "Cancel",
-                               review_warning_choice_unverified_contracts);
+            nbgl_useCaseChoice(
+                &C_Warning_64px,
+                "Allow unverified contracts",
+                "Unverified contracts may not be displayed in a readable form on "
+                "your Ledger, so you need to examine them very carefully before sign them.",
+                "I understand, confirm",
+                "Cancel",
+                review_warning_choice_unverified_contracts);
         }
     }
 }

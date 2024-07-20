@@ -366,13 +366,14 @@ static void warning_choice_tx1(bool confirm) {
     if (confirm) {
         ui_action_validate_transaction(false);
     } else {
-        nbgl_useCaseChoice(NULL,
-                           "The transaction cannot be trusted",
-                           "The invocation of unverified contracts may not be displayed in a "
-                           "readable form on your Ledger, you need to examine them very carefully.",
-                           "I accept the risk",
-                           "Reject transaction",
-                           warning_choice_tx2);
+        nbgl_useCaseChoice(
+            NULL,
+            "The transaction cannot be trusted",
+            "Unverified contracts may not be displayed in a readable form on your Ledger, so you "
+            "need to examine them very carefully before sign them.",
+            "I accept the risk",
+            "Reject transaction",
+            warning_choice_tx2);
     }
 }
 
@@ -389,13 +390,14 @@ static void warning_choice_auth1(bool confirm) {
     if (confirm) {
         ui_action_validate_transaction(false);
     } else {
-        nbgl_useCaseChoice(NULL,
-                           "The Soroban Authorization cannot be trusted",
-                           "The invocation of unverified contracts may not be displayed in a "
-                           "readable form on your Ledger, you need to examine them very carefully.",
-                           "I accept the risk",
-                           "Reject transaction",
-                           warning_choice_auth2);
+        nbgl_useCaseChoice(
+            NULL,
+            "The Soroban Authorization cannot be trusted",
+            "Unverified contracts may not be displayed in a readable form on your Ledger, so you "
+            "need to examine them very carefully before sign them.",
+            "I accept the risk",
+            "Reject transaction",
+            warning_choice_auth2);
     }
 }
 
