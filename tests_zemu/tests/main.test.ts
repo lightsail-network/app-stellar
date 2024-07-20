@@ -22,7 +22,7 @@ const settingToggleHashSigning: INavElement = {
   type: ActionKind.Touch,
   button: {
     x: 350,
-    y: 238,
+    y: 254,
     delay: 0.25,
     direction: 0
   }
@@ -32,7 +32,7 @@ const settingToggleSequence: INavElement = {
   type: ActionKind.Touch,
   button: {
     x: 350,
-    y: 362,
+    y: 394,
     delay: 0.25,
     direction: 0
   }
@@ -303,7 +303,7 @@ describe("transactions", () => {
           ...new TouchNavigation("stax", [ButtonKind.InfoButton]).schedule,
           settingToggleCustomContracts,
           ...new TouchNavigation("stax", [ButtonKind.ConfirmYesButton]).schedule,
-          // settingToggleSequence,
+          settingToggleSequence,
         ];
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav, true, false);
       } else {
