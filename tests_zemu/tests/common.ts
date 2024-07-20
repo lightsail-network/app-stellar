@@ -19,7 +19,7 @@ const STAX_START_TEXT = "This app enables";
 
 export const models: { dev: IDeviceModel; startText: string, plugin_path: string }[] = [
   { dev: { name: "stax", prefix: "stax", path: APP_PATH_STAX }, startText: STAX_START_TEXT, plugin_path: PLUGIN_PATH_STAX },
-  // { dev: { name: "nanos", prefix: "S", path: APP_PATH_S }, startText: NANO_START_TEXT, plugin_path: PLUGIN_PATH_S },
-  // { dev: { name: "nanox", prefix: "X", path: APP_PATH_X }, startText: NANO_START_TEXT, plugin_path: PLUGIN_PATH_X },
-  // { dev: { name: "nanosp", prefix: "SP", path: APP_PATH_SP }, startText: NANO_START_TEXT, plugin_path: PLUGIN_PATH_SP },
+  { dev: { name: "nanos", prefix: "S", path: APP_PATH_S }, startText: NANO_START_TEXT, plugin_path: PLUGIN_PATH_S },
+  { dev: { name: "nanox", prefix: "X", path: APP_PATH_X }, startText: NANO_START_TEXT, plugin_path: PLUGIN_PATH_X },
+  { dev: { name: "nanosp", prefix: "SP", path: APP_PATH_SP }, startText: NANO_START_TEXT, plugin_path: PLUGIN_PATH_SP },
 ];
