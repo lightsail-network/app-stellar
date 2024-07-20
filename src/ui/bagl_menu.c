@@ -35,7 +35,7 @@ UX_STEP_CB(ux_settings_unverified_contracts_step,
            bnnn_paging,
            switch_settings_unverified_contracts(),
            {
-               .title = "Custom Contracts",
+               .title = "Custom contracts",
                .text = G.ui.detail_value,
            });
 UX_STEP_CB(ux_settings_hash_signing_step,
