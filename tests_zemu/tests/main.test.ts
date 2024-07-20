@@ -14,6 +14,7 @@ const settingToggleCustomContracts: INavElement = {
     x: 350,
     y: 115,
     delay: 0.25,
+    direction: 0
   }
 }
 
@@ -23,6 +24,7 @@ const settingToggleHashSigning: INavElement = {
     x: 350,
     y: 238,
     delay: 0.25,
+    direction: 0
   }
 }
 
@@ -32,6 +34,7 @@ const settingToggleSequence: INavElement = {
     x: 350,
     y: 362,
     delay: 0.25,
+    direction: 0
   }
 }
 
@@ -142,9 +145,9 @@ describe("hash signing", () => {
       // enable hash signing
       if (dev.name == "stax") {
         const settingNav = [
-          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          ...new TouchNavigation("stax", [ButtonKind.InfoButton]).schedule,
           settingToggleHashSigning,
-          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule
+          ...new TouchNavigation("stax", [ButtonKind.ConfirmYesButton]).schedule
         ]
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, settingNav, true, false);
       } else {
@@ -159,7 +162,7 @@ describe("hash signing", () => {
       await sim.waitForScreenChanges(events);
       let textToFind = "Sign Hash";
       if (dev.name == "stax") {
-        const acceptRisk = new TouchNavigation([
+        const acceptRisk = new TouchNavigation("stax", [
           ButtonKind.ConfirmNoButton,
           ButtonKind.ConfirmYesButton,
         ]);
@@ -186,9 +189,9 @@ describe("hash signing", () => {
       if (dev.name == "stax") {
         textToFind = "Hold to";
         const settingNav = [
-          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          ...new TouchNavigation("stax", [ButtonKind.InfoButton]).schedule,
           settingToggleHashSigning,
-          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule
+          ...new TouchNavigation("stax", [ButtonKind.ConfirmYesButton]).schedule
         ]
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, settingNav, true, false);
       } else {
@@ -205,7 +208,7 @@ describe("hash signing", () => {
       await sim.waitForScreenChanges(events);
 
       if (dev.name == "stax") {
-        const acceptRisk = new TouchNavigation([
+        const acceptRisk = new TouchNavigation("stax", [
           ButtonKind.ConfirmNoButton,
           ButtonKind.ConfirmYesButton,
         ]);
@@ -213,7 +216,7 @@ describe("hash signing", () => {
       }
       await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, textToFind, true);
       if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
+        const settingNav = new TouchNavigation("stax", [ButtonKind.ApproveTapButton]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, settingNav.schedule, true, false);
       }
     } finally {
@@ -233,10 +236,10 @@ describe("transactions", () => {
         const str = new Str(transport);
         if (dev.name == "stax") {
           const settingNav = [
-            ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+            ...new TouchNavigation("stax", [ButtonKind.InfoButton]).schedule,
             settingToggleCustomContracts,
-            ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
-            // settingToggleSequence,
+            ...new TouchNavigation("stax", [ButtonKind.ConfirmYesButton]).schedule,
+            settingToggleSequence,
           ];
           await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav, true, true);
         } else {
@@ -261,7 +264,7 @@ describe("transactions", () => {
             && !c.caseName.includes("Xlm")
             && !c.caseName.includes("Usdc")
           ) {
-            const acceptRisk = new TouchNavigation([
+            const acceptRisk = new TouchNavigation("stax", [
               ButtonKind.ConfirmNoButton,
               ButtonKind.ConfirmYesButton,
             ]);
@@ -297,9 +300,9 @@ describe("transactions", () => {
       if (dev.name == "stax") {
         textToFind = "Hold to";
         const settingNav = [
-          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          ...new TouchNavigation("stax", [ButtonKind.InfoButton]).schedule,
           settingToggleCustomContracts,
-          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
+          ...new TouchNavigation("stax", [ButtonKind.ConfirmYesButton]).schedule,
           // settingToggleSequence,
         ];
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav, true, false);
@@ -325,7 +328,7 @@ describe("transactions", () => {
         1000 * 60 * 60
       );
       if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
+        const settingNav = new TouchNavigation("stax", [ButtonKind.ApproveTapButton]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav.schedule, true, false);
       }
     } finally {
@@ -346,10 +349,10 @@ describe("transactions", () => {
       if (dev.name == "stax") {
         textToFind = "Hold to";
         const settingNav = [
-          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          ...new TouchNavigation("stax", [ButtonKind.InfoButton]).schedule,
           settingToggleCustomContracts,
-          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule,
-          // settingToggleSequence,
+          ...new TouchNavigation("stax", [ButtonKind.ConfirmYesButton]).schedule,
+          settingToggleSequence,
         ];
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav, true, false);
       } else {
@@ -374,7 +377,7 @@ describe("transactions", () => {
         1000 * 60 * 60
       );
       if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
+        const settingNav = new TouchNavigation("stax", [ButtonKind.ApproveTapButton]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav.schedule, true, false);
       }
     } finally {
@@ -472,9 +475,9 @@ describe("soroban auth", () => {
 
         if (dev.name == "stax") {
           const settingNav = [
-            ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+            ...new TouchNavigation("stax", [ButtonKind.InfoButton]).schedule,
             settingToggleCustomContracts,
-            ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule
+            ...new TouchNavigation("stax", [ButtonKind.ConfirmYesButton]).schedule
           ];
           await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, settingNav, true, false);
         } else {
@@ -491,7 +494,7 @@ describe("soroban auth", () => {
           textToFind = /\bHold to\b/;
 
           if (!c.caseName.includes("Create")) {
-            const acceptRisk = new TouchNavigation([
+            const acceptRisk = new TouchNavigation("stax", [
               ButtonKind.ConfirmNoButton,
               ButtonKind.ConfirmYesButton,
             ]);
@@ -526,9 +529,9 @@ describe("soroban auth", () => {
 
       if (dev.name == "stax") {
         const settingNav = [
-          ...new TouchNavigation([ButtonKind.InfoButton]).schedule,
+          ...new TouchNavigation("stax", [ButtonKind.InfoButton]).schedule,
           settingToggleCustomContracts,
-          ...new TouchNavigation([ButtonKind.ConfirmYesButton]).schedule
+          ...new TouchNavigation("stax", [ButtonKind.ConfirmYesButton]).schedule
         ];
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav, true, false);
       } else {
@@ -547,7 +550,7 @@ describe("soroban auth", () => {
       await sim.waitForScreenChanges(events);
 
       if (dev.name == "stax") {
-        const acceptRisk = new TouchNavigation([
+        const acceptRisk = new TouchNavigation("stax", [
           ButtonKind.ConfirmNoButton,
           ButtonKind.ConfirmYesButton,
         ]);
@@ -563,7 +566,7 @@ describe("soroban auth", () => {
         1000 * 60 * 60
       );
       if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
+        const settingNav = new TouchNavigation("stax", [ButtonKind.ApproveTapButton]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav.schedule, true, false);
       }
     } finally {
@@ -642,7 +645,7 @@ describe("plugin", () => {
         1000 * 60 * 60
       );
       if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
+        const settingNav = new TouchNavigation("stax", [ButtonKind.ApproveTapButton]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-plugin-invoke-host-function-reject`, settingNav.schedule, true, false);
       }
     } finally {
@@ -710,7 +713,7 @@ describe("plugin", () => {
         1000 * 60 * 60
       );
       if (dev.name == "stax") {
-        const settingNav = new TouchNavigation([ButtonKind.ApproveTapButton]);
+        const settingNav = new TouchNavigation("stax", [ButtonKind.ApproveTapButton]);
         await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav.schedule, true, false);
       }
     } finally {
