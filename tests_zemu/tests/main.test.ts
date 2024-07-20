@@ -487,14 +487,16 @@ describe("soroban auth", () => {
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
         let textToFind = /\bSign\b/;
-        if (dev.name == "stax" && !c.caseName.includes("Create")) {
+        if (dev.name == "stax") {
           textToFind = /\bHold to\b/;
 
-          const acceptRisk = new TouchNavigation([
-            ButtonKind.ConfirmNoButton,
-            ButtonKind.ConfirmYesButton,
-          ]);
-          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, acceptRisk.schedule, true, true);
+          if (!c.caseName.includes("Create")) {
+            const acceptRisk = new TouchNavigation([
+              ButtonKind.ConfirmNoButton,
+              ButtonKind.ConfirmYesButton,
+            ]);
+            await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, acceptRisk.schedule, true, true);
+          }
         }
 
         await sim.navigateAndCompareUntilText(
