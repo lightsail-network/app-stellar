@@ -227,7 +227,7 @@ describe("transactions", () => {
         const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
         await sim.navigateAndCompareUntilText(
           ".",
-          "demo",
+          testCaseName,
           textToFind,
           true,
           undefined,
