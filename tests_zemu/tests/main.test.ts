@@ -586,7 +586,7 @@ describe("plugin", () => {
       );
       if (dev.name == "stax" || dev.name == "flex") {
         const settingNav = new TouchNavigation(dev.name, [ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav.schedule, true);
+        await sim.navigate(".", `${dev.prefix.toLowerCase()}-plugin-soroban-auth-reject`, settingNav.schedule, true);
       }
     } finally {
       await sim.close();
