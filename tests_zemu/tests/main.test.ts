@@ -119,7 +119,7 @@ describe("hash signing", () => {
       await sim.waitForScreenChanges(events);
       // accept risk
       await acceptRisk(sim, dev.name, testCaseName);
-      await sim.waitForScreenChanges(events);
+      await sim.deleteEvents();
 
       const textToFind = dev.name.startsWith("nano") ? "Sign Hash" : "Hold to";
       await sim.navigateAndCompareUntilText(".", testCaseName, textToFind, true);
@@ -150,8 +150,7 @@ describe("hash signing", () => {
 
       // accept risk
       await acceptRisk(sim, dev.name, testCaseName);
-      await sim.waitForScreenChanges(events);
-
+      await sim.deleteEvents();
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Hold to";
       await sim.navigateAndCompareUntilText(".", testCaseName, textToFind, true);
       if (dev.name == "stax" || dev.name == "flex") {
@@ -221,14 +220,14 @@ describe("transactions", () => {
         // accept risk
         if (testsNeedEnableCustomContracts.includes(c.caseName)) {
           await acceptRisk(sim, dev.name, testCaseName);
+          await sim.deleteEvents();
         }
-        await sim.waitForScreenChanges(events);
 
         // TODO: If set to Sign, it will not pass the test. Is this a bug in Zemu?
         const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
         await sim.navigateAndCompareUntilText(
           ".",
-          testCaseName,
+          "demo",
           textToFind,
           true,
           undefined,
@@ -430,7 +429,7 @@ describe("soroban auth", () => {
         await sim.waitForScreenChanges(events);
         if (testsNeedEnableCustomContracts.includes(c.caseName)) {
           await acceptRisk(sim, dev.name, testCaseName);
-          await sim.waitForScreenChanges(events);
+          await sim.deleteEvents();
         }
         const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
         await sim.navigateAndCompareUntilText(
@@ -468,7 +467,7 @@ describe("soroban auth", () => {
       await sim.waitForScreenChanges(events);
 
       await acceptRisk(sim, dev.name, testCaseName);
-      await sim.waitForScreenChanges(events);
+      await sim.deleteEvents();
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Sign Soroban Auth?";
       await sim.navigateAndCompareUntilText(
         ".",
