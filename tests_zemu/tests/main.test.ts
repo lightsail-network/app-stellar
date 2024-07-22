@@ -49,6 +49,7 @@ describe("get public key", () => {
 
   test.concurrent.each(models)("get public key with confirmation - approve ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-public-key-approve`;
     try {
       const confirmText = dev.name.startsWith("nano") ? "Approve" : "Confirm";
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.ApproveTapButton });
@@ -58,7 +59,7 @@ describe("get public key", () => {
       const kp = Keypair.fromSecret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK");
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
-      await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-public-key-approve`, confirmText, true);
+      await sim.navigateAndCompareUntilText(".", testCaseName, confirmText, true);
       const pk = StrKey.encodeEd25519PublicKey((await result).rawPublicKey);
       expect(pk).toEqual(kp.publicKey());
     } finally {
@@ -68,6 +69,7 @@ describe("get public key", () => {
 
   test.concurrent.each(models)("get public key with confirmation - reject ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-public-key-reject`;
     try {
       const confirmText = dev.name.startsWith("nano") ? "Reject" : "Confirm";
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
@@ -78,7 +80,7 @@ describe("get public key", () => {
 
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
-      await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-public-key-reject`, confirmText, true);
+      await sim.navigateAndCompareUntilText(".", testCaseName, confirmText, true);
     } finally {
       await sim.close();
     }
@@ -102,11 +104,11 @@ describe("hash signing", () => {
   // TODO: skip for now, see https://github.com/LedgerHQ/ledger-secure-sdk/issues/737
   test.concurrent.each(models.filter(({ dev }) => dev.name !== "flex" && dev.name !== "stax"))("approve ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-approve`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
       const str = new Str(transport);
-      const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-approve`;
 
       // enable hash signing
       await enableSettings(sim, dev.name, testCaseName, false, true, false);
@@ -130,11 +132,11 @@ describe("hash signing", () => {
   // TODO: skip for now, see https://github.com/LedgerHQ/ledger-secure-sdk/issues/737
   test.concurrent.each(models.filter(({ dev }) => dev.name !== "flex" && dev.name !== "stax"))("reject ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-reject`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
-      const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-reject`;
 
       // enable hash signing
       await enableSettings(sim, dev.name, testCaseName, false, true, false);
@@ -165,6 +167,7 @@ describe("transactions", () => {
     test.concurrent.each(models)("device ($dev.name)", async ({ dev, startText }) => {
       const tx = c.txFunction();
       const sim = new Zemu(dev.path);
+      const testCaseName = `${dev.prefix.toLowerCase()}-${c.filePath}`;
       try {
         await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
         const transport = await sim.getTransport();
@@ -185,26 +188,22 @@ describe("transactions", () => {
           "opInvokeHostFunctionWithoutArgs",
           "opInvokeHostFunctionWithoutAuthAndNoSource"
         ];
-        await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-${c.filePath}`, testsNeedEnableCustomContracts.includes(c.caseName), false, true);
+        await enableSettings(sim, dev.name, testCaseName, testsNeedEnableCustomContracts.includes(c.caseName), false, true);
 
         const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
 
         // accept risk
-        if (testsNeedEnableCustomContracts.includes(c.caseName) && (dev.name == "stax" || dev.name == "flex")) {
-          const acceptRisk = new TouchNavigation(dev.name, [
-            ButtonKind.ConfirmNoButton,
-            ButtonKind.ConfirmYesButton,
-          ]);
-          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, acceptRisk.schedule, true);
+        if (testsNeedEnableCustomContracts.includes(c.caseName)) {
+          await acceptRisk(sim, dev.name, testCaseName);
         }
 
         // TODO: If set to Sign, it will not pass the test. Is this a bug in Zemu?
         const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
         await sim.navigateAndCompareUntilText(
           ".",
-          `${dev.prefix.toLowerCase()}-${c.filePath}`,
+          testCaseName,
           textToFind,
           true,
           undefined,
@@ -222,13 +221,14 @@ describe("transactions", () => {
   test.concurrent.each(models)("reject tx ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.txNetworkPublic();
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-tx-reject`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
 
       // enable custom contracts and seqence number
-      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-tx-reject`, false, false, true);
+      await enableSettings(sim, dev.name, testCaseName, false, false, true);
 
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
 
@@ -237,7 +237,7 @@ describe("transactions", () => {
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Sign transaction?";
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-tx-reject`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -245,7 +245,7 @@ describe("transactions", () => {
       );
       if (dev.name == "stax" || dev.name == "flex") {
         const settingNav = new TouchNavigation(dev.name, [ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-tx-reject`, settingNav.schedule, true);
+        await sim.navigate(".", testCaseName, settingNav.schedule, true);
       }
     } finally {
       await sim.close();
@@ -255,13 +255,14 @@ describe("transactions", () => {
   test.concurrent.each(models)("reject fee bump tx ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.feeBumpTx();
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
 
       // enable custom contracts and seqence number
-      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, false, false, true);
+      await enableSettings(sim, dev.name, testCaseName, false, false, true);
 
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
 
@@ -270,7 +271,7 @@ describe("transactions", () => {
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Sign transaction?";
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -278,7 +279,7 @@ describe("transactions", () => {
       );
       if (dev.name == "stax" || dev.name == "flex") {
         const settingNav = new TouchNavigation(dev.name, [ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, settingNav.schedule, true);
+        await sim.navigate(".", testCaseName, settingNav.schedule, true);
       }
     } finally {
       await sim.close();
@@ -288,6 +289,7 @@ describe("transactions", () => {
   test.concurrent.each(models)("hide sequence tx ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.txNetworkPublic();
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-tx-hide-sequence`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
@@ -299,7 +301,7 @@ describe("transactions", () => {
       const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-tx-hide-sequence`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -316,6 +318,7 @@ describe("transactions", () => {
   test.concurrent.each(models)("hide sequence fee bump tx ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.feeBumpTx();
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-fee-bump-tx-hide-sequence`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
@@ -327,7 +330,7 @@ describe("transactions", () => {
       const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-fee-bump-tx-hide-sequence`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -362,6 +365,7 @@ describe("soroban auth", () => {
     test.concurrent.each(models)("device ($dev.name)", async ({ dev, startText }) => {
       const hashIdPreimage = c.txFunction();
       const sim = new Zemu(dev.path);
+      const testCaseName = `${dev.prefix.toLowerCase()}-${c.filePath}`;
       try {
         await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
         const transport = await sim.getTransport();
@@ -376,22 +380,18 @@ describe("soroban auth", () => {
           "sorobanAuthTestnet",
           "sorobanAuthUnknownNetwork"
         ];
-        await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-${c.filePath}`, testsNeedEnableCustomContracts.includes(c.caseName), false, false);
+        await enableSettings(sim, dev.name, testCaseName, testsNeedEnableCustomContracts.includes(c.caseName), false, false);
 
         const result = str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"));
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
-        if (testsNeedEnableCustomContracts.includes(c.caseName) && (dev.name == "stax" || dev.name == "flex")) {
-          const acceptRisk = new TouchNavigation(dev.name, [
-            ButtonKind.ConfirmNoButton,
-            ButtonKind.ConfirmYesButton,
-          ]);
-          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, acceptRisk.schedule, true);
+        if (testsNeedEnableCustomContracts.includes(c.caseName)) {
+          await acceptRisk(sim, dev.name, testCaseName);
         }
         const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
         await sim.navigateAndCompareUntilText(
           ".",
-          `${dev.prefix.toLowerCase()}-${c.filePath}`,
+          testCaseName,
           textToFind,
           true,
           undefined,
@@ -409,30 +409,25 @@ describe("soroban auth", () => {
   test.concurrent.each(models)("reject soroban auth ($dev.name)", async ({ dev, startText }) => {
     const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContract();
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-soroban-auth-reject`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
 
       // enable custom contracts
-      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-soroban-auth-reject`, true, false, false);
+      await enableSettings(sim, dev.name, testCaseName, true, false, false);
 
       expect(() => str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"))).rejects.toThrow(StellarUserRefusedError);
 
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
 
-      if (dev.name == "stax" || dev.name == "flex") {
-        const acceptRisk = new TouchNavigation(dev.name, [
-          ButtonKind.ConfirmNoButton,
-          ButtonKind.ConfirmYesButton,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, acceptRisk.schedule, true);
-      }
+      await acceptRisk(sim, dev.name, testCaseName);
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Sign Soroban Auth?";
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-soroban-auth-reject`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -440,7 +435,7 @@ describe("soroban auth", () => {
       );
       if (dev.name == "stax" || dev.name == "flex") {
         const settingNav = new TouchNavigation(dev.name, [ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-soroban-auth-reject`, settingNav.schedule, true);
+        await sim.navigate(".", testCaseName, settingNav.schedule, true);
       }
     } finally {
       await sim.close();
@@ -468,6 +463,7 @@ describe("plugin", () => {
     const sim = new Zemu(dev.path, {
       "StellarTest": plugin_path
     });
+    const testCaseName = `${dev.prefix.toLowerCase()}-plugin-invoke-host-function`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
@@ -478,7 +474,7 @@ describe("plugin", () => {
       const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-plugin-invoke-host-function`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -494,6 +490,7 @@ describe("plugin", () => {
 
   test.concurrent.each(models)("reject tx ($dev.name)", async ({ dev, startText, plugin_path }) => {
     const tx = testCasesFunction.opInvokeHostFunctionTestPlugin();
+    const testCaseName = `${dev.prefix.toLowerCase()}-plugin-invoke-host-function-reject`;
     const sim = new Zemu(dev.path, {
       "StellarTest": plugin_path
     });
@@ -507,7 +504,7 @@ describe("plugin", () => {
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Sign transaction?";
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-plugin-invoke-host-function-reject`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -515,7 +512,7 @@ describe("plugin", () => {
       );
       if (dev.name == "stax" || dev.name == "flex") {
         const settingNav = new TouchNavigation(dev.name, [ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-plugin-invoke-host-function-reject`, settingNav.schedule, true);
+        await sim.navigate(".", testCaseName, settingNav.schedule, true);
       }
     } finally {
       await sim.close();
@@ -528,6 +525,7 @@ describe("plugin", () => {
     const sim = new Zemu(dev.path, {
       "StellarTest": plugin_path
     });
+    const testCaseName = `${dev.prefix.toLowerCase()}-plugin-soroban-auth`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
@@ -538,7 +536,7 @@ describe("plugin", () => {
       const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-plugin-soroban-auth`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -555,6 +553,7 @@ describe("plugin", () => {
 
   test.concurrent.each(models)("reject soroban auth ($dev.name)", async ({ dev, startText, plugin_path }) => {
     const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContractTestPlugin();
+    const testCaseName = `${dev.prefix.toLowerCase()}-plugin-soroban-auth-reject`;
     const sim = new Zemu(dev.path, {
       "StellarTest": plugin_path
     });
@@ -569,7 +568,7 @@ describe("plugin", () => {
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Sign Soroban Auth?";
       await sim.navigateAndCompareUntilText(
         ".",
-        `${dev.prefix.toLowerCase()}-plugin-soroban-auth-reject`,
+        testCaseName,
         textToFind,
         true,
         undefined,
@@ -577,7 +576,7 @@ describe("plugin", () => {
       );
       if (dev.name == "stax" || dev.name == "flex") {
         const settingNav = new TouchNavigation(dev.name, [ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-plugin-soroban-auth-reject`, settingNav.schedule, true);
+        await sim.navigate(".", testCaseName, settingNav.schedule, true);
       }
     } finally {
       await sim.close();
