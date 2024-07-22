@@ -163,7 +163,7 @@ describe("hash signing", () => {
 
   test.concurrent.each(models)("refuse risk ($dev.name)", async ({ dev, startText }) => {
     const sim = new Zemu(dev.path);
-    const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-reject`;
+    const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-refuse-risk`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
@@ -177,8 +177,6 @@ describe("hash signing", () => {
 
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
-
-      // accept risk
       await refuseRisk(sim, dev.name, testCaseName);
     } finally {
       await sim.close();
@@ -386,14 +384,16 @@ describe("transactions", () => {
   test.concurrent.each(models)("refuse risk ($dev.name)", async ({ dev, startText }) => {
     const tx = testCasesFunction.opInvokeHostFunctionScvalsCase0();
     const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-tx-refuse-risk`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
       const str = new Str(transport);
+      await enableSettings(sim, dev.name, testCaseName, true, false, false);
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
-      await refuseRisk(sim, dev.name, "tx-refuse-risk");
+      await refuseRisk(sim, dev.name, testCaseName);
     } finally {
       await sim.close();
     }
@@ -499,7 +499,7 @@ describe("soroban auth", () => {
   test.concurrent.each(models)("refuse risk ($dev.name)", async ({ dev, startText }) => {
     const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContract();
     const sim = new Zemu(dev.path);
-    const testCaseName = `${dev.prefix.toLowerCase()}-soroban-auth-reject`;
+    const testCaseName = `${dev.prefix.toLowerCase()}-soroban-auth-refuse-risk`;
     try {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
@@ -703,7 +703,7 @@ async function enableSettings(sim: Zemu, device: TModel, testCaseName: string, e
     if (enableSequence) {
       settingNav.push(StaxSettingToggleSequence);
     }
-    await sim.navigate(".", testCaseName, settingNav, true);
+    await sim.navigate(".", testCaseName, settingNav, true, false);
   } else if (device == "flex") {
     const settingNav = [
       ...new TouchNavigation("flex", [ButtonKind.InfoButton]).schedule,
@@ -721,7 +721,7 @@ async function enableSettings(sim: Zemu, device: TModel, testCaseName: string, e
       settingNav.push(...new TouchNavigation("flex", [ButtonKind.SettingsNavRightButton]).schedule);
       settingNav.push(FlexSettingToggleSequence);
     }
-    await sim.navigate(".", testCaseName, settingNav, true);
+    await sim.navigate(".", testCaseName, settingNav, true, false);
   } else {
     // enter settings page
     await sim.clickRight(undefined, true);
@@ -748,15 +748,15 @@ async function acceptRisk(sim: Zemu, device: TModel, testCaseName: string) {
     ]);
     await sim.navigate(".", testCaseName, acceptRisk.schedule, true);
   } else if (device == 'nanos') {
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickBoth();
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickBoth(undefined, true);
   } else {
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickBoth();
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickBoth(undefined, true);
   }
 }
 
@@ -766,19 +766,19 @@ async function refuseRisk(sim: Zemu, device: TModel, testCaseName: string) {
       ButtonKind.ConfirmNoButton,
       ButtonKind.ConfirmNoButton,
     ]);
-    await sim.navigate(".", testCaseName, acceptRisk.schedule, true);
+    await sim.navigate(".", testCaseName, acceptRisk.schedule, true, false);
   } else if (device == 'nanos') {
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickBoth();
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickBoth(undefined, true);
   } else {
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickRight();
-    await sim.clickBoth();
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickRight(undefined, true);
+    await sim.clickBoth(undefined, true);
   }
 }
 
