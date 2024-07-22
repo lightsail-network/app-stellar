@@ -27,6 +27,7 @@
 #include "io.h"
 #include "bip32.h"
 #include "format.h"
+#include "bagl_common.h"
 
 #include "display.h"
 #include "constants.h"
@@ -36,6 +37,8 @@
 #include "stellar/printer.h"
 #include "stellar/formatter.h"
 #include "stellar/printer.h"
+
+static void start_review_flow();
 
 static action_validate_cb g_validate_callback;
 
@@ -52,13 +55,6 @@ UX_STEP_NOCB(ux_tx_hash_signing_review_step,
                  &C_icon_eye,
                  "Review",
                  "Hash Signing",
-             });
-UX_STEP_NOCB(ux_tx_hash_signing_warning_step,
-             pbb,
-             {
-                 &C_icon_warning,
-                 "Dangerous",
-                 "Operation",
              });
 UX_STEP_NOCB(ux_tx_hash_signing_display_hash_step,
              bnnn_paging,
@@ -85,16 +81,53 @@ UX_STEP_CB(ux_tx_hash_display_reject_step,
 
 // FLOW to display hash signing
 // #1 screen: eye icon + "Review Transaction"
-// #2 screen: warning icon + "Hash Signing"
-// #3 screen: display hash
-// #4 screen: approve button
-// #5 screen: reject button
+// #2 screen: display hash
+// #3 screen: approve button
+// #4 screen: reject button
 UX_FLOW(ux_tx_hash_signing_flow,
         &ux_tx_hash_signing_review_step,
-        &ux_tx_hash_signing_warning_step,
         &ux_tx_hash_signing_display_hash_step,
         &ux_tx_hash_display_approve_step,
         &ux_tx_hash_display_reject_step);
+
+// clang-format off
+UX_STEP_CB(
+    ux_blind_signing_accept_step,
+    pbb,
+    start_review_flow(),
+    {
+      &C_icon_validate_14,
+#ifdef TARGET_NANOS
+      "Accept risk",
+      "and review",
+#else
+      "Accept risk and",
+      "review transaction",
+#endif
+    });
+UX_STEP_CB(
+    ux_blind_signing_reject_step,
+    pb,
+    ui_action_validate_transaction(false),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+// clang-format on
+
+UX_FLOW(ux_blind_signing_flow,
+        &ux_blind_signing_warning_step,
+#ifndef TARGET_NANOS
+        &ux_blind_signing_text1_step,
+        &ux_blind_signing_text2_step,
+#endif
+        &ux_blind_signing_link_step,
+        &ux_blind_signing_accept_step,
+        &ux_blind_signing_reject_step);
+
+static void start_review_flow() {
+    ux_flow_init(0, ux_tx_hash_signing_flow, NULL);
+}
 
 int ui_display_hash() {
     if (G_context.req_type != CONFIRM_HASH || G_context.state != STATE_NONE) {
@@ -110,7 +143,8 @@ int ui_display_hash() {
 
     g_validate_callback = &ui_action_validate_transaction;
 
-    ux_flow_init(0, ux_tx_hash_signing_flow, NULL);
+    ux_flow_init(0, ux_blind_signing_flow, NULL);
+
     return 0;
 }
 #endif
