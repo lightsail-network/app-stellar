@@ -18,46 +18,4 @@
 #ifdef HAVE_BAGL
 #include "glyphs.h"
 
-// clang-format off
-UX_STEP_NOCB(
-    ux_blind_signing_warning_step,
-    pbb,
-    {
-      &C_icon_warning,
-#ifdef TARGET_NANOS
-      "Transaction",
-      "not trusted",
-#else
-      "This transaction",
-      "cannot be trusted",
-#endif
-    });
-#ifndef TARGET_NANOS
-UX_STEP_NOCB(
-    ux_blind_signing_text1_step,
-    nnnn,
-    {
-      "Your Ledger cannot",
-      "decode this",
-      "transaction. If you",
-      "sign it, you could",
-    });
-UX_STEP_NOCB(
-    ux_blind_signing_text2_step,
-    nnnn,
-    {
-      "be authorizing",
-      "malicious actions",
-      "that can drain your",
-      "wallet.",
-    });
-#endif
-UX_STEP_NOCB(
-    ux_blind_signing_link_step,
-    nn,
-    {
-      "Learn more:",
-      "ledger.com/e8",
-    });
-// clang-format on
 #endif
