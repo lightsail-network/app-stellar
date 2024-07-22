@@ -27,7 +27,6 @@
 #include "io.h"
 #include "bip32.h"
 #include "format.h"
-#include "bagl_common.h"
 
 #include "display.h"
 #include "constants.h"
@@ -49,21 +48,21 @@ static void ui_action_validate_transaction(bool choice) {
 }
 
 // Step with icon and text
-UX_STEP_NOCB(ux_tx_hash_signing_review_step,
+UX_STEP_NOCB(ux_hash_signing_review_step,
              pnn,
              {
                  &C_icon_eye,
                  "Review",
                  "Hash Signing",
              });
-UX_STEP_NOCB(ux_tx_hash_signing_display_hash_step,
+UX_STEP_NOCB(ux_hash_signing_display_hash_step,
              bnnn_paging,
              {
                  .title = "Hash",
                  .text = G.ui.detail_value,
              });
 // Step with approve button
-UX_STEP_CB(ux_tx_hash_display_approve_step,
+UX_STEP_CB(ux_hash_display_approve_step,
            pb,
            (*g_validate_callback)(true),
            {
@@ -71,7 +70,7 @@ UX_STEP_CB(ux_tx_hash_display_approve_step,
                "Sign Hash",
            });
 // Step with reject button
-UX_STEP_CB(ux_tx_hash_display_reject_step,
+UX_STEP_CB(ux_hash_display_reject_step,
            pb,
            (*g_validate_callback)(false),
            {
@@ -93,12 +92,12 @@ UX_STEP_NOCB(ux_hash_approval_blind_signing_reminder_step,
 // #3 screen: display warning
 // #4 screen: approve button
 // #5 screen: reject button
-UX_FLOW(ux_tx_hash_signing_flow,
-        &ux_tx_hash_signing_review_step,
-        &ux_tx_hash_signing_display_hash_step,
+UX_FLOW(ux_hash_signing_flow,
+        &ux_hash_signing_review_step,
+        &ux_hash_signing_display_hash_step,
         &ux_hash_approval_blind_signing_reminder_step,
-        &ux_tx_hash_display_approve_step,
-        &ux_tx_hash_display_reject_step);
+        &ux_hash_display_approve_step,
+        &ux_hash_display_reject_step);
 
 // clang-format off
 UX_STEP_NOCB(
@@ -176,7 +175,7 @@ UX_FLOW(ux_hash_blind_signing_flow,
         &ux_hash_blind_signing_reject_step);
 
 static void start_review_flow() {
-    ux_flow_init(0, ux_tx_hash_signing_flow, NULL);
+    ux_flow_init(0, ux_hash_signing_flow, NULL);
 }
 
 int ui_display_hash() {
