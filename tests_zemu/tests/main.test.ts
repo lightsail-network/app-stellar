@@ -180,26 +180,33 @@ describe("transactions", () => {
         const str = new Str(transport);
 
         // enable custom contracts and seqence number
-        await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-${c.filePath}`, true, false, true);
+        const testsNeedEnableCustomContracts = [
+          "opInvokeHostFunctionAssetApprove",
+          "opInvokeHostFunctionAssetTransfer",
+          "opInvokeHostFunctionScvalsCase0",
+          "opInvokeHostFunctionScvalsCase1",
+          "opInvokeHostFunctionScvalsCase2",
+          "opInvokeHostFunctionTestPlugin",
+          "opInvokeHostFunctionWithAuth",
+          "opInvokeHostFunctionWithAuthAndNoArgs",
+          "opInvokeHostFunctionWithAuthAndNoArgsAndNoSource",
+          "opInvokeHostFunctionWithComplexSubInvocation",
+          "opInvokeHostFunctionWithoutArgs",
+          "opInvokeHostFunctionWithoutAuthAndNoSource"
+        ];
+        await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-${c.filePath}`, testsNeedEnableCustomContracts.includes(c.caseName), false, true);
 
         const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
 
         // accept risk
-        if (dev.name == "stax" || dev.name == "flex") {
-          if (c.caseName.includes("InvokeHostFunction")
-            && !c.caseName.includes("Create")
-            && !c.caseName.includes("Upload")
-            && !c.caseName.includes("Xlm")
-            && !c.caseName.includes("Usdc")
-          ) {
-            const acceptRisk = new TouchNavigation(dev.name, [
-              ButtonKind.ConfirmNoButton,
-              ButtonKind.ConfirmYesButton,
-            ]);
-            await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, acceptRisk.schedule, true);
-          }
+        if (testsNeedEnableCustomContracts.includes(c.caseName) && (dev.name == "stax" || dev.name == "flex")) {
+          const acceptRisk = new TouchNavigation(dev.name, [
+            ButtonKind.ConfirmNoButton,
+            ButtonKind.ConfirmYesButton,
+          ]);
+          await sim.navigate(".", `${dev.prefix.toLowerCase()}-${c.filePath}`, acceptRisk.schedule, true);
         }
 
         // TODO: If set to Sign, it will not pass the test. Is this a bug in Zemu?
@@ -230,7 +237,7 @@ describe("transactions", () => {
       const str = new Str(transport);
 
       // enable custom contracts and seqence number
-      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-tx-reject`, true, false, true);
+      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-tx-reject`, false, false, true);
 
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
 
@@ -263,7 +270,7 @@ describe("transactions", () => {
       const str = new Str(transport);
 
       // enable custom contracts and seqence number
-      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, true, false, true);
+      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-fee-bump-tx-reject`, false, false, true);
 
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
 
@@ -370,12 +377,20 @@ describe("soroban auth", () => {
         const str = new Str(transport);
 
         // enable custom contracts
-        await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-${c.filePath}`, true, false, false);
+        const testsNeedEnableCustomContracts = [
+          "sorobanAuthInvokeContract",
+          "sorobanAuthInvokeContractWithComplexSubInvocation",
+          "sorobanAuthInvokeContractWithoutArgs",
+          "sorobanAuthPublic",
+          "sorobanAuthTestnet",
+          "sorobanAuthUnknownNetwork"
+        ];
+        await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-${c.filePath}`, testsNeedEnableCustomContracts.includes(c.caseName), false, false);
 
         const result = str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"));
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
-        if (!c.caseName.includes("Create") && (dev.name == "stax" || dev.name == "flex")) {
+        if (testsNeedEnableCustomContracts.includes(c.caseName) && (dev.name == "stax" || dev.name == "flex")) {
           const acceptRisk = new TouchNavigation(dev.name, [
             ButtonKind.ConfirmNoButton,
             ButtonKind.ConfirmYesButton,
