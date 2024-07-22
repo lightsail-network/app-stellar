@@ -160,6 +160,30 @@ describe("hash signing", () => {
       await sim.close();
     }
   });
+
+  test.concurrent.each(models)("refuse risk ($dev.name)", async ({ dev, startText }) => {
+    const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-reject`;
+    try {
+      await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
+      const transport = await sim.getTransport();
+      const str = new Str(transport);
+
+      // enable hash signing
+      await enableSettings(sim, dev.name, testCaseName, false, true, false);
+
+      const hash = Buffer.from("3389e9f0f1a65f19736cacf544c2e825313e8447f569233bb8db39aa607c8889", "hex");
+      expect(() => str.signHash("44'/148'/0'", hash)).rejects.toThrow(StellarUserRefusedError);
+
+      const events = await sim.getEvents();
+      await sim.waitForScreenChanges(events);
+
+      // accept risk
+      await refuseRisk(sim, dev.name, testCaseName);
+    } finally {
+      await sim.close();
+    }
+  });
 });
 
 describe("transactions", () => {
@@ -358,6 +382,22 @@ describe("transactions", () => {
       await sim.close();
     }
   });
+
+  test.concurrent.each(models)("refuse risk ($dev.name)", async ({ dev, startText }) => {
+    const tx = testCasesFunction.opInvokeHostFunctionScvalsCase0();
+    const sim = new Zemu(dev.path);
+    try {
+      await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
+      const transport = await sim.getTransport();
+      const str = new Str(transport);
+      expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
+      const events = await sim.getEvents();
+      await sim.waitForScreenChanges(events);
+      await refuseRisk(sim, dev.name, "tx-refuse-risk");
+    } finally {
+      await sim.close();
+    }
+  });
 });
 
 describe("soroban auth", () => {
@@ -451,6 +491,27 @@ describe("soroban auth", () => {
       const str = new Str(transport);
       // TODO: Waiting for SDK update.
       expect(() => str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"))).rejects.toThrow();
+    } finally {
+      await sim.close();
+    }
+  });
+
+  test.concurrent.each(models)("refuse risk ($dev.name)", async ({ dev, startText }) => {
+    const hashIdPreimage = testCasesFunction.sorobanAuthInvokeContract();
+    const sim = new Zemu(dev.path);
+    const testCaseName = `${dev.prefix.toLowerCase()}-soroban-auth-reject`;
+    try {
+      await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
+      const transport = await sim.getTransport();
+      const str = new Str(transport);
+
+      // enable custom contracts
+      await enableSettings(sim, dev.name, testCaseName, true, false, false);
+
+      expect(() => str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"))).rejects.toThrow(StellarUserRefusedError);
+      const events = await sim.getEvents();
+      await sim.waitForScreenChanges(events);
+      await refuseRisk(sim, dev.name, testCaseName);
     } finally {
       await sim.close();
     }
@@ -691,6 +752,28 @@ async function acceptRisk(sim: Zemu, device: TModel, testCaseName: string) {
     await sim.clickRight();
     await sim.clickBoth();
   } else {
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickBoth();
+  }
+}
+
+async function refuseRisk(sim: Zemu, device: TModel, testCaseName: string) {
+  if (device == "stax" || device == "flex") {
+    const acceptRisk = new TouchNavigation(device, [
+      ButtonKind.ConfirmNoButton,
+      ButtonKind.ConfirmNoButton,
+    ]);
+    await sim.navigate(".", testCaseName, acceptRisk.schedule, true);
+  } else if (device == 'nanos') {
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickBoth();
+  } else {
+    await sim.clickRight();
     await sim.clickRight();
     await sim.clickRight();
     await sim.clickRight();
