@@ -119,6 +119,7 @@ describe("hash signing", () => {
       await sim.waitForScreenChanges(events);
       // accept risk
       await acceptRisk(sim, dev.name, testCaseName);
+      await sim.waitForScreenChanges(events);
 
       const textToFind = dev.name.startsWith("nano") ? "Sign Hash" : "Hold to";
       await sim.navigateAndCompareUntilText(".", testCaseName, textToFind, true);
@@ -149,6 +150,7 @@ describe("hash signing", () => {
 
       // accept risk
       await acceptRisk(sim, dev.name, testCaseName);
+      await sim.waitForScreenChanges(events);
 
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Hold to";
       await sim.navigateAndCompareUntilText(".", testCaseName, textToFind, true);
@@ -220,6 +222,7 @@ describe("transactions", () => {
         if (testsNeedEnableCustomContracts.includes(c.caseName)) {
           await acceptRisk(sim, dev.name, testCaseName);
         }
+        await sim.waitForScreenChanges(events);
 
         // TODO: If set to Sign, it will not pass the test. Is this a bug in Zemu?
         const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
@@ -427,6 +430,7 @@ describe("soroban auth", () => {
         await sim.waitForScreenChanges(events);
         if (testsNeedEnableCustomContracts.includes(c.caseName)) {
           await acceptRisk(sim, dev.name, testCaseName);
+          await sim.waitForScreenChanges(events);
         }
         const textToFind = dev.name.startsWith("nano") ? /\bSign\b/ : /\bHold to\b/;
         await sim.navigateAndCompareUntilText(
@@ -464,6 +468,7 @@ describe("soroban auth", () => {
       await sim.waitForScreenChanges(events);
 
       await acceptRisk(sim, dev.name, testCaseName);
+      await sim.waitForScreenChanges(events);
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Sign Soroban Auth?";
       await sim.navigateAndCompareUntilText(
         ".",
@@ -747,7 +752,7 @@ async function acceptRisk(sim: Zemu, device: TModel, testCaseName: string) {
       ButtonKind.ConfirmYesButton,
     ]);
     await sim.navigate(".", testCaseName, acceptRisk.schedule, true);
-  } else if (device == 'nanos') {
+  } else if (device == "nanos") {
     await sim.clickRight(undefined, true);
     await sim.clickRight(undefined, true);
     await sim.clickBoth(undefined, true);
@@ -767,7 +772,7 @@ async function refuseRisk(sim: Zemu, device: TModel, testCaseName: string) {
       ButtonKind.ConfirmNoButton,
     ]);
     await sim.navigate(".", testCaseName, acceptRisk.schedule, true, false);
-  } else if (device == 'nanos') {
+  } else if (device == "nanos") {
     await sim.clickRight(undefined, true);
     await sim.clickRight(undefined, true);
     await sim.clickRight(undefined, true);
