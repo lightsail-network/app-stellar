@@ -106,24 +106,20 @@ describe("hash signing", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
       const str = new Str(transport);
+      const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-approve`;
 
       // enable hash signing
-      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-hash-signing-approve`, false, true, false);
+      await enableSettings(sim, dev.name, testCaseName, false, true, false);
 
       const hash = Buffer.from("3389e9f0f1a65f19736cacf544c2e825313e8447f569233bb8db39aa607c8889", "hex");
       const result = str.signHash("44'/148'/0'", hash);
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
       // accept risk
-      if (dev.name == "stax" || dev.name == "flex") {
-        const acceptRisk = new TouchNavigation(dev.name, [
-          ButtonKind.ConfirmNoButton,
-          ButtonKind.ConfirmYesButton,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, acceptRisk.schedule, true);
-      }
+      await acceptRisk(sim, dev.name, testCaseName);
+
       const textToFind = dev.name.startsWith("nano") ? "Sign Hash" : "Hold to";
-      await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-hash-signing-approve`, textToFind, true);
+      await sim.navigateAndCompareUntilText(".", testCaseName, textToFind, true);
       const kp = Keypair.fromSecret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK");
       expect((await result).signature).toStrictEqual(kp.sign(hash));
     } finally {
@@ -138,9 +134,10 @@ describe("hash signing", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
+      const testCaseName = `${dev.prefix.toLowerCase()}-hash-signing-reject`;
 
       // enable hash signing
-      await enableSettings(sim, dev.name, `${dev.prefix.toLowerCase()}-hash-signing-reject`, false, true, false);
+      await enableSettings(sim, dev.name, testCaseName, false, true, false);
 
       const hash = Buffer.from("3389e9f0f1a65f19736cacf544c2e825313e8447f569233bb8db39aa607c8889", "hex");
       expect(() => str.signHash("44'/148'/0'", hash)).rejects.toThrow(StellarUserRefusedError);
@@ -149,19 +146,13 @@ describe("hash signing", () => {
       await sim.waitForScreenChanges(events);
 
       // accept risk
-      if (dev.name == "stax" || dev.name == "flex") {
-        const acceptRisk = new TouchNavigation(dev.name, [
-          ButtonKind.ConfirmNoButton,
-          ButtonKind.ConfirmYesButton,
-        ]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, acceptRisk.schedule, true);
-      }
+      await acceptRisk(sim, dev.name, testCaseName);
 
       const textToFind = dev.name.startsWith("nano") ? "Reject" : "Hold to";
-      await sim.navigateAndCompareUntilText(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, textToFind, true);
+      await sim.navigateAndCompareUntilText(".", testCaseName, textToFind, true);
       if (dev.name == "stax" || dev.name == "flex") {
         const settingNav = new TouchNavigation(dev.name, [ButtonKind.ApproveTapButton]);
-        await sim.navigate(".", `${dev.prefix.toLowerCase()}-hash-signing-reject`, settingNav.schedule, true);
+        await sim.navigate(".", testCaseName, settingNav.schedule, true);
       }
     } finally {
       await sim.close();
@@ -686,6 +677,26 @@ async function enableSettings(sim: Zemu, device: TModel, testCaseName: string, e
     if (enableSequence) {
       await sim.clickBoth(undefined, true);
     }
+  }
+}
+
+async function acceptRisk(sim: Zemu, device: TModel, testCaseName: string) {
+  if (device == "stax" || device == "flex") {
+    const acceptRisk = new TouchNavigation(device, [
+      ButtonKind.ConfirmNoButton,
+      ButtonKind.ConfirmYesButton,
+    ]);
+    await sim.navigate(".", testCaseName, acceptRisk.schedule, true);
+  } else if (device == 'nanos') {
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickBoth();
+  } else {
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickRight();
+    await sim.clickBoth();
   }
 }
 
