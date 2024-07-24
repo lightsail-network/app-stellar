@@ -42,7 +42,7 @@
 static char str_values[MAX_DATA_IN_SINGLE_FORMAT][DETAIL_VALUE_MAX_LENGTH];
 static char str_captions[MAX_DATA_IN_SINGLE_FORMAT][DETAIL_CAPTION_MAX_LENGTH];
 static nbgl_contentTagValue_t pairs[MAX_DATA_IN_SINGLE_FORMAT];
-static nbgl_contentTagValueList_t tag_value_list;
+static nbgl_contentTagValueList_t pairs_list;
 static uint32_t displayed_data_index = 0;
 static formatter_data_t formatter_data;
 
@@ -131,9 +131,9 @@ static void review_continue(bool ask_more) {
                 pairs[i].item = str_captions[i];
                 pairs[i].value = str_values[i];
             }
-            tag_value_list.nbPairs = pair_cnt;
-            tag_value_list.pairs = pairs;
-            nbgl_useCaseReviewStreamingContinue(&tag_value_list, review_continue);
+            pairs_list.nbPairs = pair_cnt;
+            pairs_list.pairs = pairs;
+            nbgl_useCaseReviewStreamingContinue(&pairs_list, review_continue);
         } else {
             if (formatter_data.envelope->type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
                 nbgl_useCaseReviewStreamingFinish("Sign Soroban Auth?", review_choice);
@@ -187,8 +187,8 @@ static void review_prepare() {
 
     // init formatter_data
     memcpy(&formatter_data, &fdata, sizeof(formatter_data_t));
-    explicit_bzero(pairs, sizeof(pairs));
-    explicit_bzero(tag_value_list, sizeof(nbgl_contentTagValueList_t));
+    explicit_bzero(&pairs, sizeof(pairs));
+    explicit_bzero(&pairs_list, sizeof(pairs_list));
     displayed_data_index = 0;
 }
 
