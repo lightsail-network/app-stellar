@@ -36,14 +36,14 @@
 
 // The amount of data may be very large, in order to avoid insufficient memory, we load a certain
 // amount of data at most once.
-#define MAX_DATA_IN_SINGLE_FORMAT 16
+#define MAX_DATA_IN_SINGLE_FORMAT 32
 
 // Globals
 static char str_values[MAX_DATA_IN_SINGLE_FORMAT][DETAIL_VALUE_MAX_LENGTH];
 static char str_captions[MAX_DATA_IN_SINGLE_FORMAT][DETAIL_CAPTION_MAX_LENGTH];
 static nbgl_contentTagValue_t pairs[MAX_DATA_IN_SINGLE_FORMAT];
 static nbgl_contentTagValueList_t pairs_list;
-static uint32_t displayed_data_index = 0;
+static uint32_t displayed_data = 0;
 static formatter_data_t formatter_data;
 
 static uint32_t more_data_to_send(void);
@@ -91,7 +91,7 @@ static uint32_t more_data_to_send() {
         }
 
         // if the current data index is less than the displayed data index, we skip it
-        if (current_data_index < displayed_data_index) {
+        if (current_data_index < displayed_data) {
             current_data_index++;
             continue;
         }
@@ -110,7 +110,7 @@ static uint32_t more_data_to_send() {
         current_data_index++;
     }
 
-    displayed_data_index += filled_count;
+    displayed_data += filled_count;
     return filled_count;
 }
 
@@ -197,7 +197,7 @@ static void review_prepare() {
     memcpy(&formatter_data, &fdata, sizeof(formatter_data_t));
     explicit_bzero(&pairs, sizeof(pairs));
     explicit_bzero(&pairs_list, sizeof(pairs_list));
-    displayed_data_index = 0;
+    displayed_data = 0;
 }
 
 static void warning_choice_tx2(bool confirm) {
