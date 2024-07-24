@@ -83,9 +83,10 @@ static uint32_t more_data_to_send() {
             break;
         }
 
-        // if we have already add some data and the current data is an operation header
-        // (Operation i of n), we break
-        if (filled_count != 0 && is_op_header) {
+        // if we are checking the tx data, and it has more than one operation, and it is the op
+        // header (Operation i of n), we break
+        if (filled_count != 0 && G_context.envelope.type != ENVELOPE_TYPE_SOROBAN_AUTHORIZATION &&
+            G_context.envelope.tx_details.tx.operations_count > 1 && is_op_header) {
             break;
         }
 
