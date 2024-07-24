@@ -55,6 +55,13 @@ static void warning_choice_tx1(bool confirm);
 static void warning_choice_tx2(bool confirm);
 static void warning_choice_auth1(bool confirm);
 static void warning_choice_auth2(bool confirm);
+static void ui_action_validate_transaction(bool choice);
+
+// Validate/Invalidate transaction and go back to home
+static void ui_action_validate_transaction(bool choice) {
+    validate_transaction(choice);
+    ui_menu_main();
+}
 
 static uint32_t more_data_to_send() {
     reset_formatter();
@@ -197,13 +204,13 @@ static void warning_choice_tx2(bool confirm) {
         review_prepare();
         review_start();
     } else {
-        validate_transaction(false);
+        ui_action_validate_transaction(false);
     }
 }
 
 static void warning_choice_tx1(bool confirm) {
     if (confirm) {
-        validate_transaction(false);
+        ui_action_validate_transaction(false);
     } else {
         nbgl_useCaseChoice(
             NULL,
@@ -220,13 +227,13 @@ static void warning_choice_auth2(bool confirm) {
     if (confirm) {
         review_start();
     } else {
-        validate_transaction(false);
+        ui_action_validate_transaction(false);
     }
 }
 
 static void warning_choice_auth1(bool confirm) {
     if (confirm) {
-        validate_transaction(false);
+        ui_action_validate_transaction(false);
     } else {
         nbgl_useCaseChoice(
             NULL,
