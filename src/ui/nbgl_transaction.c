@@ -47,6 +47,7 @@ static uint32_t displayed_data_index = 0;
 static formatter_data_t formatter_data;
 
 static uint32_t more_data_to_send(void);
+static void review_prepare(void);
 static void review_start(void);
 static void review_continue(bool ask_more);
 static void review_choice(bool confirm);
@@ -167,7 +168,7 @@ static void review_start(void) {
     }
 }
 
-static void prepare_display() {
+static void review_prepare() {
     formatter_data_t fdata = {
         .raw_data = G_context.raw,
         .raw_data_len = G_context.raw_size,
@@ -186,12 +187,14 @@ static void prepare_display() {
 
     // init formatter_data
     memcpy(&formatter_data, &fdata, sizeof(formatter_data_t));
+    explicit_bzero(pairs, sizeof(pairs));
+    explicit_bzero(tag_value_list, sizeof(nbgl_contentTagValueList_t));
     displayed_data_index = 0;
 }
 
 static void warning_choice_tx2(bool confirm) {
     if (confirm) {
-        prepare_display();
+        review_prepare();
         review_start();
     } else {
         validate_transaction(false);
@@ -241,7 +244,7 @@ int ui_display_transaction(void) {
         G_context.state = STATE_NONE;
         return io_send_sw(SW_BAD_STATE);
     }
-    prepare_display();
+    review_prepare();
     if (G_context.unverified_contracts) {
         nbgl_useCaseChoice(&C_Warning_64px,
                            "Security risk detected",
@@ -263,7 +266,7 @@ int ui_display_auth() {
         G_context.state = STATE_NONE;
         return io_send_sw(SW_BAD_STATE);
     }
-    prepare_display();
+    review_prepare();
     if (G_context.unverified_contracts) {
         nbgl_useCaseChoice(&C_Warning_64px,
                            "Security risk detected",
