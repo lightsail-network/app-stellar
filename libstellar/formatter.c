@@ -1932,6 +1932,10 @@ static bool format_sub_invocation_auth_function(formatter_data_t *fdata) {
             STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
             FORMATTER_CHECK(format_next_sub_invocation(fdata));
             break;
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_V2_HOST_FN:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
+            break;
         default:
             return false;
     }
@@ -2169,6 +2173,12 @@ static bool format_invoke_host_function_contract_id(formatter_data_t *fdata) {
     return true;
 }
 
+static bool format_create_contact_v2(formatter_data_t *fdata) {
+    STRLCPY(fdata->caption, "Constructor Args", fdata->caption_len);
+    FORMATTER_CHECK(push_to_formatter_stack(&format_invoke_host_function_args))
+    return true;
+}
+
 static bool format_invoke_host_function(formatter_data_t *fdata) {
     // avoid the host function op be overwritten by the sub-invocation
     if (fdata->envelope->tx_details.tx.op_details.invoke_host_function_op.sub_invocations_count) {
@@ -2196,6 +2206,17 @@ static bool format_invoke_host_function(formatter_data_t *fdata) {
             STRLCPY(fdata->value, "Upload Smart Contract Wasm", fdata->value_len);
             return format_operation_source_prepare(fdata);
             break;
+        case HOST_FUNCTION_TYPE_CREATE_CONTRACT_V2:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
+            if (fdata->envelope->tx_details.tx.op_details.invoke_host_function_op
+                    .invoke_contract_args.parameters_length == 0) {
+                return format_operation_source_prepare_for_invoke_host_function_op(fdata);
+            } else {
+                parameters_index = 0;
+                FORMATTER_CHECK(push_to_formatter_stack(&format_create_contact_v2))
+            }
+            break;
         default:
             return false;
     }
@@ -2214,6 +2235,10 @@ static bool format_auth_function(formatter_data_t *fdata) {
             STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
             // we dont need to care the sub-invocation here
             FORMATTER_CHECK(push_to_formatter_stack(NULL))
+            break;
+        case SOROBAN_AUTHORIZED_FUNCTION_TYPE_CREATE_CONTRACT_V2_HOST_FN:
+            STRLCPY(fdata->caption, "Soroban", fdata->caption_len);
+            STRLCPY(fdata->value, "Create Smart Contract", fdata->value_len);
             break;
         default:
             return false;
