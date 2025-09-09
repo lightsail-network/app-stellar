@@ -161,13 +161,14 @@ UX_STEP_INIT(ux_tx_lower_delimiter, NULL, NULL, {
 });
 
 // Step for blind signing warning
-UX_STEP_NOCB(ux_tx_and_auth_blind_signing_approve_step,
-             pbb,
-             {
-                 &C_icon_validate_14,
-                 "Accept risk",
-                 "and sign",
-             });
+UX_STEP_CB(ux_tx_and_auth_blind_signing_approve_step,
+           pbb,
+           (*g_validate_callback)(true),
+           {
+               &C_icon_validate_14,
+               "Accept risk",
+               "and sign",
+           });
 
 // Step with approve button
 UX_STEP_CB(ux_tx_approve_step,
