@@ -22,11 +22,22 @@
 
 static void ui_idle(void);
 static void display_settings(const ux_flow_step_t* const start_step);
+static void switch_settings_blind_signing();
 static void switch_settings_sequence_number();
 
 // FLOW for the settings menu:
-// #1 screen: enable sequence number
-// #2 screen: quit
+// #1 screen: enable blind signing
+// #2 screen: enable sequence number
+// #3 screen: quit
+UX_STEP_CB(ux_settings_blind_signing_step,
+           bnnn,
+           switch_settings_blind_signing(),
+           {
+               "Blind Signing",
+               "Enable blind",
+               "signing",
+               G.ui.detail_value,
+           });
 UX_STEP_CB(ux_settings_sequence_number_step,
            bnnn,
            switch_settings_sequence_number(),
@@ -34,9 +45,8 @@ UX_STEP_CB(ux_settings_sequence_number_step,
                "Sequence Number",
                "Display sequence",
                "in transactions",
-               G.ui.detail_value,
+               G.ui.detail_value + 12,
            });
-
 UX_STEP_CB(ux_settings_exit_step,
            pb,
            ui_idle(),
@@ -44,7 +54,10 @@ UX_STEP_CB(ux_settings_exit_step,
                &C_icon_back_x,
                "Back",
            });
-UX_FLOW(ux_settings_flow, &ux_settings_sequence_number_step, &ux_settings_exit_step);
+UX_FLOW(ux_settings_flow,
+        &ux_settings_blind_signing_step,
+        &ux_settings_sequence_number_step,
+        &ux_settings_exit_step);
 
 // We have a screen with the icon and "Stellar is ready"
 UX_STEP_NOCB(ux_menu_ready_step, pnn, {&C_icon_stellar, "Stellar", "is ready"});
@@ -80,14 +93,29 @@ static void ui_idle(void) {
 
 static void display_settings(const ux_flow_step_t* const start_step) {
     strlcpy(G.ui.detail_value,
+            (HAS_SETTING(S_BLIND_SIGNING_ENABLED) ? "Enabled" : "NOT Enabled"),
+            12);
+    strlcpy(G.ui.detail_value + 12,
             (HAS_SETTING(S_SEQUENCE_NUMBER_ENABLED) ? "Displayed" : "NOT Displayed"),
             14);
 
     ux_flow_init(0, ux_settings_flow, start_step);
 }
 
+static void switch_settings_blind_signing() {
+    SETTING_TOGGLE(S_BLIND_SIGNING_ENABLED);
+    display_settings(&ux_settings_blind_signing_step);
+}
+
 static void switch_settings_sequence_number() {
     SETTING_TOGGLE(S_SEQUENCE_NUMBER_ENABLED);
     display_settings(&ux_settings_sequence_number_step);
+}
+
+/**
+ * Go to home screen
+ */
+void ui_idle(void) {
+    ui_menu_main();
 }
 #endif  // HAVE_BAGL

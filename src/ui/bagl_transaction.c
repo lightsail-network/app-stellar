@@ -48,7 +48,7 @@ static formatter_data_t formatter_data;
 // Validate/Invalidate transaction and go back to home
 static void ui_action_validate_transaction(bool choice) {
     validate_transaction(choice);
-    ui_menu_main();
+    ui_idle();
 }
 
 static void bnnn_paging_edgecase() {

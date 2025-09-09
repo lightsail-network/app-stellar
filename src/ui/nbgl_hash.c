@@ -34,7 +34,7 @@
 // Validate/Invalidate transaction and go back to home
 static void ui_action_validate_transaction(bool choice) {
     validate_transaction(choice);
-    ui_menu_main();
+    ui_idle();
 }
 
 // Globals
@@ -68,9 +68,9 @@ static void prepare_page(void) {
 static void review_choice(bool confirm) {
     // Answer, display a status page and go back to main
     if (confirm) {
-        nbgl_useCaseStatus("Hash signed", true, ui_menu_main);
+        nbgl_useCaseStatus("Hash signed", true, ui_idle);
     } else {
-        nbgl_useCaseStatus("Hash rejected", false, ui_menu_main);
+        nbgl_useCaseStatus("Hash rejected", false, ui_idle);
     }
     validate_transaction(confirm);
 }

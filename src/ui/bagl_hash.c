@@ -44,7 +44,7 @@ static action_validate_cb g_validate_callback;
 // Validate/Invalidate transaction and go back to home
 static void ui_action_validate_transaction(bool choice) {
     validate_transaction(choice);
-    ui_menu_main();
+    ui_idle();
 }
 
 // Step with icon and text

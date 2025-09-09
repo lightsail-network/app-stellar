@@ -60,7 +60,7 @@ static void ui_action_validate_transaction(bool choice);
 // Validate/Invalidate transaction and go back to home
 static void ui_action_validate_transaction(bool choice) {
     validate_transaction(choice);
-    ui_menu_main();
+    ui_idle();
 }
 
 static uint32_t more_data_to_send() {
@@ -118,14 +118,14 @@ static void review_choice(bool confirm) {
     // display a status page and go back to main
     if (G_context.envelope.type == ENVELOPE_TYPE_SOROBAN_AUTHORIZATION) {
         if (confirm) {
-            nbgl_useCaseStatus("Soroban Auth signed", true, ui_menu_main);
+            nbgl_useCaseStatus("Soroban Auth signed", true, ui_idle);
         } else {
-            nbgl_useCaseStatus("Soroban Auth rejected", false, ui_menu_main);
+            nbgl_useCaseStatus("Soroban Auth rejected", false, ui_idle);
         }
     } else {
         nbgl_useCaseReviewStatus(
             confirm ? STATUS_TYPE_TRANSACTION_SIGNED : STATUS_TYPE_TRANSACTION_REJECTED,
-            ui_menu_main);
+            ui_idle);
     }
     validate_transaction(confirm);
 }
