@@ -61,7 +61,6 @@ int handler_sign_hash(buffer_t *cdata) {
 
     if (!HAS_SETTING(S_BLIND_SIGNING_ENABLED)) {
         // if hash signing is not enabled
-        // pass
         ui_error_blind_signing();
         return io_send_sw(SW_BLIND_SIGNING_MODE_NOT_ENABLED);
     }

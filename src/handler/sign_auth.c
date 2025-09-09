@@ -27,6 +27,7 @@
 
 #include "sign_tx.h"
 #include "sw.h"
+#include "settings.h"
 #include "globals.h"
 #include "plugin.h"
 #include "ui/display.h"

@@ -96,6 +96,7 @@ describe("hash signing", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = await sim.getTransport();
       const str = new Str(transport);
+      await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
 
       const hash = Buffer.from("3389e9f0f1a65f19736cacf544c2e825313e8447f569233bb8db39aa607c8889", "hex");
       const result = str.signHash("44'/148'/0'", hash);
@@ -105,7 +106,7 @@ describe("hash signing", () => {
       await acceptRisk(sim, dev.name, testCaseName);
       await sim.deleteEvents();
 
-      const textToFind = dev.name.startsWith("nano") ? "Sign Hash" : "Hold to";
+      const textToFind = dev.name.startsWith("nano") ? "Sign" : "Hold to";
       await sim.navigateAndCompareUntilText(".", testCaseName, textToFind, true);
       const kp = Keypair.fromSecret("SAIYWGGWU2WMXYDSK33UBQBMBDKU4TTJVY3ZIFF24H2KQDR7RQW5KAEK");
       expect((await result).signature).toStrictEqual(kp.sign(hash));
@@ -121,6 +122,7 @@ describe("hash signing", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
+      await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
 
       const hash = Buffer.from("3389e9f0f1a65f19736cacf544c2e825313e8447f569233bb8db39aa607c8889", "hex");
       expect(() => str.signHash("44'/148'/0'", hash)).rejects.toThrow(StellarUserRefusedError);
@@ -172,7 +174,7 @@ describe("transactions", () => {
         const transport = await sim.getTransport();
         const str = new Str(transport);
 
-        // enable custom contracts and sequence number
+        // enable blind signing and sequence number
         const testsNeedEnableCustomContracts = [
           "opInvokeHostFunctionAssetApprove",
           "opInvokeHostFunctionAssetTransfer",
@@ -188,7 +190,7 @@ describe("transactions", () => {
           "opInvokeHostFunctionWithoutArgs",
           "opInvokeHostFunctionWithoutAuthAndNoSource"
         ];
-        await enableSequence(sim, dev.name, testCaseName);
+        await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
 
         const result = str.signTransaction("44'/148'/0'", tx.signatureBase());
         const events = await sim.getEvents();
@@ -228,7 +230,7 @@ describe("transactions", () => {
       const transport = await sim.getTransport();
       const str = new Str(transport);
 
-      await enableSequence(sim, dev.name, testCaseName);
+      await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
 
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
 
@@ -260,7 +262,7 @@ describe("transactions", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
-      await enableSequence(sim, dev.name, testCaseName);
+      await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
 
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
 
@@ -371,6 +373,7 @@ describe("soroban auth", () => {
         await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
         const transport = await sim.getTransport();
         const str = new Str(transport);
+        await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
 
         // enable custom contracts
         const testsNeedEnableCustomContracts = [
@@ -414,6 +417,7 @@ describe("soroban auth", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
+      await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
 
       expect(() => str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"))).rejects.toThrow(StellarUserRefusedError);
 
@@ -448,6 +452,7 @@ describe("soroban auth", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText, approveAction: ButtonKind.RejectButton });
       const transport = await sim.getTransport();
       const str = new Str(transport);
+      await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
       expect(() => str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"))).rejects.toThrow(StellarUserRefusedError);
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
@@ -743,16 +748,19 @@ function hash(data: Buffer) {
   return hasher.digest()
 }
 
-async function enableSequence(sim: Zemu, device: TModel, testCaseName: string) {
+async function enableBlindSigningAndSequence(sim: Zemu, device: TModel, testCaseName: string) {
   if (device == "stax" || device == "flex") {
     const settingNav = new TouchNavigation(device, [
       ButtonKind.InfoButton,
       ButtonKind.ToggleSettingButton1,
+      ButtonKind.ToggleSettingButton2,
     ]);
     await sim.navigate(".", testCaseName, settingNav.schedule, true, false);
   } else {
     await sim.clickRight(undefined, true);
     await sim.clickBoth(undefined, true);
+    await sim.clickBoth(undefined, true);
+    await sim.clickRight(undefined, true);
     await sim.clickBoth(undefined, true);
   }
 }
@@ -764,12 +772,6 @@ async function acceptRisk(sim: Zemu, device: TModel, testCaseName: string) {
       ButtonKind.ConfirmYesButton,
     ]);
     await sim.navigate(".", testCaseName, acceptRisk.schedule, true, false);
-  } else {
-    await sim.clickRight(undefined, true);
-    await sim.clickRight(undefined, true);
-    await sim.clickRight(undefined, true);
-    await sim.clickRight(undefined, true);
-    await sim.clickBoth(undefined, true);
   }
 }
 
@@ -780,12 +782,5 @@ async function refuseRisk(sim: Zemu, device: TModel, testCaseName: string) {
       ButtonKind.ConfirmNoButton,
     ]);
     await sim.navigate(".", testCaseName, acceptRisk.schedule, true, false);
-  } else {
-    await sim.clickRight(undefined, true);
-    await sim.clickRight(undefined, true);
-    await sim.clickRight(undefined, true);
-    await sim.clickRight(undefined, true);
-    await sim.clickRight(undefined, true);
-    await sim.clickBoth(undefined, true);
   }
 }

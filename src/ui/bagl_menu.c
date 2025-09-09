@@ -20,7 +20,7 @@
 #include "globals.h"
 #include "settings.h"
 
-static void ui_idle(void);
+static void ui_back_to_home(void);
 static void display_settings(const ux_flow_step_t* const start_step);
 static void switch_settings_blind_signing();
 static void switch_settings_sequence_number();
@@ -49,7 +49,7 @@ UX_STEP_CB(ux_settings_sequence_number_step,
            });
 UX_STEP_CB(ux_settings_exit_step,
            pb,
-           ui_idle(),
+           ui_back_to_home(),
            {
                &C_icon_back_x,
                "Back",
@@ -83,7 +83,7 @@ void ui_menu_main(void) {
     ux_flow_init(0, ux_menu_main_flow, NULL);
 };
 
-static void ui_idle(void) {
+static void ui_back_to_home(void) {
     // reserve a display stack slot if none yet
     if (G_ux.stack_count == 0) {
         ux_stack_push();
