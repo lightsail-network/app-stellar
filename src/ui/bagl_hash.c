@@ -46,6 +46,13 @@ static void ui_action_validate_transaction(bool choice) {
 }
 
 // Step with icon and text
+UX_STEP_NOCB(ux_hash_signing_blind_signing_reminder_step,
+             pbb,
+             {
+                 &C_icon_warning,
+                 "Blind",
+                 "signing",
+             });
 UX_STEP_NOCB(ux_hash_signing_review_step,
              pnn,
              {
@@ -78,11 +85,13 @@ UX_STEP_CB(ux_hash_display_reject_step,
            });
 
 // FLOW to display hash signing
-// #1 screen: eye icon + "Review Transaction"
-// #2 screen: display hash
-// #3 screen: approve button
-// #4 screen: reject button
+// #1 screen: blind signing reminder
+// #2 screen: eye icon + "Review Transaction"
+// #3 screen: display hash
+// #4 screen: approve button
+// #5 screen: reject button
 UX_FLOW(ux_hash_signing_flow,
+        &ux_hash_signing_blind_signing_reminder_step,
         &ux_hash_signing_review_step,
         &ux_hash_signing_display_hash_step,
         &ux_hash_display_approve_step,

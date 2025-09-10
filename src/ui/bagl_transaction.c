@@ -161,6 +161,14 @@ UX_STEP_INIT(ux_tx_lower_delimiter, NULL, NULL, {
 });
 
 // Step for blind signing warning
+UX_STEP_NOCB(ux_tx_and_auth_blind_signing_reminder_step,
+             pbb,
+             {
+                 &C_icon_warning,
+                 "Blind",
+                 "signing",
+             });
+// Step for blind signing warning
 UX_STEP_CB(ux_tx_and_auth_blind_signing_approve_step,
            pbb,
            (*g_validate_callback)(true),
@@ -214,6 +222,7 @@ UX_FLOW(ux_auth_flow,
         &ux_tx_reject_step);
 
 UX_FLOW(ux_tx_flow_with_reminder,
+        &ux_tx_and_auth_blind_signing_reminder_step,
         &ux_tx_review_step,
         &ux_tx_upper_delimiter,
         &ux_tx_generic,
@@ -222,6 +231,7 @@ UX_FLOW(ux_tx_flow_with_reminder,
         &ux_tx_reject_step);
 
 UX_FLOW(ux_auth_flow_with_reminder,
+        &ux_tx_and_auth_blind_signing_reminder_step,
         &ux_auth_review_step,
         &ux_tx_upper_delimiter,
         &ux_tx_generic,
