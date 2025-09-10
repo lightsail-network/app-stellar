@@ -769,7 +769,6 @@ async function acceptRisk(sim: Zemu, device: TModel, testCaseName: string) {
   if (device == "stax" || device == "flex") {
     const acceptRisk = new TouchNavigation(device, [
       ButtonKind.ConfirmNoButton,
-      ButtonKind.ConfirmYesButton,
     ]);
     await sim.navigate(".", testCaseName, acceptRisk.schedule, true, false);
   }
