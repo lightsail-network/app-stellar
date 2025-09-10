@@ -181,7 +181,7 @@ describe("transactions", () => {
         const str = new Str(transport);
 
         // enable blind signing and sequence number
-        const testsNeedEnableCustomContracts = [
+        const testsNeedEnableBlindSigning = [
           "opInvokeHostFunctionAssetApprove",
           "opInvokeHostFunctionAssetTransfer",
           "opInvokeHostFunctionScvalsCase0",
@@ -202,10 +202,12 @@ describe("transactions", () => {
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
 
-        if (!dev.name.startsWith("nano")) {
-          // accept risk
-          await acceptRisk(sim, dev.name, testCaseName);
-          await sim.deleteEvents();
+        if (testsNeedEnableBlindSigning.includes(c.caseName) && !dev.name.startsWith("nano")) {
+          if (!dev.name.startsWith("nano")) {
+            // accept risk
+            await acceptRisk(sim, dev.name, testCaseName);
+            await sim.deleteEvents();
+          }
         }
 
         // TODO: If set to Sign, it will not pass the test. Is this a bug in Zemu?
@@ -362,6 +364,7 @@ describe("transactions", () => {
       await sim.start({ ...defaultOptions, model: dev.name, startText: startText });
       const transport = sim.getTransport();
       const str = new Str(transport);
+      await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
       expect(() => str.signTransaction("44'/148'/0'", tx.signatureBase())).rejects.toThrow(StellarUserRefusedError);
       const events = await sim.getEvents();
       await sim.waitForScreenChanges(events);
@@ -384,8 +387,7 @@ describe("soroban auth", () => {
         const str = new Str(transport);
         await enableBlindSigningAndSequence(sim, dev.name, testCaseName);
 
-        // enable custom contracts
-        const testsNeedEnableCustomContracts = [
+        const testsNeedEnableBlindSigning = [
           "sorobanAuthInvokeContract",
           "sorobanAuthInvokeContractWithComplexSubInvocation",
           "sorobanAuthInvokeContractWithoutArgs",
@@ -396,7 +398,7 @@ describe("soroban auth", () => {
         const result = str.signSorobanAuthorization("44'/148'/0'", hashIdPreimage.toXDR("raw"));
         const events = await sim.getEvents();
         await sim.waitForScreenChanges(events);
-        if (testsNeedEnableCustomContracts.includes(c.caseName) && !dev.name.startsWith("nano")) {
+        if (testsNeedEnableBlindSigning.includes(c.caseName) && !dev.name.startsWith("nano")) {
           await acceptRisk(sim, dev.name, testCaseName);
           await sim.deleteEvents();
         }
