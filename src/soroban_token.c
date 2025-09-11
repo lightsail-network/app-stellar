@@ -311,6 +311,7 @@ stellar_plugin_result_t token_plugin_query_data_pair(const uint8_t *contract_add
     buffer_t buffer = {.ptr = G_context.raw,
                        .size = G_context.raw_size,
                        .offset = invoke_contract_args.parameters_position};
+    // Handle transfer function: transfer(env: Env, from: Address, to: Address, amount: i128)
     if (strcmp(function_name, "transfer") == 0) {
         switch (data_pair_index) {
             case 0: {
@@ -365,6 +366,8 @@ stellar_plugin_result_t token_plugin_query_data_pair(const uint8_t *contract_add
         }
     }
 
+    // Handle approve function: approve(env: Env, from: Address, spender: Address, amount: i128,
+    // expiration_ledger: u32)
     if (strcmp(function_name, "approve") == 0) {
         switch (data_pair_index) {
             case 0: {
