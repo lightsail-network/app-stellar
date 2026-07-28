@@ -1,5 +1,3 @@
-Max Fee; 0.00005 XLM
-Sequence Num; 103720918407102568
 Tx Source; GDUTHCF37UX32EMANXIL2WOOVEDZ47GHBTT3DYKU6EKM37SOIZXM2FN7
 Contract ID; CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 Function; test
@@ -12,3 +10,5 @@ Arg 6 of 9; this is test bytes
 Arg 7 of 9; hello this is test string
 Arg 8 of 9; testfunc
 Arg 9 of 9; [true,false]
+Sequence Num; 103720918407102568
+Max Fee; 0.00005 XLM

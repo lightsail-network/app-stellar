@@ -15,7 +15,7 @@ pub mod serialize;
 pub use formatter::{
     format_hash_id_preimage_soroban_authorization, format_operation,
     format_transaction_signature_payload, get_operation_intent, DataEntry, FormatConfig,
-    FormatError,
+    FormatError, TransactionEntries,
 };
 pub use parser::*;
 pub use token_formatter::try_format_token_contract_call;

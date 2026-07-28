@@ -76,8 +76,9 @@ fn test_sign_tx_format_case(case_name: &str) {
 
     let signer = "GDUTHCF37UX32EMANXIL2WOOVEDZ47GHBTT3DYKU6EKM37SOIZXM2FN7";
 
-    let mut entries = format_transaction_signature_payload(&tx_signature_payload, &config, signer)
+    let tx_entries = format_transaction_signature_payload(&tx_signature_payload, &config, signer)
         .unwrap_or_else(|_| panic!("Failed to format transaction for {}", case_name));
+    let mut entries = tx_entries.header;
 
     let (op_count, tx_source) = match &tx_signature_payload.tagged_transaction {
         stellarlib::TaggedTransaction::EnvelopeTypeTx(tx) => {
@@ -105,6 +106,8 @@ fn test_sign_tx_format_case(case_name: &str) {
             .unwrap_or_else(|_| panic!("Failed to format Operation for {}", case_name));
         entries.extend(op_entries);
     }
+
+    entries.extend(tx_entries.footer);
 
     let actual_output = format_entries_to_text(&entries);
     compare_with_diff(&actual_output, &expected_output, case_name);

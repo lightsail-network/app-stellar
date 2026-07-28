@@ -158,8 +158,9 @@ fn test_transaction(test_case: &SorobanTestCase) -> Result<(), String> {
 
     let signer = "GDUTHCF37UX32EMANXIL2WOOVEDZ47GHBTT3DYKU6EKM37SOIZXM2FN7";
 
-    let mut entries = format_transaction_signature_payload(&tx_signature_payload, &config, signer)
+    let tx_entries = format_transaction_signature_payload(&tx_signature_payload, &config, signer)
         .map_err(|e| format!("Failed to format transaction: {:?}", e))?;
+    let mut entries = tx_entries.header;
 
     // Format operations
     for i in 0..op_count {
@@ -175,6 +176,8 @@ fn test_transaction(test_case: &SorobanTestCase) -> Result<(), String> {
             .map_err(|e| format!("Failed to format operation {}: {:?}", i, e))?;
         entries.extend(op_entries);
     }
+
+    entries.extend(tx_entries.footer);
 
     // If we got here, both parse and format succeeded
     Ok(())

@@ -36,9 +36,9 @@ pub fn ui_sign_tx(raw_data: &[u8], signer: &[u8]) -> Result<bool, AppSW> {
     let tx_signature_payload =
         TransactionSignaturePayload::parse(&mut parser).map_err(|_| AppSW::DataParsingFail)?;
 
-    let mut data_entries =
-        format_transaction_signature_payload(&tx_signature_payload, &config, &signer)
-            .map_err(|_| AppSW::DataFormattingFail)?;
+    let tx_entries = format_transaction_signature_payload(&tx_signature_payload, &config, &signer)
+        .map_err(|_| AppSW::DataFormattingFail)?;
+    let mut data_entries = tx_entries.header;
 
     let (op_count, tx_source) = match &tx_signature_payload.tagged_transaction {
         stellarlib::TaggedTransaction::EnvelopeTypeTx(tx) => {
@@ -76,6 +76,8 @@ pub fn ui_sign_tx(raw_data: &[u8], signer: &[u8]) -> Result<bool, AppSW> {
             intent = get_operation_intent(&op, &tx_source);
         }
     }
+
+    data_entries.extend(tx_entries.footer);
 
     let (title, finish_title) = match &tx_signature_payload.tagged_transaction {
         stellarlib::TaggedTransaction::EnvelopeTypeTx(_) => match &intent {

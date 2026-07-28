@@ -8,6 +8,8 @@
 
 ### Updated
 
+- Transaction fields are now ordered to match Ledger's design guidelines: the transaction source comes first, followed by the operations, then the transaction metadata (memo, sequence number, preconditions), with `Max Fee` last, immediately before the signature confirmation. Previously `Max Fee` was the first field shown.
+- The inner transaction's `Max Fee` is no longer displayed when reviewing a fee bump transaction; a fee bump supersedes it and that amount is never charged. The fee bump's own `Fee Source` and `Max Fee` are shown together at the end.
 - Each Soroban authorization entry with source-account credentials is now displayed in full from its root invocation; previously the root was assumed to match the invoked host function and was never shown, hiding the actual authorized call when they differ.
 - A source-account authorization entry whose root invocation is exactly the invoked contract call and that has no sub-invocations is no longer displayed, since it authorizes nothing beyond the call already shown. This removes a verbatim repeat from roughly two thirds of Soroban transactions.
 - Authorization entries are now labeled `Authorization` with a hierarchical index (e.g. `1`, `1-1`, `1-2-1`), replacing the `Nested Authorization` label.

@@ -111,6 +111,20 @@ impl core::fmt::Display for FormatError {
     }
 }
 
+/// Transaction entries, split around the operations the caller appends.
+///
+/// Ledger's field-order guideline puts the payer first, then what the
+/// transaction does, and the fee last. The operations are parsed and formatted
+/// by the caller, so the entries that surround them are returned separately
+/// instead of as one list.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TransactionEntries {
+    /// Entries displayed before the operations.
+    pub header: Vec<DataEntry>,
+    /// Entries displayed after the operations, ending with the fee.
+    pub footer: Vec<DataEntry>,
+}
+
 /// Formats a transaction signature payload into a complete format result
 ///
 /// # Arguments
@@ -119,29 +133,26 @@ impl core::fmt::Display for FormatError {
 /// * `signer_address` - The signer address to compare with transaction source
 ///
 /// # Returns
-/// A result containing a `FormatResult` with formatted transaction information
+/// A result containing the entries to display before and after the operations
 pub fn format_transaction_signature_payload(
     tx_signature_payload: &TransactionSignaturePayload,
     config: &FormatConfig,
     signer_address: &str,
-) -> Result<Vec<DataEntry>, FormatError> {
-    let mut entries = Vec::with_capacity(8);
+) -> Result<TransactionEntries, FormatError> {
+    let mut header = Vec::with_capacity(4);
+    let mut footer = Vec::with_capacity(8);
 
     // Network ID (only show if not public network)
-    add_network_info_if_needed(&mut entries, &tx_signature_payload.network_id);
+    add_network_info_if_needed(&mut header, &tx_signature_payload.network_id);
 
     match &tx_signature_payload.tagged_transaction {
         TaggedTransaction::EnvelopeTypeTx(tx) => {
             let tx_entries = format_transaction(tx, config, signer_address, false)?;
-            entries.extend(tx_entries);
+            header.extend(tx_entries.header);
+            footer.extend(tx_entries.footer);
         }
         TaggedTransaction::EnvelopeTypeTxFeeBump(tx) => {
-            entries.push(DataEntry::new("Fee Source", tx.fee_source.to_string()));
-            entries.push(DataEntry::new(
-                "Max Fee",
-                format!("{} XLM", format_native_amount(tx.fee.into())),
-            ));
-            entries.push(DataEntry::new(
+            header.push(DataEntry::new(
                 "Inner Tx",
                 "The following details are for the inner transaction".to_string(),
             ));
@@ -149,13 +160,25 @@ pub fn format_transaction_signature_payload(
             match &tx.inner_tx {
                 InnerTransaction::EnvelopeTypeTx(tx) => {
                     let tx_entries = format_transaction(tx, config, signer_address, true)?;
-                    entries.extend(tx_entries);
+                    header.extend(tx_entries.header);
+                    footer.extend(tx_entries.footer);
                 }
             }
+
+            // A fee bump supersedes the inner transaction's fee: the fee source
+            // pays this amount and the inner fee is never charged, so only this
+            // one is displayed. Keeping the source next to it makes clear that
+            // the fee belongs to the outer envelope, not to the inner details
+            // above.
+            footer.push(DataEntry::new("Fee Source", tx.fee_source.to_string()));
+            footer.push(DataEntry::new(
+                "Max Fee",
+                format!("{} XLM", format_native_amount(tx.fee.into())),
+            ));
         }
     }
 
-    Ok(entries)
+    Ok(TransactionEntries { header, footer })
 }
 
 /// Formats a hash ID preimage for Soroban authorization into data entries
@@ -291,52 +314,59 @@ fn format_price(price: &Price) -> Result<String, FormatError> {
 /// * `is_inner_tx` - Whether this is an inner transaction of a fee bump transaction
 ///
 /// # Returns
-/// A result containing a vector of data entries representing the formatted transaction
+/// A result containing the entries to display before and after the operations
 ///
 /// # Note
-/// The order of entries follows Stellar transaction structure:
-/// 1. Memo (if present)
-/// 2. Max Fee
-/// 3. Sequence Number (if enabled in config)
-/// 4. Preconditions (if enabled in config)
-/// 5. Transaction Source (conditionally shown based on config)
-/// 6. Operations
+/// The order follows Ledger's field-order guideline, which asks for the payer,
+/// then what the transaction does, then the fee:
+/// 1. Transaction Source (conditionally shown based on config)
+/// 2. Operations (appended by the caller)
+/// 3. Memo (if present)
+/// 4. Sequence Number (if enabled in config)
+/// 5. Preconditions (if enabled in config)
+/// 6. Max Fee
 fn format_transaction(
     transaction: &Transaction,
     config: &FormatConfig,
     signer_address: &str,
     is_inner_tx: bool,
-) -> Result<Vec<DataEntry>, FormatError> {
-    let mut entries = Vec::with_capacity(16);
+) -> Result<TransactionEntries, FormatError> {
+    let mut header = Vec::with_capacity(2);
+    let mut footer = Vec::with_capacity(16);
+
+    // The transaction source is the account paying for the operations, so it is
+    // shown ahead of them. It is displayed only if:
+    // 1. This is an inner transaction of a fee bump (always show), or
+    // 2. Config allows showing when it matches the signer, or
+    // 3. It doesn't match the signer address
+    let source_str = transaction.source_account.to_string();
+    if is_inner_tx || config.show_tx_source_if_matches_signer || source_str != signer_address {
+        header.push(DataEntry::new("Tx Source", source_str));
+    }
 
     match &transaction.memo {
         Memo::None => {}
         Memo::Text(text) => {
             let text_str = text.to_string();
-            entries.push(DataEntry::new("Memo Text", text_str));
+            footer.push(DataEntry::new("Memo Text", text_str));
         }
         Memo::Id(id) => {
             let id_str = id.to_string();
-            entries.push(DataEntry::new("Memo ID", id_str));
+            footer.push(DataEntry::new("Memo ID", id_str));
         }
         Memo::Hash(hash) => {
             let hash_str = hex::encode(hash.as_bytes());
-            entries.push(DataEntry::new("Memo Hash", hash_str));
+            footer.push(DataEntry::new("Memo Hash", hash_str));
         }
         Memo::Return(hash) => {
             let hash_str = hex::encode(hash.as_bytes());
-            entries.push(DataEntry::new("Memo Return", hash_str));
+            footer.push(DataEntry::new("Memo Return", hash_str));
         }
     }
 
-    entries.push(DataEntry::new(
-        "Max Fee",
-        format!("{} XLM", format_native_amount(transaction.fee.into())),
-    ));
-
     if config.show_sequence_and_nonce {
         let seq_str = transaction.seq_num.to_string();
-        entries.push(DataEntry::new("Sequence Num", seq_str));
+        footer.push(DataEntry::new("Sequence Num", seq_str));
     }
 
     if config.show_preconditions {
@@ -344,7 +374,7 @@ fn format_transaction(
             Preconditions::None => {}
             Preconditions::Time(time_bounds) => {
                 if time_bounds.min_time != 0 {
-                    entries.push(DataEntry::new(
+                    footer.push(DataEntry::new(
                         "Valid After",
                         format_unix_timestamp(time_bounds.min_time),
                     ));
@@ -352,7 +382,7 @@ fn format_transaction(
 
                 if time_bounds.max_time != 0 {
                     // only show if not zero
-                    entries.push(DataEntry::new(
+                    footer.push(DataEntry::new(
                         "Valid Before",
                         format_unix_timestamp(time_bounds.max_time),
                     ));
@@ -361,7 +391,7 @@ fn format_transaction(
             Preconditions::V2(cond) => {
                 if let Some(time_bounds) = &cond.time_bounds {
                     if time_bounds.min_time != 0 {
-                        entries.push(DataEntry::new(
+                        footer.push(DataEntry::new(
                             "Valid After",
                             format_unix_timestamp(time_bounds.min_time),
                         ));
@@ -369,7 +399,7 @@ fn format_transaction(
 
                     if time_bounds.max_time != 0 {
                         // only show if not zero
-                        entries.push(DataEntry::new(
+                        footer.push(DataEntry::new(
                             "Valid Before",
                             format_unix_timestamp(time_bounds.max_time),
                         ));
@@ -377,14 +407,14 @@ fn format_transaction(
                 }
                 if let Some(ledger_bounds) = &cond.ledger_bounds {
                     if ledger_bounds.min_ledger != 0 {
-                        entries.push(DataEntry::new(
+                        footer.push(DataEntry::new(
                             "Min Ledger",
                             ledger_bounds.min_ledger.to_string(),
                         ));
                     }
 
                     if ledger_bounds.max_ledger != 0 {
-                        entries.push(DataEntry::new(
+                        footer.push(DataEntry::new(
                             "Max Ledger",
                             ledger_bounds.max_ledger.to_string(),
                         ));
@@ -392,20 +422,20 @@ fn format_transaction(
                 }
                 if let Some(min_seq_num) = cond.min_seq_num {
                     if min_seq_num != 0 {
-                        entries.push(DataEntry::new("Min Seq Num", min_seq_num.to_string()));
+                        footer.push(DataEntry::new("Min Seq Num", min_seq_num.to_string()));
                     }
                 }
                 if cond.min_seq_age != 0 {
-                    entries.push(DataEntry::new("Min Seq Age", cond.min_seq_age.to_string()));
+                    footer.push(DataEntry::new("Min Seq Age", cond.min_seq_age.to_string()));
                 }
                 if cond.min_seq_ledger_gap != 0 {
-                    entries.push(DataEntry::new(
+                    footer.push(DataEntry::new(
                         "Min Seq Ledger Gap",
                         cond.min_seq_ledger_gap.to_string(),
                     ));
                 }
                 for (i, signer) in cond.extra_signers.iter().enumerate() {
-                    entries.push(DataEntry::new(
+                    footer.push(DataEntry::new(
                         &format!("Extra Signer {}", i + 1),
                         signer.to_string(),
                     ));
@@ -414,16 +444,16 @@ fn format_transaction(
         }
     }
 
-    // Only show transaction source if:
-    // 1. This is an inner transaction of a fee bump (always show), or
-    // 2. Config allows showing when it matches the signer, or
-    // 3. It doesn't match the signer address
-    let source_str = transaction.source_account.to_string();
-    if is_inner_tx || config.show_tx_source_if_matches_signer || source_str != signer_address {
-        entries.push(DataEntry::new("Tx Source", source_str));
+    // A fee bump supersedes the inner transaction's fee, so the inner one is
+    // never charged and is not displayed; the outer fee is added by the caller.
+    if !is_inner_tx {
+        footer.push(DataEntry::new(
+            "Max Fee",
+            format!("{} XLM", format_native_amount(transaction.fee.into())),
+        ));
     }
 
-    Ok(entries)
+    Ok(TransactionEntries { header, footer })
 }
 
 /// Formats transaction operations into data entries
