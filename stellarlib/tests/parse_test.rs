@@ -508,6 +508,9 @@ fn test_flag_definitions_cover_every_accepted_value() {
     let rendered = |bytes: &[u8], field: &str| -> String {
         let mut parser = Parser::new(bytes);
         let op = Operation::parse(&mut parser).expect("accepted by the parser");
+        // Guards the hand-built operations above: a stray byte would otherwise
+        // leave this exercising a different value than intended.
+        parser.ensure_fully_consumed().expect("operation is exact");
         format_operation(&op, &cfg, source)
             .expect("formats")
             .into_iter()
@@ -517,7 +520,15 @@ fn test_flag_definitions_cover_every_accepted_value() {
     };
 
     // One name per set bit, so the rendered list must have as many entries.
-    let named_count = |s: &str| s.split(", ").count();
+    // An empty render is zero names, not one: `"".split(", ").count()` is 1,
+    // which would let a dropped single-bit name pass unnoticed.
+    let named_count = |s: &str| {
+        if s.is_empty() {
+            0
+        } else {
+            s.split(", ").count()
+        }
+    };
 
     for flags in 1..=stellarlib::ALL_ACCOUNT_FLAGS {
         let content = rendered(&set_options_flags_op(flags, flags), "Set Flags");
