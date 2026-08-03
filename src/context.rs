@@ -28,11 +28,15 @@ pub const MAX_RAW_DATA_LEN: usize = 1024 * 8;
 pub const SWAP_MAX_RAW_DATA_LEN: usize = 1024;
 
 /// Identifies the signing instruction that owns an in-progress chunk stream.
+///
+/// Variant names intentionally mirror the APDU instruction names used throughout
+/// the app, making mismatched-flow checks explicit at each handler call site.
+#[allow(clippy::enum_variant_names)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ActiveSignFlow {
-    Tx,
-    SorobanAuth,
-    Message,
+pub(crate) enum ActiveFlow {
+    SignTx,
+    SignSorobanAuth,
+    SignMessage,
 }
 
 pub struct RawDataBuffer<const MAX: usize> {
@@ -115,7 +119,7 @@ pub struct AppContext<const MAX: usize> {
     pub review_finished: bool,
     /// The signing instruction that started the current chunk stream.
     /// Continuation chunks must belong to the same instruction.
-    active_flow: Option<ActiveSignFlow>,
+    active_flow: Option<ActiveFlow>,
 }
 
 impl<const MAX: usize> AppContext<MAX> {
@@ -155,7 +159,7 @@ impl<const MAX: usize> AppContext<MAX> {
     pub(crate) fn handle_chunk(
         &mut self,
         comm: &mut Comm,
-        flow: ActiveSignFlow,
+        flow: ActiveFlow,
         first: bool,
     ) -> Result<(), AppSW> {
         let data = comm.get_data().map_err(|_| AppSW::WrongApduLength)?;
