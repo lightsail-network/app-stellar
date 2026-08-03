@@ -16,10 +16,3 @@ jobs:
       branch_for_stellar: ${{ github.ref }}
       test_filter: '"XLM or xlm or Stellar or stellar"'
       repo_for_stellar: ${{ github.repository }}
-      # TEMPORARY: drop these two lines once the fix lands upstream.
-      # app-exchange's Stellar test helper appends a stray `sig.len = 0` after
-      # `tx.ext`, so what it sends is not a signature base. The device used to
-      # sign it anyway; now that unreviewed trailing bytes are rejected, every
-      # valid swap case fails against upstream's test code.
-      repo_for_exchange: overcat/app-exchange
-      branch_for_exchange: fix/stellar-signature-base
