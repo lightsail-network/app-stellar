@@ -29,10 +29,10 @@ pub const SWAP_MAX_RAW_DATA_LEN: usize = 1024;
 
 /// Identifies the signing instruction that owns an in-progress chunk stream.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ActiveFlow {
-    SignTx,
-    SignSorobanAuth,
-    SignMessage,
+pub(crate) enum ActiveSignFlow {
+    Tx,
+    SorobanAuth,
+    Message,
 }
 
 pub struct RawDataBuffer<const MAX: usize> {
@@ -115,7 +115,7 @@ pub struct AppContext<const MAX: usize> {
     pub review_finished: bool,
     /// The signing instruction that started the current chunk stream.
     /// Continuation chunks must belong to the same instruction.
-    active_flow: Option<ActiveFlow>,
+    active_flow: Option<ActiveSignFlow>,
 }
 
 impl<const MAX: usize> AppContext<MAX> {
@@ -155,7 +155,7 @@ impl<const MAX: usize> AppContext<MAX> {
     pub(crate) fn handle_chunk(
         &mut self,
         comm: &mut Comm,
-        flow: ActiveFlow,
+        flow: ActiveSignFlow,
         first: bool,
     ) -> Result<(), AppSW> {
         let data = comm.get_data().map_err(|_| AppSW::WrongApduLength)?;
