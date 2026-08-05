@@ -1440,8 +1440,8 @@ fn auth_duplicates_host_function(
 /// Credential and delegate signatures are still parsed but are intentionally
 /// not rendered: they are opaque proofs rather than authorization intent; the
 /// corresponding authorizing and delegate addresses are the reviewable fields.
-/// Delegate paths are prefixed with `auth_index` so every label identifies its
-/// enclosing authorization entry.
+/// Delegate paths are prefixed with `auth_index` and included in the field
+/// value, keeping the fixed `Delegate` title short at any nesting depth.
 fn format_soroban_authorization_credentials(
     credentials: &SorobanCredentials,
     config: &FormatConfig,
@@ -1493,8 +1493,8 @@ fn format_soroban_delegate(
     entries: &mut Vec<DataEntry>,
 ) {
     entries.push(DataEntry::new(
-        &format!("Delegate {index}"),
-        delegate.address.to_string(),
+        "Delegate",
+        format!("{index}: {}", delegate.address),
     ));
     for (i, nested) in delegate.nested_delegates.iter().enumerate() {
         format_soroban_delegate(nested, format!("{index}-{}", i + 1), entries);

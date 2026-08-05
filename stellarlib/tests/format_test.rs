@@ -376,7 +376,7 @@ fn test_sign_tx_authorization_settings() {
     );
     assert!(actual.contains("Sig Exp Ledger; 3716907"));
     assert!(actual
-        .contains("Delegate 1-1-1-1; GDRMNAIPTNIJWJSL6JOF76CJORN47TDVMWERTXO2G2WKOMXGNHUFL5QX"));
+        .contains("Delegate; 1-1-1-1: GDRMNAIPTNIJWJSL6JOF76CJORN47TDVMWERTXO2G2WKOMXGNHUFL5QX"));
 
     config.show_sequence_and_nonce = true;
     config.show_authorization_details = false;
@@ -385,7 +385,7 @@ fn test_sign_tx_authorization_settings() {
     assert!(!actual.contains("Authorization;"));
     assert!(!actual.contains("Auth Type;"));
     assert!(!actual.contains("Auth Address;"));
-    assert!(!actual.contains("Delegate "));
+    assert!(!actual.contains("Delegate;"));
     assert!(actual.contains("Function; increment"));
 }
 
