@@ -1461,7 +1461,7 @@ fn format_soroban_authorization_credentials(
         SorobanCredentials::AddressWithDelegates(cred) => {
             entries.push(DataEntry::new(
                 "Auth Type",
-                "Address + Delegates".to_string(),
+                "Address with Delegates".to_string(),
             ));
             format_soroban_address_credentials(&cred.address_credentials, config, &mut entries);
             for (i, delegate) in cred.delegates.iter().enumerate() {
