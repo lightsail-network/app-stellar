@@ -26,7 +26,6 @@ curve = ["ed25519"]
 flags = "0xa00"
 path = ["44'/148'"]
 name = "Stellar"
-
 nanosplus = { icon = "icons/stellar_14x14.gif" }
 nanox = { icon = "icons/stellar_14x14.gif" }
 stax = { icon = "icons/stellar_32x32.gif" }
